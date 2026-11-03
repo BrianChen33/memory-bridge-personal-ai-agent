@@ -1,8 +1,12 @@
 # Memory Bridge: Muse ↔ dot
 
-**External memory v0.1.1. Local-first prototype, not a native assistant integration.**
+**External memory v0.1.2. Local-first prototype, not a native assistant integration.**
 
 A Python standard-library tool for owner-scoped events and facts in SQLite, with provenance, lexical/time-filtered retrieval, revisions, conflicts, tombstones, reversible merges, and backup/restore. An external CLI and a read-only MCP adapter provide access. Per-bot append-only exports use compare-and-swap transport semantics. A GitHub Contents API adapter is implemented alongside a fake transport for offline tests. No live GitHub connection or deployed integration has been verified.
+
+## Independent runner revision
+
+v0.1.2 adds a [bounded JSON self-test runner](docs/RUNNER.md) for separately staged, explicitly authorized execution: `python -m memory_bridge.runner` with separate stdin `{"mode":"self-test"}`. It performs fixed local synthetic checks only, with no live data or network access. It does not install into either assistant.
 
 ## Muse adapter revision
 

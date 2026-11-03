@@ -10,7 +10,7 @@ def handle(store,request):
     method=request['method']; params=request.get('params',{})
     if not isinstance(params,dict): raise Invalid('params')
     if method=='initialize':
-        return {'protocolVersion':'2024-11-05','capabilities':{'tools':{}},'serverInfo':{'name':'external-memory-bridge','version':'0.1.1'}}
+        return {'protocolVersion':'2024-11-05','capabilities':{'tools':{}},'serverInfo':{'name':'external-memory-bridge','version':'0.1.2'}}
     if method=='notifications/initialized': return None
     if method=='ping': return {}
     if method=='tools/list':

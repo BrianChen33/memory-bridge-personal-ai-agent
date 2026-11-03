@@ -13,6 +13,7 @@ This describes the intended v0.1 implementation boundary. Passing local tests is
 | Sharing | Trusted local policy for source/category/audience/consent/expiry | Consent inferred from arbitrary imported claims |
 | Export | Per-bot append-only format, dry-run default, fake CAS transport and GitHub Contents API adapter | Live-tested connection, deployment, or automatic publication |
 | Muse row adapter | Pure confirmed-fact schema transformation with explicit trusted scope and exact selection | Live Muse database/CLI integration, automatic native dot hooks |
+| Independent runner | Strict JSON self-test-only entrypoint with input/worker deadline and scoped cleanup | Live capture, production DB reads, automatic consent, sandbox or real-time OS guarantee |
 | Client access | External CLI and read-only MCP adapter | Installed or tested native Muse/dot integration |
 | Scheduling | Disabled configuration example | Installed cron job, recurring sync, autonomous reminders |
 | Optional interfaces | Future extension concepts | Working emotion, reminder, or reading modules |
