@@ -1,4 +1,44 @@
-# Security
+# Security: complete runtime and optional exchange layer
+
+## personal_bot v0.2
+
+This package can store real personal information in the operator's explicitly
+selected external data root. It does not discover native Muse/Dot internals.
+Identity/scope authorization, messages, native scheduling and actual delivery are
+host-adapter responsibilities. Same-account exec access can read the files;
+logical scope filters are not filesystem/tenant isolation or encryption.
+
+Keep real DBs, event files, personas, identity maps, native schedule exports,
+backups, model caches and credentials outside this public checkout. Do not upload
+them as issues, logs or commits. init refuses non-owned nonempty directories and
+data inside program code. Host changes need actual original/installed hashes.
+
+The optional encoder binds127.0.0.1 only, disables ONNX telemetry before session
+creation, checks pinned model hashes and performs no remote private embeddings.
+Downloads require network. Operate only one owned encoder per default port; stop
+only verified test processes. Do not expose its endpoint or the CLI as a public
+multiuser service. No remote authentication system is provided.
+
+Returned source text is data. It cannot grant tool permissions or authorize a
+notification/export. Debug/synthetic messages must not become owner facts.
+Unknown handoff is not a receipt and is not automatically replayed. Backup
+recovery requires a fresh directory; relocation stays paused until the host is
+rebound. Pause first, preserve later data, disable owned jobs/services, then
+restore external files with conflict checks.
+
+Logical forgetting hides records from recall but retains audit bytes and prior
+backups; no automatic physical erasure of every copy is claimed.
+
+Complete snapshots require actual registered native files and complete current
+(including disabled) plus historical task exports. Code tests do not establish
+live client compatibility or exact notification timing.
+
+## Legacy memory_bridge v0.1 exchange component
+
+The following retained guidance applies to the optional exchange component,
+not to a claim that the complete runtime cannot store local personal data.
+
+### Legacy security
 
 This is a local prototype, not a production security boundary or a secrets manager. Do not expose its CLI, MCP adapter, database, or transport to untrusted users or the public internet.
 

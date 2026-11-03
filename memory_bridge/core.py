@@ -89,7 +89,8 @@ class Store:
         self.policy=policy
         path=safe_file(root,'memory.sqlite'); path.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
         fd=os.open(path,os.O_RDWR|os.O_CREAT|getattr(os,'O_NOFOLLOW',0),0o600)
-        os.fchmod(fd,0o600); os.close(fd)
+        if os.name != "nt": os.fchmod(fd,0o600)
+        os.close(fd)
         self.db=sqlite3.connect(path)
         self.db.executescript('CREATE TABLE IF NOT EXISTS identity(owner TEXT PRIMARY KEY); CREATE TABLE IF NOT EXISTS events(id TEXT PRIMARY KEY, hash TEXT UNIQUE NOT NULL, body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS merges(id TEXT PRIMARY KEY, survivor TEXT NOT NULL, hidden TEXT NOT NULL, active INTEGER NOT NULL);')
         existing=self.db.execute('SELECT owner FROM identity').fetchall()

@@ -4,14 +4,24 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "memory-bridge-muse-dot"
-version = "0.1.2"
-description = "Local-first, owner-scoped external memory bridge"
+version = "0.2.0"
+description = "Deployable local memory for always-on personal AI agents, with optional consent-scoped exchange"
+readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "AGPL-3.0-or-later"}
 dependencies = []
 
+[project.optional-dependencies]
+embeddings = ["onnxruntime==1.29.0", "tokenizers==0.23.1", "numpy>=1.26.4,<3"]
+
 [project.scripts]
 memory-bridge = "memory_bridge.cli:main"
+personal-brain = "personal_bot.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["memory_bridge*"]
+include = ["memory_bridge*", "personal_bot*"]
+exclude = ["personal_bot.runtime.tests*"]
+
+[tool.setuptools.package-data]
+personal_bot = ["provenance.json"]
+"personal_bot.runtime" = ["*.json", "*.mjs", "*.txt"]

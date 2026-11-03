@@ -8,7 +8,11 @@ Pinned reference:
 
 The pinned reference identifies provenance and design inspiration. It is not
 an endorsement, a native integration, or a claim of clean-room development.
-No upstream code was fetched or executed as part of writing these documents.
+The v0.1 documentation did not fetch or execute upstream code.
+The v0.2 personal_bot runtime comes from the operator-authorized, verified
+Muse implementation developed for this project. Source hashes and public
+adaptations are in personal_bot/provenance.json. This is not an official
+Muse/Dot SDK; private memories, credentials and deployment records are excluded.
 Preserve applicable upstream attribution and license notices if incorporating
 upstream material in later revisions.
 

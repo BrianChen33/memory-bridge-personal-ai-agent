@@ -1,3 +1,9 @@
+# Threat model scopes
+
+For the full local runtime, see ../SECURITY.md: the trusted boundary is the local operator and host adapter; there is no public network memory service or multitenant authentication. Cloud-computer availability is not implicit access to native private memories.
+
+The retained model below specifically covers legacy memory_bridge event exchange, local content grants and its optional private GitHub transport. Those grants do not automatically authorize full personal_bot memory export.
+
 # Threat model
 
 ## Assets and adversaries

@@ -1,33 +1,18 @@
-# Capability and limitation checklist
+# Capability matrix · v0.2
 
-This describes the intended v0.1 implementation boundary. Passing local tests is evidence only for the tested behavior, not production readiness or live client compatibility.
+| Area | personal_bot完整运行时 | 宿主责任 / 限制 |
+|---|---|---|
+| Storage | scoped SQLite + 原话事件 + 七种kind + 源证据 | 真实ID/发送者映射；逻辑隔离不是多租户认证 |
+| Retrieval | FTS关键词/中文日历/可选512维本机编码/两跳实体/重要性/新鲜度 | 模型资源验收；超期限降级，不保证所有库规模都语义命中 |
+| Emotion | 事件去重PAD与标签更新/衰减/阈值候选 | 推断语气；无真实事件不造原因 |
+| Memory lifecycle | 纠正/遗忘/归档/来源核验/可撤销等价视图/冲突提示 | 语义判断要有出处，不能自动确定真伪 |
+| Life/news | 来源候选/评分/当前兴趣资格/去重/过期/quiet gate | 实际搜索、画像确认、主动递送 |
+| Time | 中文北京时间范围/原话/说话者过滤 | 旧聊天不自动全导；非北京时间未实现 |
+| Reminder | 稳定ID/version/挂接对账/取消改期/due wait/未知不重发 | 原生runonce及native final；没有客户端准点保证 |
+| Reading | 白名单真实文档/hash/chunk租约/原文+推断/原子游标 | 授权来源、真实获取与总结；无虚构视频/书本经历 |
+| Backup | 已注册代码/数据/配置/游标/原生文件/任务定义的完整快照；7daily槽位 | 注册原生文件并导出完整定义；权重/依赖可按固定版本重建 |
+| Restore/rollback | 空目录restore/代码版本匹配relocate/本地停用及epoch | 原生任务/外部文件/模型服务须宿主实际处理 |
+| Muse/Dot | 可部署CLI和能力驱动的宿主契约 | 不是官方通用自动安装SDK；逐平台验收 |
+| Legacy sharing | 原memory_bridge协议/逐内容批准/只读MCP/可选私有GitHub | 不自动接入完整库，不把个人库发公开仓库 |
 
-| Area | v0.1 scope | Not claimed |
-| --- | --- | --- |
-| Storage | Python standard library, local SQLite, owner-scoped events and facts | Encrypted storage, multi-tenant security |
-| Retrieval | Lexical matching and supported time filters | Embeddings, semantic recall, factual correctness |
-| History | Provenance, revisions, conflict records | Automatic truth resolution |
-| Lifecycle | Tombstones and deletion-aware replay/restore | Physical erasure of every copy |
-| Merge | Reversible merge operations | Arbitrary distributed consistency |
-| Recovery | Local backup/monotonic event restore; current tombstones preserved | Destructive rollback, restored local merge state, or managed disaster recovery |
-| Sharing | Trusted local policy for source/category/audience/consent/expiry | Consent inferred from arbitrary imported claims |
-| Export | Per-bot append-only format, dry-run default, fake CAS transport and GitHub Contents API adapter | Live-tested connection, deployment, or automatic publication |
-| Muse row adapter | Pure confirmed-fact schema transformation with explicit trusted scope and exact selection | Live Muse database/CLI integration, automatic native dot hooks |
-| Independent runner | Strict JSON self-test-only entrypoint with input/worker deadline and scoped cleanup | Live capture, production DB reads, automatic consent, sandbox or real-time OS guarantee |
-| Client access | External CLI and read-only MCP adapter | Installed or tested native Muse/dot integration |
-| Scheduling | Disabled configuration example | Installed cron job, recurring sync, autonomous reminders |
-| Optional interfaces | Future extension concepts | Working emotion, reminder, or reading modules |
-| Persona | No access or mutation | Persona sync, prompt edits, internal memory access |
-
-## Before claiming a deployment works
-
-- Run the complete local test suite and review failures.
-- Inspect help/output against the actual CLI implementation.
-- Test the specific external MCP client's protocol and permission behavior.
-- Use synthetic data to test owner isolation, denied exports, expired consent, conflicts, merge reversal, concurrent export changes, and deletion-aware restore.
-- Inspect the exact destination and payload before any real transmission.
-- Live-validate the implemented GitHub adapter against an explicitly authorized private destination before claiming a working deployment; offline mocked tests are not live verification.
-
-No real personal data belongs in fixtures, screenshots, examples, or the public code repository.
-
-Time filtering and merge reversal are exposed by core Python APIs; the CLI and minimal MCP adapter expose a smaller command set. Content scanners are heuristic and do not replace independent review.
+新命令在临时目录测试、完整运行时回归从已核验版本移植。其他部署者仍需执行本地和真实宿主验收，不能继承参考实例的成功声明。旧v0.1范围已保存在[历史清单](legacy/V01_CAPABILITIES.md)。

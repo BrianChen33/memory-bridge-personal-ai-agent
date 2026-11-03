@@ -1,37 +1,37 @@
-# Architecture: external memory v0.1
+# Architecture · v0.2
 
-## Scope
+本仓库有两个互不隐式连通的组件：
 
-The application is a separate memory service operated by the user. It is not an extension of either assistant's private state. Access is via an external CLI or a read-only MCP adapter; configuring an external client is a separate, explicit integration step.
+- `personal_bot`：完整本地运行时 + 外部数据根目录 + 命令行部署入口。原话、类型化记忆、PAD/标签、待分享候选/新闻账本、提醒ledger、阅读块/游标、向量、合并视图和来源派生记录存入SQLite。
+- `memory_bridge`：原v0.1逐项批准的事件交换层，保留其独立格式、授权文件、只读MCP和可选私有GitHub传输。完整库不会自动上传或自动转换为分享事件。
 
-## Data flow
+## 边界
 
-1. An authorized local caller supplies an owner and synthetic or explicitly authorized memory content.
-2. SQLite stores events and derived facts with provenance and lifecycle metadata.
-3. Retrieval filters by owner and supported time constraints, then performs lexical matching. It is not vector search, semantic understanding, or a truth oracle.
-4. Revisions preserve change history. Conflicting facts remain preserved but are quarantined from normal retrieval rather than silently declaring one true. Merges retain enough state to support reversal.
-5. Deletion records a tombstone. Restore/import must reconcile tombstones before accepting older records, so ordinary replay does not resurrect deleted content.
-6. Export passes through a trusted local policy, then builds per-bot append-only records. Dry runs are the safe default. The fake transport exercises compare-and-swap behavior offline. The implemented GitHub Contents adapter supports explicitly enabled reads and writes; it has only been tested with mocked responses, not a live account.
+宿主负责可信身份/会话→scope、稳定消息ID、原始时间、每轮工具调用、原生调度、实际递送及人格。运行时负责存储、检索、事件去重、来源资格、静默gate、提醒版本/交接、游标和恢复一致性。
 
-## Trust boundaries
+`personal_bot`父CLI只管理已标记的外部数据目录，子进程在内置runtime目录导入旧核心所需的brain/proactive模块，避免污染旧memory_bridge导入。代码与私有数据分离；不同root生成不同任务ID。轮询/消息准备不冷载模型。
 
-- **Trusted local configuration:** sharing policy and the operator's explicit authorization. Do not derive these from imported text.
-- **Untrusted content:** memory text, provenance claims from external sources, retrieved snippets, and incoming export records.
-- **Application isolation:** owner-scoped queries reduce accidental cross-owner reads; they do not replace filesystem protection or authentication.
-- **Remote boundary:** the GitHub Contents adapter uses a separately supplied environment token and explicit network/write flags. It verifies private repository identity, uses fixed HTTPS with redirects/proxies disabled, and enforces `memory-v1/<owner>/<source>/events.json` paths with expected-SHA updates. No live connection, hosted authentication system, or production deployment is supplied.
+本地向量服务只编码文本，固定127.0.0.1:18765、单CPU推理并发、CLS/512维、固定资产哈希、无远程私人embedding。查询客户端120ms期限，向量扫描35ms后丢弃偏置的半成品排名，继续独立的关键词/实体候选。重要性/新鲜度参与排序；不是向量库万能真实性保证。
 
-A policy restricts eligible source, category, audience, consent, and expiry. Approval is bound to an exact event hash and expiration; the local `approvals.json` is kept separate from synced records. Remote content cannot create its own approval. Heuristic scanners are only a supplementary check, not a reliable classifier of all sensitive free text. Export eligibility does not independently authorize a new destination or an ongoing schedule. An external client remains responsible for its own authorization and for treating results as data.
+## 数据流
 
-## Persistence and recovery
+真实入站→prepare→原始事件和适用的PAD更新→作用域/时间/来源过滤后的memories+events+insights→原Bot回答。后续长期学习明确kind/evidence；assistant派生记录只作inference，并链接有效原始来源。
 
-SQLite is the canonical local store. Restore is a monotonic event import into the current store, not a destructive rollback. Current tombstones remain in force; local merge state is not restored. Backups are sensitive copies, not sanitized exports. Recovery must preserve deletion knowledge and validate input before merging it. Tombstones provide logical suppression, not guaranteed physical erasure. A fresh installation cannot infer deletions that happened after an old backup without a retained deletion ledger.
+周期任务使用同一来源账本与全局短交接协调，各自按channel分享，不设日配额。只有可操作的有价值变化才通知。夜间可处理/入队，不能主动final。提醒独立runonce及实际due守卫，不依赖生活分享开关。
 
-Append-only exports improve traceability, but permanent retention conflicts with erasure requirements. Keep private logs separate from public code, define retention explicitly, and do not store credentials. Git deletion does not erase historical objects or copies held elsewhere.
+## 持久化与可恢复性
 
-## Extension seams
+init建立备份白名单，显式包含已安装包代码、模型资产清单、数据目录配置/画像/游标、SQLite在线快照和本地保存的完整原生定义。部署者需登记真实原生文件，不能把空导出当完整原生备份。
 
-The CLI, read adapter, policy, and fake transport are deliberately separable. Additional remote transports, authenticated servers, semantic retrieval, emotion, reminders, and reading features require implementation and review. An interface name or example is not evidence that a module works. Never couple these extensions to persona or system-prompt modification.
+实际引用的host_manifests及其原始.bin也显式收录，不盲扫任意快照目录或跟随外部目标路径。
 
-## Transport operation
+7成功每日槽位与manual快照分开。恢复到空目录，只使用快照字节；relocate核对代码哈希后重绑定路径，保持开关与蓝图停用。外部服务/定时任务恢复由真实宿主接口完成。回退保留后写入数据，不能复活遗忘源或重发unknown。
 
-`--network-consent` enables GitHub reads, including during dry runs. `--apply` enables a push write or pull import. Local exact-content grants gate remote records as well as local exports; no remote autoapproval exists. The dry-run result is a count/revision summary rather than a complete payload preview. Failed writes can have uncertain outcomes and require inspection before retry. Revocation does not remove historical Git content, and a revoked remote event can intentionally block further append-only sync. The MCP adapter refreshes local grants for each request.
+## 有意保留的限制
+
+- 范围隔离是逻辑边界，不代替操作系统权限、认证或磁盘加密；此项目不是公开多用户服务。
+- 日历和提醒目前只支持北京时间语义，不能通过改一个timezone字段宣称任意地区已适配。
+- 自主总结/语义判断/新闻获取由宿主完成，运行时不是额外LLM服务。
+- 模块测试、特定参考环境、其他平台接入与自然调度是不同证据层级。
+
+旧交换层的详细架构见[legacy](legacy/V01_ARCHITECTURE.md)。

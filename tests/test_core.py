@@ -282,7 +282,10 @@ class CoreTests(unittest.TestCase):
     def test_symlink_files_and_ancestors_rejected(self):
         target = self.root / 'target.json'
         target.write_text('{}')
-        (self.root / 'link.json').symlink_to(target)
+        try:
+            (self.root / 'link.json').symlink_to(target)
+        except OSError:
+            self.skipTest('host cannot create symlinks; Linux CI runs this check')
         with self.assertRaises(Denied):
             read_file(self.root, 'link.json')
         real = self.root / 'real'
