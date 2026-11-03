@@ -51,6 +51,32 @@
     "referenced host rollback artifacts in full snapshots",
     "relocate native trees and host manifests to isolated copies",
     "numeric QQ timestamp preservation",
-    "synthetic fixture entity and timestamp normalization"
-  ]
+    "synthetic fixture entity and timestamp normalization",
+    "model-judged emotion v1 with strict assessment and no keyword fallback",
+    "assessment-only no-change audit without refreshing mood timestamps",
+    "legacy event replay guard on upgraded roots",
+    "deterministic synthetic quiet-boundary test clocks"
+  ],
+  "model_emotion_update": {
+    "date": "2026-11-04",
+    "protocol": 1,
+    "release": "0.3.0",
+    "source": "verified Muse model-judged emotion v1; synthetic portable adaptation",
+    "source_hashes": {
+      "brain.py": "2e75ae5be492b634ca5362f00589c7cae6d0c8b5a13e89a7f2f51ff95acdf038",
+      "muse_ext/emotion.py": "312e347357abd26e3d6e218069de228fd62981fded8b2a3622fa8bf4aede785a",
+      "muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83"
+    },
+    "portable_hashes": {
+      "brain.py": "1ef729ec0b7d9d2bf3605a760f1c6ba4e78a7ce02f56fb215dbba86dd581e6c3",
+      "muse_ext/emotion.py": "60b2745b924136ab1918208d656f6de58d23be5f78909b22e369344f04bd6997",
+      "muse_ext/events.py": "fe2622da5bb2dcab0b64cac8c7903130f401c40d3bb53c5ad6fc5ee0dfb5f526"
+    },
+    "adaptations": [
+      "generic tone notes preserve host persona",
+      "only user actor can change mood; no QQ-specific trust/shared projection",
+      "legacy emotion event replay guard preserves existing state without fabricated assessments",
+      "no QQ bridge/hook/sticker implementation copied"
+    ]
+  }
 }

@@ -86,6 +86,35 @@ def scope_ok(scope):
     return scope
 
 
+def _emotion_explicitly_disabled(brain, q):
+    """v1 (2026-11-04): explicit-disable pre-check for the emotion path.
+
+    Returns True ONLY when the trusted local config actually reads as off:
+    enabled=false (master), modules.mood=false,
+    features.emotion_events=false, features.events=false.
+    Missing keys / unreadable config / corrupt config are NOT explicit disable
+    (they surface as errors elsewhere); model input is never consulted.
+    """
+    try:
+        c = brain.config()
+    except Exception:
+        return False
+    if not isinstance(c, dict):
+        return False
+    if c.get('enabled', True) is False:
+        return True
+    mods = c.get('modules')
+    if isinstance(mods, dict) and mods.get('mood', True) is False:
+        return True
+    feats = c.get('features')
+    if isinstance(feats, dict):
+        if feats.get('emotion_events', True) is False:
+            return True
+        if feats.get('events', True) is False:
+            return True
+    return False
+
+
 class Brain:
     def __init__(self, root):
         self.root = Path(root).resolve()
@@ -456,7 +485,7 @@ class Brain:
             news_id = cur.lastrowid
             # Create candidate linked to news (fingerprint = story_key, not sources)
             # Candidate text MUST include real source_url/date, not just title+reason
-            cand_text = f"【新闻】{title.strip()}\n来源：{source_url.strip()}\n日期：{publish_date}\n{reason.strip()}"
+            cand_text = f"�����š�{title.strip()}\n��Դ��{source_url.strip()}\n���ڣ�{publish_date}\n{reason.strip()}"
             self.db.execute(
                 '''INSERT OR IGNORE INTO candidates(scope,text,sources,topic,fingerprint,created_at)
                    VALUES(?,?,?,?,?,?)''',
@@ -655,21 +684,36 @@ class Brain:
             from muse_ext.insights import derive
             return derive(self,q)
         if op == 'capture':
+            # v1: capture only. No emotion side effect; assessment comes later
+            # via prepare-with-assessment referencing the same event_id.
             from muse_ext.events import capture_event
             event = capture_event(self,q)
-            from muse_ext.emotion import observe_event
-            return dict(ok=True,event=event,emotion=observe_event(self,event.get('id')))
+            return dict(ok=True,event=event,emotion={'status':'pending_assessment'},
+                        mood=self.dispatch(dict(op='mood',scope=scope)))
         if op == 'prepare':
             event, emotion = None, None
-            if self.feature('events'):
+            if _emotion_explicitly_disabled(self, q):
+                # Explicit local disable: honest status, zero emotion writes.
+                # No capture, no submit. (Corrupt config / missing keys are NOT
+                # explicit and fall through to the normal/error paths below.)
+                emotion = {'status': 'disabled_by_config'}
+            elif self.feature('events'):
                 from muse_ext.events import capture_event
-                from muse_ext.emotion import observe_event
+                from muse_ext.emotion import submit_assessment
                 event = capture_event(self,q)
-                emotion = observe_event(self,event.get('id'))
+                # v1 model-judged protocol: no assessment -> explicit 'missing'
+                # (no keyword fallback); invalid -> explicit 'invalid'. Neither
+                # consumes the event's assessment opportunity.
+                raw = q.get('emotion_assessment', None)
+                if raw is None:
+                    emotion = {'status':'missing'}
+                else:
+                    emotion = submit_assessment(self,event.get('id'),raw)
             recalled=self.recall(q)
-            return dict(recalled,mood=self.dispatch(dict(op='mood',scope=scope)),
+            result = dict(recalled,mood=self.dispatch(dict(op='mood',scope=scope)),
                         event=event,emotion=emotion,
                         style=self.dispatch(dict(op='style',scope=scope,sender_type=q.get('sender_type'))))
+            return result
         if op == 'ingest':
             if not self.available('input'):
                 return dict(ok=False,disabled=True)
@@ -681,7 +725,7 @@ class Brain:
                 if not isinstance(a,dict) or a.get('type') not in ('image','audio','video','link','file'):
                     raise ValueError('invalid_attachment')
                 parsed=a.get('text') if a.get('status')=='parsed' else None
-                parts.append('['+a['type']+'] '+(parsed if isinstance(parsed,str) and parsed else '未解析：无内容证据'))
+                parts.append('['+a['type']+'] '+(parsed if isinstance(parsed,str) and parsed else 'δ������������֤��'))
             return self.dispatch(dict(q,op='remember',text='\n'.join(parts),kind='episode',evidence='observed'))
         if op == 'maintain':
             if not self.available('feedback'):
@@ -763,7 +807,7 @@ class Brain:
                 return dict(ok=True,disabled=True)
             task=q.get('scene')=='task'
             return dict(ok=True,mention='first_only' if q.get('sender_type')=='bot' else 'none',allow_detail=task,
-                        guidance=('认真任务可展开步骤、证据与限制' if task else '熟人闲聊自然短句，不强行列点总结')+'；保留当前机器人的原有人设；不改写事实、不删除回答、不增加模型调用')
+                        guidance=('���������չ�����衢֤��������' if task else '����������Ȼ�̾䣬��ǿ���е��ܽ�')+'��������ǰ�����˵�ԭ�����裻����д��ʵ����ɾ���ش𡢲�����ģ�͵���')
         if op == 'proactive_check':
             # Lightweight startup check: enabled/life + quiet-hours gate.
             # Returns actual policy state; NOT just reading rule text.

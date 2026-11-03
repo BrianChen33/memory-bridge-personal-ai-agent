@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 RUNTIME=ROOT/'personal_bot/runtime'
 NAMES=['test_brain','test_concurrency','test_ops','test_proactive','test_news_dispatch','test_heartbeat_digest',
-       'test_events','test_temporal','test_reminders','test_retrieval','test_consolidation','test_reading','test_sharing','test_full_backup']
+       'test_events','test_model_emotion','test_temporal','test_reminders','test_retrieval','test_consolidation','test_reading','test_sharing','test_full_backup']
 
 def run(args,cwd,env):
     p=subprocess.run(args,cwd=cwd,env=env)

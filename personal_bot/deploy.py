@@ -93,7 +93,7 @@ def blueprint(root):
     cmd=command(root,'request')
     shared=('Use the host native scheduler and main-chat outbound API, never invent an API. '
             'First call proactive_check(scope=owner-private) using '+cmd+'. If background_allowed is not true, stop. '
-            '01:00–07:00 Asia/Shanghai: background only, no unsolicited final. No daily quota. '
+            '01:00�C07:00 Asia/Shanghai: background only, no unsolicited final. No daily quota. '
             'For useful source-backed observations call life, then digest_claim with this channel only; '
             'generate from claimed sources, digest_authorize, digest_finish(outcome=unknown,expressed_ids=used IDs), '
             'immediately one native final. Any refusal/empty/busy means silence. Never replay unknown. '
@@ -103,7 +103,7 @@ def blueprint(root):
             'Use authorized news sources and local interests. News must pass current scoring/date/source/dedup gates. '
             'Update source cursors only on success. After new memories, vector_index limit20 if vector is enabled; failure must not block sharing.'),
            ('emotion',{'kind':'interval','minutes':15},['emotion'],
-            'Actual mood updates are event-driven by prepare. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
+            'Actual mood updates require model emotion_assessment v1 on real incoming events; never use keyword rules or the task clock to add emotion. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
             'Recovery may enqueue once with the same real active sources and stable recovery topic. No real change means silence.'),
            ('reading',{'kind':'interval','minutes':120},['reading'],
             'reading claim from the allowlisted library; read actual chunk, summarize as inference, reading commit with chunk_id/lease. '
@@ -163,7 +163,7 @@ def init(root):
 def enable(root,features):
     if any(x not in FEATURES for x in features):raise ValueError('invalid_feature')
     if 'vector' in features:
-        p=subprocess.run([sys.executable,'-c','from muse_ext.embeddings import encode; encode("启动检查",query=True)'],
+        p=subprocess.run([sys.executable,'-c','from muse_ext.embeddings import encode; encode("�������",query=True)'],
                          cwd=RUNTIME,env=runtime_env(),capture_output=True,timeout=5)
         if p.returncode:raise ValueError('local_encoder_not_ready_vector_stays_off')
     return request(root,dict(op='configure',enabled=True,features={x:x in features for x in FEATURES}))
@@ -270,10 +270,14 @@ def self_test():
     with tempfile.TemporaryDirectory(prefix='personal-memory-test-') as temp:
         root=root_path(Path(temp)/'isolated');init(root);enable(root,DEFAULT_FEATURES)
         t=datetime.now(timezone(timedelta(hours=8))).replace(hour=9,minute=0,second=0,microsecond=0)-timedelta(days=1)
-        q=dict(op='prepare',scope='owner-private',text='谢谢你，帮了大忙',source='fixture:isolated',event_id='test-event',occurred_at=t.timestamp())
+        q=dict(op='prepare',scope='owner-private',text='лл�㣬���˴�æ',source='fixture:isolated',event_id='test-event',occurred_at=t.timestamp())
+        pre=request(root,q)
+        q['emotion_assessment']=dict(version=1,changed=True,label='��ϲ',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
         a=request(root,q);b=request(root,q)
-        r=request(root,dict(op='recall',scope='owner-private',text='昨天早上我说了什么'))
-        if a['event']['status']!='captured' or b['event']['status']!='replayed' or a['mood']['p']<=0 or not r['events']:
+        r=request(root,dict(op='recall',scope='owner-private',text='����������˵��ʲô'))
+        if (pre['event']['status']!='captured' or pre['emotion']['status']!='missing'
+                or pre['mood']['p']!=0 or a['emotion']['status']!='updated'
+                or b['emotion']['status']!='replayed' or a['mood']['p']<=0 or not r['events']):
             raise RuntimeError('synthetic_self_test_failed')
         rollback(root)
-    return dict(ok=True,scope='temporary_synthetic_only',checks=['init','prepare','idempotence','mood_write','Chinese_time_originals','pause'],network=False,notifications=False)
+    return dict(ok=True,scope='temporary_synthetic_only',checks=['init','prepare','idempotence','model_assessment','no_keyword_update','mood_write','Chinese_time_originals','pause'],network=False,notifications=False)

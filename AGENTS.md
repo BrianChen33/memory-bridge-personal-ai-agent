@@ -4,6 +4,12 @@ Read README.md and DEPLOY_FOR_BOT.md first. The public term is Personal AI Agent
 "always-on personal AI agent" describes the persistent-computer form. The Python
 package name personal_bot is a technical entrypoint, not a standards claim.
 
+Read docs/SYSTEM_REPLICATION.md for the full design and docs/MODEL_EMOTION.md
+before changing emotion. v0.3 uses host-model assessment v1 before composition;
+prepare without assessment is missing, not unchanged. No keyword emotion fallback.
+Do not copy deployment-specific QQ hooks, identities, private mood reasons or
+persona notes into the portable package. Media sending is a host adaptation.
+
 Keep legacy memory_bridge protocol compatibility. New personal_bot contains the
 full external memory runtime. All real data must live outside this checkout;
 never commit DBs, real transcripts, personas, identity maps, tokens or native
