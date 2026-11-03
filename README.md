@@ -53,7 +53,7 @@ flowchart TD
 
 复制下面这段给**你自己的、具有本地执行权限的机器人**：
 
-> 请阅读 https://github.com/BrianChen33/memory-bridge-muse-dot 的 README 和 DEPLOY_FOR_BOT.md，在我的环境部署完整 personal_bot 系统。先检查你实际具有的命令执行、文件、稳定消息 ID、原生定时和主动递送能力；使用仓库外的独立数据目录，保留我原来的人设和聊天逻辑。按部署指南先本地合成验收，再接消息和分工任务，备份原有配置并准备一条指令回退。向量模型仅本地运行，默认不启用 GitHub 记忆同步。不要把缺少的宿主能力或测试通过说成已经部署成功；缺哪一项请明确说明。
+> 请阅读 https://github.com/BrianChen33/memory-bridge-personal-ai-agent 的 README 和 DEPLOY_FOR_BOT.md，在我的环境部署完整 personal_bot 系统。先检查你实际具有的命令执行、文件、稳定消息 ID、原生定时和主动递送能力；使用仓库外的独立数据目录，保留我原来的人设和聊天逻辑。按部署指南先本地合成验收，再接消息和分工任务，备份原有配置并准备一条指令回退。向量模型仅本地运行，默认不启用 GitHub 记忆同步。不要把缺少的宿主能力或测试通过说成已经部署成功；缺哪一项请明确说明。
 
 机器人应该继续读取 [DEPLOY_FOR_BOT.md](DEPLOY_FOR_BOT.md)，不是只复述这段说明。没有命令/文件能力的封闭平台无法仅靠提示词安装此系统。
 
@@ -64,8 +64,8 @@ flowchart TD
 ### 1. 获取代码并创建独立环境
 
 ```sh
-git clone https://github.com/BrianChen33/memory-bridge-muse-dot.git
-cd memory-bridge-muse-dot
+git clone https://github.com/BrianChen33/memory-bridge-personal-ai-agent.git
+cd memory-bridge-personal-ai-agent
 python -m venv .venv
 ```
 
