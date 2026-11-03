@@ -485,7 +485,7 @@ class Brain:
             news_id = cur.lastrowid
             # Create candidate linked to news (fingerprint = story_key, not sources)
             # Candidate text MUST include real source_url/date, not just title+reason
-            cand_text = f"�����š�{title.strip()}\n��Դ��{source_url.strip()}\n���ڣ�{publish_date}\n{reason.strip()}"
+            cand_text = f"【新闻】{title.strip()}\n来源：{source_url.strip()}\n日期：{publish_date}\n{reason.strip()}"
             self.db.execute(
                 '''INSERT OR IGNORE INTO candidates(scope,text,sources,topic,fingerprint,created_at)
                    VALUES(?,?,?,?,?,?)''',
@@ -725,7 +725,7 @@ class Brain:
                 if not isinstance(a,dict) or a.get('type') not in ('image','audio','video','link','file'):
                     raise ValueError('invalid_attachment')
                 parsed=a.get('text') if a.get('status')=='parsed' else None
-                parts.append('['+a['type']+'] '+(parsed if isinstance(parsed,str) and parsed else 'δ������������֤��'))
+                parts.append('['+a['type']+'] '+(parsed if isinstance(parsed,str) and parsed else '未解析：无内容证据'))
             return self.dispatch(dict(q,op='remember',text='\n'.join(parts),kind='episode',evidence='observed'))
         if op == 'maintain':
             if not self.available('feedback'):
@@ -807,7 +807,7 @@ class Brain:
                 return dict(ok=True,disabled=True)
             task=q.get('scene')=='task'
             return dict(ok=True,mention='first_only' if q.get('sender_type')=='bot' else 'none',allow_detail=task,
-                        guidance=('���������չ�����衢֤��������' if task else '����������Ȼ�̾䣬��ǿ���е��ܽ�')+'��������ǰ�����˵�ԭ�����裻����д��ʵ����ɾ���ش𡢲�����ģ�͵���')
+                        guidance=('认真任务可展开步骤、证据与限制' if task else '熟人闲聊自然短句，不强行列点总结')+'；保留当前机器人的原有人设；不改写事实、不删除回答、不增加模型调用')
         if op == 'proactive_check':
             # Lightweight startup check: enabled/life + quiet-hours gate.
             # Returns actual policy state; NOT just reading rule text.

@@ -1,66 +1,66 @@
-# JSON API ������
+# JSON API 与验收
 
-������ڣ�`python -m personal_bot --root <STATE> request --file request.json`��Ҳ����stdin��UTF-8 JSON�����β�����65536�ֽڣ��������12000�ַ�����ȡ����е�ok������reason������/��Ĭ/δ�����ǽṹ���������һ���ǳ��������CLI��ok=falseʱ���ط��㣬������JSON�ֶΡ�
+命令入口：`python -m personal_bot --root <STATE> request --file request.json`；也可在stdin传UTF-8 JSON。单次不超过65536字节，正文最多12000字符。读取结果中的ok及具体reason：澄清/静默/未到点是结构化结果，不一定是程序崩溃。CLI在ok=false时返回非零，但保留JSON字段。
 
-����ʱ�� standalone core �������ĵ�����������ʵ��dispatch�����Ƕ����Զ��API������ֵ����ʾ������Ҫ�Ѻϳ�����д����ʽ���˿⡣
+运行时由 standalone core 处理，文档操作名来自实际dispatch，不是额外的远程API。下面值都是示例，不要把合成数据写入正式个人库。
 
-## ���ò���
+## 常用操作
 
-| op | �ؼ��ֶ� | ���� |
+| op | 关键字段 | 含义 |
 |---|---|---|
-| prepare | scope/text/source/event_id/occurred_at/actor���ɸ� emotion_assessment v1 | ���� + ���������������� missing����������У��/ȥ�ظ��º󷵻��� mood |
-| capture | ͬ�ϣ�actor=user/assistant/bot/article | ����¼��ʵ�¼���emotion=pending_assessment�������������ã����ܳ䵱���ͻ�ִ |
-| remember / ingest | scope/text/source/event_id/kind/evidence | �洢�������ļ���/��������֤�� |
-| recall | scope/text����ѡstart/end | ����ʱ���������ʽ�뿪���ַ�Χ������ԭ��/����/����Դ�ƶ� |
-| correct / forget | scope/id��correct����text/source/event_id | ����/��������ֹ���������ݸ��� |
-| mood | scope | ��ȡ˥�����PAD���ǩ������������prepare��ģ���������ɵײ�д����ݽӿڲ������������� |
-| derive | scope/sources/text/kind | reflection/skill/lesson����ȷinference����Դ����Ч |
-| consolidate | scope/action=propose/merge/undo | Դ��ϣ���顢�ȼۺϲ���ͼ����ͻ������ |
-| vector_index | scope/limit<=20 | �����н��̨������ģ�Ͳ����þ�ʧ��/�����ؼ��� |
-| reading | scope=owner-private/action=claim/commit/status | �������ĵ��Ķ�����Լ��ԭ�����ƶϱʼǡ��α� |
-| reminder | scope=owner-private/action | �����������ڣ����� |
-| proactive_check | scope=owner-private | ʵ��ϵͳʱ����background_allowed/can_notify |
-| life / news | scope=owner-private��ʵ��sources/�����ֶ� | ���ɴ�������ѡ��news����֤��ǰ����/����/��ֵ |
-| digest_claim / digest_authorize / digest_finish | scope/channels/lease/epoch/expressed_ids | ����ڹ�������/ȥ�غ�������Դ���� |
-| maintain | scope | �鵵���ڵ���Ҫ�Ե�episode |
+| prepare | scope/text/source/event_id/occurred_at/actor，可附 emotion_assessment v1 | 捕获 + 检索；无评估返回 missing，有评估则校验/去重更新后返回新 mood |
+| capture | 同上，actor=user/assistant/bot/article | 仅记录真实事件，emotion=pending_assessment，无情绪副作用；不能充当递送回执 |
+| remember / ingest | scope/text/source/event_id/kind/evidence | 存储带出处的记忆/附件解析证据 |
+| recall | scope/text，可选start/end | 中文时间解析或显式半开数字范围；返回原话/记忆/有来源推断 |
+| correct / forget | scope/id，correct另带text/source/event_id | 纠正/遗忘并阻止关联旧内容复活 |
+| mood | scope | 读取衰减后的PAD与标签；正常更新走prepare的模型评估；旧底层写入兼容接口不用于正常聊天 |
+| derive | scope/sources/text/kind | reflection/skill/lesson，明确inference且来源仍有效 |
+| consolidate | scope/action=propose/merge/undo | 源哈希复查、等价合并视图、冲突、撤销 |
+| vector_index | scope/limit<=20 | 本机有界后台索引；模型不可用就失败/保留关键词 |
+| reading | scope=owner-private/action=claim/commit/status | 白名单文档阅读、租约、原文与推断笔记、游标 |
+| reminder | scope=owner-private/action | 提醒生命周期，见下 |
+| proactive_check | scope=owner-private | 实际系统时钟下background_allowed/can_notify |
+| life / news | scope=owner-private及实际sources/评分字段 | 生成待分享候选；news还验证当前画像/日期/阈值 |
+| digest_claim / digest_authorize / digest_finish | scope/channels/lease/epoch/expressed_ids | 跨入口共享认领/去重和最终来源复查 |
+| maintain | scope | 归档超期低重要性的episode |
 
-`source` ����Դ��¼����������ѧ��֤�����ݺͲ�����Ȩ�������������Ŀ��������������������߼����룬ӵ�б���ִ��Ȩ�޵�ͬһ�������ܶ������ļ������Ƕ��⻧��ȫ�߽硣
+`source` 是溯源记录，不是密码学认证；身份和操作授权必须来自宿主的可信适配器。作用域是逻辑隔离，拥有本地执行权限的同一代理仍能读本地文件，不是多租户安全边界。
 
-## ʱ��������
+## 时间与情绪
 
-ͬһ��ʵ��Ϣ��������scope/source/event_id/actor�����ݱ����ܾ����������� prepare Ԥ��������ԭ�ظ�ģ���ύͬ�¼� emotion_assessment��û�йؼ����Զ����¡�updated/unchanged/replayed �ɼ�����missing/invalid ��Ҫ����Ч������conflict �����׸���legacy_recorded ��ʾ����ǰ�Ѹ��¹��ľ��¼��������ظ�Ӧ�á���ֵ���޷���PAD��Сʱ��˥����ǩ45���Ӱ�˥���ޱ仯�ʹ���ȡ����״̬ʱ�䡣��ϸЭ�顢����JSON��Ǩ�Ʊ߽�� [MODEL_EMOTION](MODEL_EMOTION.md)��
+同一真实消息重试沿用scope/source/event_id/actor；内容变更会拒绝。先无评估 prepare 预读，再由原回复模型提交同事件 emotion_assessment；没有关键词自动更新。updated/unchanged/replayed 可继续；missing/invalid 需要补有效评估，conflict 保留首个，legacy_recorded 表示升级前已更新过的旧事件，不再重复应用。数值有限幅，PAD六小时半衰、标签45分钟半衰；无变化和纯读取不改状态时间。详细协议、完整JSON和迁移边界见 [MODEL_EMOTION](MODEL_EMOTION.md)。
 
-`recall {text:"����������˵��ʲô"}` ������ʱ��5�C12��ȡ����userԭ����`{start:...,end:...}`����ʹ����ȷ��Χ��insights���ʼ�����occurred_at���ˣ�������ԭʼ��ԴID�������ƶϵ��û�ԭ����û�м�¼�ͻش�û��Դ��¼��
+`recall {text:"昨天早上我说了什么"}` 按北京时间5–12点取昨天user原话；`{start:...,end:...}`优先使用明确范围。insights按笔记自身occurred_at过滤，并保留原始来源ID，不把推断当用户原话。没有记录就回答没有源记录。
 
-## ���ѱջ�
+## 提醒闭环
 
-1. `reminder/create`��textΪԭʼʱ������bodyΪԤ��д�õ����ģ�source/event_idΪʵ��������Դ���硰�������㡱����ȷ�����磬����needs_clarification�����ܲ¡�
-2. ledger����id/version/native_job_id/native_at/timezone�������Ȳ�ͬIDԭ��runonce���ٴ������á�view�˶Ժ�`reminder/attach`��
-3. runonceִ�У�`python -m personal_bot --root <STATE> reminder --id ID --version N --handoff`�����ȴ�900�룬ʵ�ʵ���󸴲����á��汾��ȡ����epoch����Ĭ����Լ����ǰ���Ѳ���ǰ����
-4. ��ok=true/status=unknownʱ�������ѷ���bodyԭ����Ϊһ��native final��unknown����׼�����ӣ����ǿͻ��˻�ִ�������Զ����ԡ�
-5. `cancel`��Χ������ͣ���ص�native job��`ack_disabled`��`reschedule`����version��ͣ����ID��������version���ȶ�ID��attach��
-6. `pending`���ָ�������ˣ�������5m���˴���runonce��ʱ��lifeģ����ͣ��Ӧȡ���û���ȷ��������ѣ��ܿ���/���ѹ��ܹرջ���ֹ���ӡ�
+1. `reminder/create`：text为原始时间请求，body为预先写好的正文，source/event_id为实际请求来源；如“明天三点”不明确上下午，返回needs_clarification，不能猜。
+2. ledger返回id/version/native_job_id/native_at/timezone。宿主先查同ID原生runonce，再创建或复用、view核对后`reminder/attach`。
+3. runonce执行：`python -m personal_bot --root <STATE> reminder --id ID --version N --handoff`。最多等待900秒，实际到点后复查配置、版本、取消、epoch、静默与租约；提前唤醒不提前发。
+4. 仅ok=true/status=unknown时，立即把返回body原样作为一次native final。unknown是已准备交接，不是客户端回执；不能自动重试。
+5. `cancel`先围栏，再停返回的native job并`ack_disabled`。`reschedule`提升version、停退休ID、创建新version的稳定ID再attach。
+6. `pending`给恢复任务对账，不能用5m对账代替runonce计时。life模块暂停不应取消用户明确请求的提醒；总开关/提醒功能关闭会阻止交接。
 
-Ĭ��ҹ�����ڵ�07:00��ֻ���û���ȷָ��ҹ������ʱ����������Ŵ�quiet_override=true��quiet_permission=explicit_user_request����Ҫ�Ӽ��������ƶ�����Ȩ�ޡ�
+默认夜间延期到07:00；只有用户明确指定夜间提醒时，创建请求才传quiet_override=true、quiet_permission=explicit_user_request。不要从检索文字推断这项权限。
 
-## �Ķ��ջ�
+## 阅读闭环
 
-��`<STATE>/library/`��������Ȩ�Ĺ���UTF-8�ı�/Markdown���Ǽ�reading-sources.json��
+在`<STATE>/library/`缓存已授权的公开UTF-8文本/Markdown；登记reading-sources.json：
 
 ```json
 {"version":1,"documents":[{"id":"sqlite-backup","path":"library/sqlite-backup.txt","source_url":"https://www.sqlite.org/backup.html","public":true}]}
 ```
 
-`reading/claim`���ؾ�ȷtext/source_hash/start/end/lease������ʵ���Ķ�����chunk_id/lease/summary����commit�������ٴκ˶�Դ�ļ���ԭ��дepisode/observedԭ�ĺ�reflection/inference�ʼǣ���ǰ��cursor��ʧ�ܲ�ǰ�����ظ��ύ���ظ�д��Դ�ѱ�����������졣
+`reading/claim`返回精确text/source_hash/start/end/lease；宿主实际阅读后用chunk_id/lease/summary调用commit。代码再次核对源文件、原子写episode/observed原文和reflection/inference笔记，才前进cursor。失败不前进，重复提交不重复写，源已变更需重新认领。
 
-�ʼǿ���`life {sources:[quote_id],topic:"reading:�ĵ�:��ϣ:λ��",text:�м�ֵ�۲�}`��ӣ���reading channel����gate����������Ų���ð���Ķ��ƹ�����/��ֵ��
+笔记可以`life {sources:[quote_id],topic:"reading:文档:哈希:位置",text:有价值观察}`入队，经reading channel正常gate后分享。新闻不能冒充阅读绕过画像/阈值。
 
-## �ȼۺϲ�
+## 等价合并
 
-proposeֻ����ѡ��merge�����ṩͬscope������kind/evidence��ids��ÿԴ��ǰfingerprint��hashes����ȷquotes��relation=equivalent��contradiction����ȷreason������/���ڻ�񶨱仯����Ϊconflict��ԭ�Ĳ���д��undoֻ����ͼ����������forgotten/superseded��Դ��
+propose只给候选。merge必须提供同scope、兼容kind/evidence的ids、每源当前fingerprint的hashes、精确quotes、relation=equivalent或contradiction、明确reason。数字/日期或否定变化保留为conflict，原文不覆写。undo只撤视图，不复活已forgotten/superseded的源。
 
-## ����Լ��
+## 分享约束
 
-digest_claim��channels��ȡlife/news/emotion/reading����ͬ����ֻ�����Լ���channel��ȡ��lease/epoch������Դ���ɣ���authorize��finish unknown��expressed_idsֻ���ʵ�ʱ����ID��δ�ú�ѡ������������һ������ԴʧЧ������/��ֵ�ı��羲Ĭ�߽�ʱ�������ؾܾ�����Ҫ���в�����
+digest_claim的channels可取life/news/emotion/reading；不同任务只处理自己的channel。取得lease/epoch后依来源生成，再authorize并finish unknown。expressed_ids只填本次实际表达的ID，未用候选留待后续。任一最终来源失效、画像/阈值改变或跨静默边界时，按返回拒绝；不要自行补发。
 
-��������ʹ��`personal_bot backup`����Ҫ���ײ�ɵ�op=backup����SQLite�����������ݡ�
+完整备份使用`personal_bot backup`，不要将底层旧的op=backup（仅SQLite）当完整备份。

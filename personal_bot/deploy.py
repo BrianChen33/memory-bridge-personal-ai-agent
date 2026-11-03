@@ -93,7 +93,7 @@ def blueprint(root):
     cmd=command(root,'request')
     shared=('Use the host native scheduler and main-chat outbound API, never invent an API. '
             'First call proactive_check(scope=owner-private) using '+cmd+'. If background_allowed is not true, stop. '
-            '01:00�C07:00 Asia/Shanghai: background only, no unsolicited final. No daily quota. '
+            '01:00–07:00 Asia/Shanghai: background only, no unsolicited final. No daily quota. '
             'For useful source-backed observations call life, then digest_claim with this channel only; '
             'generate from claimed sources, digest_authorize, digest_finish(outcome=unknown,expressed_ids=used IDs), '
             'immediately one native final. Any refusal/empty/busy means silence. Never replay unknown. '
@@ -163,7 +163,7 @@ def init(root):
 def enable(root,features):
     if any(x not in FEATURES for x in features):raise ValueError('invalid_feature')
     if 'vector' in features:
-        p=subprocess.run([sys.executable,'-c','from muse_ext.embeddings import encode; encode("�������",query=True)'],
+        p=subprocess.run([sys.executable,'-c','from muse_ext.embeddings import encode; encode("启动检查",query=True)'],
                          cwd=RUNTIME,env=runtime_env(),capture_output=True,timeout=5)
         if p.returncode:raise ValueError('local_encoder_not_ready_vector_stays_off')
     return request(root,dict(op='configure',enabled=True,features={x:x in features for x in FEATURES}))
@@ -270,11 +270,11 @@ def self_test():
     with tempfile.TemporaryDirectory(prefix='personal-memory-test-') as temp:
         root=root_path(Path(temp)/'isolated');init(root);enable(root,DEFAULT_FEATURES)
         t=datetime.now(timezone(timedelta(hours=8))).replace(hour=9,minute=0,second=0,microsecond=0)-timedelta(days=1)
-        q=dict(op='prepare',scope='owner-private',text='лл�㣬���˴�æ',source='fixture:isolated',event_id='test-event',occurred_at=t.timestamp())
+        q=dict(op='prepare',scope='owner-private',text='谢谢你，帮了大忙',source='fixture:isolated',event_id='test-event',occurred_at=t.timestamp())
         pre=request(root,q)
-        q['emotion_assessment']=dict(version=1,changed=True,label='��ϲ',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
+        q['emotion_assessment']=dict(version=1,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
         a=request(root,q);b=request(root,q)
-        r=request(root,dict(op='recall',scope='owner-private',text='����������˵��ʲô'))
+        r=request(root,dict(op='recall',scope='owner-private',text='昨天早上我说了什么'))
         if (pre['event']['status']!='captured' or pre['emotion']['status']!='missing'
                 or pre['mood']['p']!=0 or a['emotion']['status']!='updated'
                 or b['emotion']['status']!='replayed' or a['mood']['p']<=0 or not r['events']):

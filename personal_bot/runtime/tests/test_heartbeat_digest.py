@@ -25,8 +25,8 @@ POLICY = {
     "news_weights": {"relevance": 60, "utility": 25, "novelty": 15},
     "inferred_relevance_penalty": 0.65,
     "interests": [
-        {"topic": "AI����", "basis": "confirmed"},
-        {"topic": "QQ������/�Զ���", "basis": "confirmed"},
+        {"topic": "AI工具", "basis": "confirmed"},
+        {"topic": "QQ机器人/自动化", "basis": "confirmed"},
     ],
 }
 
@@ -62,11 +62,11 @@ def life_q(mid, topic='t1', text='hello'):
 
 def news_q(mid, **kw):
     d = {'op': 'news', 'scope': 'owner-private',
-         'subject': 'AIģ��', 'event': '�����°汾', 'phase': 'v1',
-         'title': '�������ű���', 'source_url': 'https://example.com/news/1',
+         'subject': 'AI模型', 'event': '发布新版本', 'phase': 'v1',
+         'title': '测试新闻标题', 'source_url': 'https://example.com/news/1',
          'publish_date': '2026-11-03', 'event_date': '2026-11-03',
          'relevance': 1.0, 'utility': 1.0, 'novelty': 1.0,
-         'interest_id': 'ai-tools', 'reason': '����ԭ��',
+         'interest_id': 'ai-tools', 'reason': '测试原因',
          'sources': [mid]}
     d.update(kw)
     return d
@@ -582,7 +582,7 @@ def test_policy_list_shape_fail_closed():
         b.close()
 
 
-# --- authorize->finish ��϶���� ---------------------------------------------------
+# --- authorize->finish 间隙复检 ---------------------------------------------------
 
 def test_authorize_then_forget_source_finish_refused():
     b, _, _ = make_brain()
@@ -602,7 +602,7 @@ def test_authorize_then_forget_source_finish_refused():
             ra = b.dispatch({'op': 'digest_authorize', 'scope': 'owner-private',
                              'lease': lease, 'epoch': epoch})
             assert ra.get('ok'), ra
-            # authorize �ɹ��� forget ����һ������Դ
+            # authorize 成功后 forget 其中一条的来源
             b.db.execute("UPDATE memories SET status='forgotten' WHERE id=?", (mid1,))
             b.db.commit()
             src_of = {c['id']: json.loads(c['sources']) for c in r['candidates']}
@@ -632,7 +632,7 @@ def test_authorize_then_threshold_raised_finish_refused():
             ra = b.dispatch({'op': 'digest_authorize', 'scope': 'owner-private',
                              'lease': lease, 'epoch': epoch})
             assert ra.get('ok'), ra
-            # authorize �ɹ��������ֵ
+            # authorize 成功后调高阈值
             pol = json.loads(Path(root, 'proactive-policy.json').read_text())
             pol['news_threshold'] = 80
             Path(root, 'proactive-policy.json').write_text(json.dumps(pol))

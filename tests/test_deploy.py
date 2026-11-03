@@ -31,16 +31,16 @@ class DeployTests(unittest.TestCase):
         self.assertIn('disabled',d['native_export_requirements'])
     def test_actual_prepare_and_emotion_and_time(self):
         self.init();self.cli('enable')
-        q=dict(op='prepare',scope='owner-private',text='лл�㣬���˴�æ',source='synthetic:isolated',event_id='test-one',occurred_at=100)
+        q=dict(op='prepare',scope='owner-private',text='谢谢你，帮了大忙',source='synthetic:isolated',event_id='test-one',occurred_at=100)
         p,r=self.cli('request',q=q);self.assertEqual(p.returncode,0);self.assertEqual(r['event']['status'],'captured')
         self.assertEqual(r['emotion']['status'],'missing');self.assertEqual(r['mood']['p'],0)
-        q['emotion_assessment']=dict(version=1,changed=True,label='��ϲ',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
+        q['emotion_assessment']=dict(version=1,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
         p,r=self.cli('request',q=q);self.assertEqual(p.returncode,0);self.assertEqual(r['emotion']['status'],'updated');self.assertGreater(r['mood']['p'],0)
         _,r=self.cli('request',q=dict(op='recall',scope='owner-private',text='',start=99,end=101))
         self.assertEqual(r['events'][0]['event_id'],'test-one')
     def test_full_backup_and_restore_to_different_root(self):
         self.init();self.cli('enable')
-        self.cli('request',q=dict(op='remember',scope='owner-private',text='������������',source='synthetic:isolated',event_id='remember'))
+        self.cli('request',q=dict(op='remember',scope='owner-private',text='备份验收资料',source='synthetic:isolated',event_id='remember'))
         p,r=self.cli('backup','--manual');self.assertEqual(p.returncode,0,p.stdout+p.stderr)
         snapshot=r['snapshot'];self.assertTrue((Path(snapshot)/'project/code/personal_bot/runtime/brain.py').is_file())
         dest=Path(self.temp.name)/'restored'
@@ -52,7 +52,7 @@ class DeployTests(unittest.TestCase):
         self.assertTrue(all(Path(x['path']).exists() for x in reg['sources'] if x.get('required')))
     def test_rollback_pauses_preserves_new_messages_and_needs_native_actions(self):
         self.init();self.cli('enable')
-        self.cli('request',q=dict(op='remember',scope='owner-private',text='��д�����Ϣ',source='synthetic:isolated',event_id='later'))
+        self.cli('request',q=dict(op='remember',scope='owner-private',text='后写入的消息',source='synthetic:isolated',event_id='later'))
         _,r=self.cli('rollback');self.assertFalse(r['completed']);self.assertTrue(r['local_paused']);self.assertTrue(r['host_actions_required'])
         db=sqlite3.connect(self.root/'data/brain.sqlite')
         self.assertEqual(db.execute('SELECT COUNT(*) FROM memories').fetchone()[0],1);db.close()
@@ -69,12 +69,12 @@ class DeployTests(unittest.TestCase):
 
     def test_normal_runtime_refusals_keep_clarification_fields(self):
         self.init();self.cli('enable')
-        p,r=self.cli('request',q=dict(op='reminder',action='create',scope='owner-private',text='��������������',body='��������',source='fixture:isolated',event_id='ambiguous'))
+        p,r=self.cli('request',q=dict(op='reminder',action='create',scope='owner-private',text='明天三点提醒我',body='测试提醒',source='fixture:isolated',event_id='ambiguous'))
         self.assertFalse(r['ok']);self.assertTrue(r['needs_clarification']);self.assertEqual(r['reason'],'ambiguous_am_pm')
     def test_existing_persona_is_not_named_after_original_installation(self):
         self.init();self.cli('enable')
         _,r=self.cli('request',q=dict(op='prepare',scope='owner-private',text='hello',source='fixture:test',event_id='style'))
-        self.assertNotIn('С��',r['style']['guidance'])
+        self.assertNotIn('小鱼',r['style']['guidance'])
     def test_interrupted_init_preserves_existing_config(self):
         from personal_bot.deploy import root_path,write_json,MARKER
         self.root.mkdir();write_json(self.root/MARKER,dict(application='personal-bot-memory',schema=1))

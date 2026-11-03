@@ -26,7 +26,7 @@ def initialize(db):
 def is_control(q):
     text = q.get('text', '')
     return q.get('control') is True or q.get('synthetic') is True or bool(re.search(
-        r'\[Codex����\]|��Codex���ԣ�|��������\d|��ʾ����\d|�ϳɲ���|synthetic.test', text, re.I))
+        r'\[Codex调试\]|［Codex调试］|记忆验收\d|显示测试\d|合成测试|synthetic.test', text, re.I))
 
 
 def capture_event(brain, q):

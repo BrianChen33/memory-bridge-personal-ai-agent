@@ -9,7 +9,7 @@ from brain import Brain
 from support import seed_legacy_policy
 
 
-def assessment(changed=True, label='����', p=.03, a=.02, d=0, intensity=.04):
+def assessment(changed=True, label='害羞', p=.03, a=.02, d=0, intensity=.04):
     return dict(version=1, changed=changed, label=label,
                 delta=dict(p=p, a=a, d=d), intensity_delta=intensity)
 
@@ -32,7 +32,7 @@ class ModelEmotionTests(unittest.TestCase):
 
     def send(self, envelope=None, **kw):
         q = dict(op='prepare', scope='owner-private', source='fixture:incoming',
-                 event_id='e1', actor='user', text='����һС��λ��������')
+                 event_id='e1', actor='user', text='把这一小块位置留给你')
         if envelope is not None:
             q['emotion_assessment'] = envelope
         q.update(kw)
@@ -43,10 +43,10 @@ class ModelEmotionTests(unittest.TestCase):
                 for table in ('mood', 'emotion', 'emotion_events', 'assessment_log')}
 
     def test_keywords_without_assessment_never_change_mood_and_can_submit_later(self):
-        r = self.send(text='лл����˴�æ')
+        r = self.send(text='谢谢你帮了大忙')
         self.assertEqual(r['emotion']['status'], 'missing')
         self.assertEqual(self.b.db.execute('SELECT COUNT(*) FROM mood').fetchone()[0], 0)
-        r = self.send(assessment(), text='лл����˴�æ')
+        r = self.send(assessment(), text='谢谢你帮了大忙')
         self.assertEqual(r['emotion']['status'], 'updated')
         self.assertAlmostEqual(r['mood']['p'], .03, places=5)
 
@@ -54,16 +54,16 @@ class ModelEmotionTests(unittest.TestCase):
         r = self.send(assessment())
         self.assertEqual(r['emotion']['status'], 'updated')
         row = self.b.db.execute('SELECT * FROM emotion').fetchone()
-        self.assertEqual(row['label'], '����')
+        self.assertEqual(row['label'], '害羞')
         self.assertEqual(row['intensity'], .04)
         self.assertTrue(row['reason'].startswith('inference:model_assessment:'))
-        self.assertNotIn('����һ', row['reason'])
+        self.assertNotIn('把这一', row['reason'])
 
     def test_capture_has_no_emotion_side_effect(self):
-        r = self.send(op='capture', text='лл��')
+        r = self.send(op='capture', text='谢谢你')
         self.assertEqual(r['emotion']['status'], 'pending_assessment')
         self.assertEqual(self.b.db.execute('SELECT COUNT(*) FROM mood').fetchone()[0], 0)
-        self.assertEqual(self.send(assessment(), text='лл��')['emotion']['status'], 'updated')
+        self.assertEqual(self.send(assessment(), text='谢谢你')['emotion']['status'], 'updated')
 
     def test_unchanged_is_logged_without_refreshing_mood_labels_or_at(self):
         self.send(assessment())
@@ -86,7 +86,7 @@ class ModelEmotionTests(unittest.TestCase):
     def test_strict_validation_keeps_later_valid_opportunity(self):
         cases = []
         for field, value in [('version', True), ('version', 1.0), ('changed', 1),
-                             ('label', '����'), ('intensity_delta', True),
+                             ('label', '开心'), ('intensity_delta', True),
                              ('intensity_delta', float('nan')), ('intensity_delta', .121)]:
             item = assessment(); item[field] = value; cases.append(item)
         for value in (True, float('inf'), -.121, '0.03'):
@@ -123,7 +123,7 @@ class ModelEmotionTests(unittest.TestCase):
     def test_output_article_bot_and_control_do_not_create_user_emotion(self):
         for actor in ('assistant', 'article', 'bot'):
             self.assertEqual(self.send(assessment(), actor=actor, event_id=actor)['emotion']['status'], 'ignored')
-        self.send(assessment(), event_id='debug', text='��Codex���ԣ�лл')
+        self.send(assessment(), event_id='debug', text='［Codex调试］谢谢')
         self.send(assessment(), event_id='synthetic', synthetic=True)
         self.assertEqual(self.b.db.execute('SELECT COUNT(*) FROM mood').fetchone()[0], 0)
         self.assertEqual(self.send(unchanged(), actor='assistant', event_id='out')['emotion']['status'], 'unchanged')
@@ -154,7 +154,7 @@ class ModelEmotionTests(unittest.TestCase):
         with self.b.db:
             self.b.db.execute('INSERT INTO mood VALUES(?,?,?,?,?)', ('owner-private', .2, 0, 0, 1000))
             self.b.db.execute('INSERT INTO emotion_events VALUES(?,?,?,?,?,?)',
-                              (event, 'owner-private', '��ϲ', '{}', 'inference', 1000))
+                              (event, 'owner-private', '欣喜', '{}', 'inference', 1000))
         before = self.snapshot()
         self.assertEqual(self.send(assessment())['emotion']['status'], 'legacy_recorded')
         self.assertEqual(self.snapshot(), before)
