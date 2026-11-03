@@ -48,3 +48,18 @@ claimed without that host's actual capabilities and acceptance. Public category
 uses existing official terms, not an invented industry standard.
 
 Pending: expected-head GitHub publication and remote tree/README readback.
+
+Published complete runtime and docs as main55dac925; remote tree/README matched
+the local committed tree. Linux3.10/3.12 CI passed, while Windows3.12 exposed
+8.3 short/long aliases during host-manifest relocation. Native host-path
+comparison now resolves surviving parents even if the old state is deleted;
+foreign-OS paths remain lexical. Actual Windows short-name regression failed
+before the fix and passed afterwards. Repeated the entire303Python+7Node suite
+under a real short-name TEMP parent (2symlink capability skips); all available
+checks passed. Installed-wheel acceptance outside checkout passed too. The
+relocation assertion now compares resolved filesystem destinations, while
+retaining the check that the current external host file stays untouched.
+
+README clarifies cloud-local storage versus model-provider context handling;
+legacy adapter docs now point readers to the full deployment entrypoint.
+Pending: publish Windows follow-up and confirm all remote CI jobs green.

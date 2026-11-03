@@ -200,7 +200,12 @@ def snapshot_native(root,name):
 
 
 def host_path(value):
-    return PureWindowsPath(value) if re.match(r'^[A-Za-z]:|^\\\\',str(value)) else PurePosixPath(value)
+    windows=bool(re.match(r'^[A-Za-z]:|^\\\\',str(value)))
+    # Resolve native aliases (including Windows 8.3 names) before comparing.
+    # strict=False expands surviving parents even when old state is gone.
+    # Foreign host paths remain lexical when restoring on a different OS.
+    if windows==(os.name=='nt'):value=Path(value).resolve(strict=False)
+    return PureWindowsPath(value) if windows else PurePosixPath(value)
 
 
 def relocate(root):

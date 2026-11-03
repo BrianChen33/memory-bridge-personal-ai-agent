@@ -90,6 +90,36 @@ class DeployTests(unittest.TestCase):
         a=blueprint(self.root);b=blueprint(self.root.parent/'second bot')
         self.assertFalse({x['id'] for x in a['tasks']} & {x['id'] for x in b['tasks']})
 
+    def test_host_path_normalizes_native_aliases_with_missing_suffix(self):
+        from personal_bot.deploy import host_path
+        parent=Path(self.temp.name).resolve()
+        alias=parent/'unused'/'..'/'removed-state'/'snapshots'/'1'/'manifest.json'
+        self.assertEqual(host_path(alias),host_path(parent/'removed-state'/'snapshots'/'1'/'manifest.json'))
+
+    @unittest.skipUnless(sys.platform=='win32','Windows short-name paths')
+    def test_host_path_expands_windows_short_alias_before_missing_suffix(self):
+        import ctypes
+        from personal_bot.deploy import host_path
+        parent=Path(self.temp.name).resolve()
+        buf=ctypes.create_unicode_buffer(32768)
+        api=ctypes.windll.kernel32.GetShortPathNameW
+        api.argtypes=[ctypes.c_wchar_p,ctypes.c_wchar_p,ctypes.c_uint32]
+        api.restype=ctypes.c_uint32
+        size=api(str(parent),buf,len(buf))
+        self.assertTrue(0<size<len(buf),'GetShortPathNameW failed')
+        short=Path(buf.value)
+        if str(short).casefold()==str(parent).casefold():self.skipTest('volume has no short-name aliases')
+        self.assertEqual(host_path(short/'removed-state'/'snapshots'/'1'/'manifest.json'),
+                         host_path(parent/'removed-state'/'snapshots'/'1'/'manifest.json'))
+        self.assertEqual(host_path(short/'host-rules.md'),host_path(parent/'host-rules.md'))
+
+    def test_foreign_host_path_stays_lexical(self):
+        from pathlib import PurePosixPath,PureWindowsPath
+        from personal_bot.deploy import host_path
+        value='/srv/former-host/state' if sys.platform=='win32' else r'C:\Users\FormerHost\state'
+        expected=PurePosixPath('/srv/former-host/state') if sys.platform=='win32' else PureWindowsPath(r'C:\Users\FormerHost\state')
+        self.assertEqual(host_path(value),expected)
+
     def test_pause_works_without_opening_corrupt_database(self):
         self.init();self.cli('enable')
         db=self.root/'data/brain.sqlite';db.write_bytes(b'corrupt database fixture')
@@ -127,7 +157,7 @@ class DeployTests(unittest.TestCase):
         p,r=self.cli('relocate',root=dest/'project');self.assertEqual(p.returncode,0,p.stdout+p.stderr)
         rebound=json.loads((dest/'project/state/deployment.json').read_text())['host_manifests'][0]
         fixed=json.loads(Path(rebound).read_text())
-        self.assertEqual(Path(fixed['entries'][0]['path']),dest/'native/host-rules.md')
+        self.assertEqual(Path(fixed['entries'][0]['path']).resolve(),(dest/'native/host-rules.md').resolve())
         script='from ops import rollback; import sys,json; print(json.dumps(rollback(sys.argv[1],sys.argv[2])))'
         proc=subprocess.run([sys.executable,'-c',script,str(dest/'project'),rebound],cwd=deploy.RUNTIME,env=deploy.runtime_env(),capture_output=True,text=True)
         self.assertTrue(json.loads(proc.stdout)['ok'],proc.stdout+proc.stderr)

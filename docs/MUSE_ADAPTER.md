@@ -1,5 +1,7 @@
 # Muse schema adapter / Muse 结构适配器
 
+> 本文只说明旧版 `memory_bridge` 交换层的 Muse 适配。部署完整版 `personal_bot` 请阅读 [完整部署任务](../DEPLOY_FOR_BOT.md) 和 [Muse / Dot 接入指南](DEPLOY_MUSE_DOT.md)。
+
 v0.1.1 adds a pure Python transformation against a documented existing Muse row interface. It does not copy Muse implementation code, execute `brain.py`, read a database, install a hook, or modify Muse. No native dot hook was verified. The external dot-facing access remains the existing read-only MCP tool or explicitly exchanged files.
 
 ## API contract: preferred integration boundary
