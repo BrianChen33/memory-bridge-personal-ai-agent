@@ -1,0 +1,30 @@
+{
+  "example_only": true,
+  "enabled": false,
+  "dry_run": true,
+  "description": "Documentation only. No scheduler consumes or installs this file in v0.1.",
+  "schedule": null,
+  "owner": "synthetic-owner",
+  "bot": "synthetic-bot",
+  "transport": "github",
+  "destination": null,
+  "authorization": "Explicit approval of schedule, destination and information categories is required before any live recurring sharing.",
+  "schedule_example": "daily at 03:00 UTC, only after explicit schedule approval",
+  "network_consent": false,
+  "command_template": [
+    "python",
+    "-m",
+    "memory_bridge",
+    "--root",
+    "PRIVATE_DIRECTORY",
+    "--owner",
+    "synthetic_owner",
+    "sync",
+    "--repository",
+    "example-owner/private-memory",
+    "--source",
+    "muse",
+    "--direction",
+    "push"
+  ]
+}
