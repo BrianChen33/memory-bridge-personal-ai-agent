@@ -75,7 +75,7 @@ def code_files():
     for p in sorted(PACKAGE.rglob('*')):
         rel=p.relative_to(PACKAGE)
         if 'tests' in rel.parts or '__pycache__' in rel.parts:continue
-        if p.is_file() and p.suffix in ('.py','.mjs','.json','.md','.txt'):
+        if p.is_file() and p.suffix in ('.py','.mjs','.json','.md','.txt','.html'):
             if p.is_symlink():raise ValueError('symlink_code_refused')
             yield rel.as_posix(),p
 
@@ -103,16 +103,21 @@ def blueprint(root):
             'Use authorized news sources and local interests. News must pass current scoring/date/source/dedup gates. '
             'Update source cursors only on success. After new memories, vector_index limit20 if vector is enabled; failure must not block sharing.'),
            ('emotion',{'kind':'interval','minutes':15},['emotion'],
-            'Actual mood updates require model emotion_assessment v1 on real incoming events; never use keyword rules or the task clock to add emotion. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
+            'If companion_v2=true: run companion_tick, companion_pending claim=true; appraise each registered event with the SAME host model and emotion assessment v2, then companion_life_assess. '
+            'Use companion_share claim then the real host sender; settle only actual receipts, unknown never automatically retries. Quiet01-07 collects only. '
+            'Actual mood updates require model assessment on registered sources; never use keyword rules or the task clock to add emotion. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
             'Recovery may enqueue once with the same real active sources and stable recovery topic. No real change means silence.'),
            ('reading',{'kind':'interval','minutes':120},['reading'],
             'reading claim from the allowlisted library; read actual chunk, summarize as inference, reading commit with chunk_id/lease. '
             'Advance cursor only on successful commit. Useful note: life sources=[quote_id], stable reading:document:hash:chunk topic. '
+            'After actual articles: capture actor=article with true source, companion_observe source_event=<captured id>; do not appraise your own output. '
+            'If companion_v2=true, run companion_summary_work for one scope, commit source-grounded L2/L3, ack the actual batch revision. '
             'After new notes, vector_index limit20 if enabled. No source: select an authorized relevant public document, cache text/URL/hash in library; never pretend to have read a book or watched a video.'),
            ('maintenance',{'kind':'daily','at':'03:35'},[],
             'Skip expensive work during inbox backlog. maintain each known scope; vector_index bounded20; consolidate propose<=10 pairs. '
             'Only explicit equivalence assessment with exact quotes/hashes may merge; changed numbers/negation remain conflicts. '
-            'derive<=3 reflection/skill/lesson notes from active real source IDs, always inference. No night final; record failures in state/health.'),
+            'derive<=3 reflection/skill/lesson notes from active real source IDs, always inference. '
+            'If companion_v2=true, companion_people_sync with explicitly bound host paths; do not infer identity joins from same names. No night final; record failures in state/health.'),
            ('backup',{'kind':'daily','at':'04:10'},[],
             'Refresh state/native-schedules.json with complete current and historical host definitions, including disabled/archived tasks. '
             'Run '+command(root,'backup')+'. Retry at most3 times; success silent. Failure writes state/health metadata for daytime reporting.'),
@@ -141,11 +146,13 @@ def init(root):
     write_json(root/MARKER,dict(application='personal-bot-memory',schema=1),True)
     owned(root)
     write_json(root/'config.json',dict(version=__version__,enabled=False,epoch=0,
-        modules={x:True for x in ('memory','mood','life','style','feedback','input')},
+        companion_v2=True,modules={x:True for x in ('memory','mood','life','style','feedback','input')},
         features={x:False for x in FEATURES}),True)
     write_json(root/'proactive-policy.json',POLICY,True)
     write_json(root/'interests.json',{'interests':[]},True)
     write_json(root/'reading-sources.json',{'version':1,'documents':[]},True)
+    write_json(root/'expression-policy.json',dict(enabled=False,base_probability=.4,maximum_probability=.9,
+        recent_seconds=3600,candidate_limit=10,shared_owner_mood=False),True)
     write_json(root/'state/native-schedules.json',{'current':[],'historical':[],'export_status':'host_export_required'},True)
     write_json(root/'state/host-bindings.json',{'status':'unverified','message_capture':False,'outbound':False,'scheduler':False},True)
     write_json(root/'state/scheduler-blueprint.json',blueprint(root),True)

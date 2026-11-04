@@ -668,6 +668,9 @@ class Brain:
                 old.unlink()
             return dict(ok=True,path=str(dest))
         scope = scope_ok(q.get('scope'))
+        if op == 'expression':
+            from muse_ext.expression import dispatch
+            return dispatch(self,q)
         if op == 'reminder':
             from muse_ext.reminders import dispatch
             return dispatch(self,q)
@@ -1221,6 +1224,11 @@ def main():
             brain.close()
     return 0
 
+
+if __name__ == '__main__':
+    sys.modules.setdefault('brain', sys.modules[__name__])
+from muse_ext.companion import install as _install_companion
+_install_companion(Brain)
 
 if __name__ == '__main__':
     sys.exit(main())

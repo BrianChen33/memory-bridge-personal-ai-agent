@@ -1,3 +1,21 @@
+# v0.4 additions
+
+Fresh CLI roots set companion_v2=true; upgrade old roots explicitly.
+All companion_* operations are trusted local administration, owner-private only.
+prepare now adds companion, scene_context, persona_context.
+
+- companion_context / companion_tick / companion_pending(claim) / companion_life_assess(id,assessment)
+- companion_observe(source_event) / companion_share(action=claim|settle,lease,outcome)
+- companion_people_sync / companion_bind(host_paths,person_map,task_bindings)
+- companion_summary_work(target_scope) / companion_summary_commit(target_scope,origin,level,key,content,source_ids) / companion_summary_ack(target_scope,origin,revision)
+- companion_summary_done(day,reference) / companion_panel
+- expression(scope,source_event,action=plan,intent=auto|direct|skip,assets=[{id,relevance}]); finish adds text_finished=true,outcome
+
+Emotion envelope and limits: MODEL_EMOTION.md. GitHub native snapshot CLI: GITHUB_VAULT.md.
+The existing companion_backup/companion_delivery ops remain for explicitly selected local/file workflows, not automatic sidechat delivery.
+
+## Existing core API (compatible)
+
 # JSON API 与验收
 
 命令入口：`python -m personal_bot --root <STATE> request --file request.json`；也可在stdin传UTF-8 JSON。单次不超过65536字节，正文最多12000字符。读取结果中的ok及具体reason：澄清/静默/未到点是结构化结果，不一定是程序崩溃。CLI在ok=false时返回非零，但保留JSON字段。

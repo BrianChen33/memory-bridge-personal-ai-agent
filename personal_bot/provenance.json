@@ -78,5 +78,51 @@
       "legacy emotion event replay guard preserves existing state without fabricated assessments",
       "no QQ bridge/hook/sticker implementation copied"
     ]
+  },
+  "companion_v2_update": {
+    "date": "2026-11-05",
+    "release": "0.4.0",
+    "source_runtime_version": "2.0.0",
+    "verified_live_companion_sha256": "3de0cc57ccc3f3f2f4fe99299204d07b0968d13818cd72fe768660b5abd2351c",
+    "adaptations": [
+      "companion_v2 opt-in for existing roots; fresh CLI roots enabled in config only",
+      "generic user persona and data-root-local defaults",
+      "model-appraised virtual life and observed reading with persistent energy/contact/expectations",
+      "source-grounded incremental L2/L3 summaries and bounded invalidated retrieval cache",
+      "generic expression policy and optional host media adapters",
+      "single-file offline panel packaged in wheel",
+      "private GitHub native cognitive snapshots; repo-scoped SSH; immutable commit receipts",
+      "no private deployed channel hooks or real personas copied"
+    ]
+  },
+  "current_code_hashes": {
+    "cli.py": "a8427be668e1b146488836da1f3d5d4adcb122dbd18ed2d604a6cc3b4496aad5",
+    "deploy.py": "8d3e72ae6fd9b7d323133c1a9569319c2045b24aa0d88654dfc567c0f0ccf876",
+    "vault.py": "63b38681d8388bb6a4b0b6fdd10e156ea6811835e3993cbf7d72523a9406aca0",
+    "__init__.py": "d4416a92cfc34aadcd2346369cb209d8c41d7f86f2b583f1a331d390ad642aa8",
+    "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
+    "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
+    "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
+    "runtime/ops.py": "cc52bf4c364784a1c09d9129a38f6fa789853f3997847a40030796c6cbc29e8c",
+    "runtime/proactive.py": "50ab1b55db3cc35c2d9d2036eb6b704acb51bf9e88c6167c03437eda3d40f4aa",
+    "runtime/qq-adapter.mjs": "2302e48614d96149cc131ecb0546848021822001b2a443f3c371c662d5b7da8c",
+    "runtime/__init__.py": "0982936c2756201cd74c82711cf33c9063e2df95828ee25a47b6f884fafc0e98",
+    "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
+    "runtime/muse_ext/companion.py": "0185057d95e70cc2352a2cb0aa88a303e2a7ac247f55463ccfdfe8dca7125638",
+    "runtime/muse_ext/companion_io.py": "bf2731bf122f89e4fad160d68288051e8e560913ff7dbc2a081f967b8bb067b1",
+    "runtime/muse_ext/companion_panel.html": "56f632e9b51d5f69cca08bc97e55d6ccefe02877cff3b8d53ad8c7bb2be42ac1",
+    "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
+    "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
+    "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
+    "runtime/muse_ext/emotion.py": "75c632736463a547fdad5ce5f4f2bcf4b0fd00542624845ffaa156852cc7974f",
+    "runtime/muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83",
+    "runtime/muse_ext/expression.py": "80af3eb5bda1c1eeed19c1c03cd62e1ddfffb716768791d96f4edcf078629fd0",
+    "runtime/muse_ext/insights.py": "9999fdbd4e931c728431d3983b09ffa54363810b02f7e56741ac438a437a8a0f",
+    "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
+    "runtime/muse_ext/reading.py": "3263e14c71108655328ea7467124e89890b980791a5d99a5315271314cc483ca",
+    "runtime/muse_ext/reminders.py": "a0f8ab2d3f92a1c6e5a73fe1c7bc7a2d3e0c57aaadbdb2f0012656f3ec5cb3ba",
+    "runtime/muse_ext/retrieval.py": "dbd9ff86806fab9023806740d525a48115481806276216c93ffcf3f0f3edb3ba",
+    "runtime/muse_ext/temporal.py": "983bc7c330efe19deae6ada46496e1cb7d13d9ca9d6897580d93a093849509f8",
+    "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f"
   }
 }

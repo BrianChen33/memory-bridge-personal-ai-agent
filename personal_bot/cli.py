@@ -10,7 +10,7 @@ def main(argv=None):
     p=argparse.ArgumentParser(description='Personal-bot local memory; explicit data root; host integration remains separate')
     p.add_argument('--root');p.add_argument('--version',action='version',version=__version__)
     sub=p.add_subparsers(dest='action',required=True)
-    for name in ('init','status','doctor','self-test','rollback','relocate'):sub.add_parser(name)
+    for name in ('init','status','doctor','self-test','rollback','relocate','companion-upgrade'):sub.add_parser(name)
     s=sub.add_parser('enable');s.add_argument('--features',default=','.join(d.DEFAULT_FEATURES))
     s=sub.add_parser('request');s.add_argument('--file')
     s=sub.add_parser('backup');s.add_argument('--manual',action='store_true')
@@ -33,6 +33,11 @@ def main(argv=None):
                         host=json.loads((root/'state/host-bindings.json').read_text(encoding='utf-8')),
                         deployment_scope='local_runtime_only_not_native_delivery_receipt')
                 elif args.action=='enable':result=d.enable(root,args.features.split(',') if args.features else [])
+                elif args.action=='companion-upgrade':
+                    cfg=json.loads((root/'config.json').read_text(encoding='utf-8'))
+                    cfg['companion_v2']=True;d.write_json(root/'config.json',cfg)
+                    result=d.request(root,dict(op='health'))
+                    result['host_prompts_require_v2_binding']=True
                 elif args.action=='request':
                     data=Path(args.file).read_bytes() if args.file else sys.stdin.buffer.read(65537)
                     if len(data)>65536:raise ValueError('request_too_large')

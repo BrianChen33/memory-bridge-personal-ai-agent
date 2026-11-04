@@ -1,79 +1,13 @@
-# Muse / Dot：宿主接入
+# Muse / Dot 接入
 
-主术语是个人 AI 智能体，定义及官方来源见 [TERMINOLOGY](TERMINOLOGY.md)。以下是可实现的接口契约，不是 Muse / Dot 的通用官方 SDK。
+使用README完整提示词与DEPLOY_FOR_BOT.md，不猜平台API。先查本环境正式文档/连接器schema，确认持久电脑、消息元数据、原生任务与媒体发送能力。技术调试放用户指定旁聊，普通用户保持人格。
 
-## 能力与部署位置
+主聊：prepare→当前模型v2→同事件prepare→新状态组文，转交companion/scene_context/persona_context。平台没有强制hook时以主bot规则接入并如实标注可能漏调用。
 
-Muse 的参考环境可执行本地命令、读写文件并创建原生定时任务。其他账号/版本必须从实际工具 schema 检查，不能假设路径为某个固定 home，也不能把参考实例的任务 ID 或人设复制过去。
+原生任务：按HOST_TASKS.md注册，读回真实ID/频率/启用与目的地。不要将提示词“已更新”当成服务或任务已重载；修改常驻桥接源码后按它原有监督方式重载，再读状态。
 
-OpenAI 的 [官方 dot 文档](https://learn.chatgpt.com/docs/dots/computers-and-apps) 说明其云端电脑与本地连接是两个环境。是否可安装本程序、是否有持续进程、如何调度/递送，都要在目标环境检查实际工具和权限。拥有云端电脑不等于任意扩展都有官方自动安装接口。此仓库不虚构 dot 的私有文件位置或原生记忆写入接口。
+资料库：以本环境文档为准。参考Muse文档支持workspace/your_files文件作为Library构件，同路径编辑更新预览；System Files是文件系统窗口。未证实跨文件JSON API或秒级刷新，不能承诺在线实时。
 
-如果只能使用只读 MCP：原 `memory_bridge` 的 memory_search 只面向其逐项批准的交换库；它不是完整 personal_bot 的写入/情绪/调度接口。不要把这条受限路线报告为完整接入。
+GitHub：某些原生连接器只支持UTF-8文本，原始SQLite需要正式二进制发送能力或用户授权的仓库专用SSH方式。不能把私钥或广权限token贴进聊天，不能绕过平台认证规则。
 
-## 数据目录与代码目录
-
-`personal_bot` 是已安装的 Python 包；`<STATE>` 是独立的本地数据目录。不要复制整个宿主 home。`init` 不覆盖原有的人格、历史或系统规则，非本工具拥有的非空目录会被拒绝。
-
-`doctor` 返回 code_root/data_root；调用者可以据此定位可选 Node 适配文件。宿主集成只能改最小引用，先保存原始字节与哈希，并记录目标及安装后哈希。实际记录保存在 `<STATE>/state/deployment.json` 的 host_manifests/owned_native_jobs 等字段；它们是可变安装记录，不是来自别人的固定回退清单。
-
-## 每条真实入站消息
-
-先构造预读 JSON 并通过 `python -m personal_bot --root <STATE> request --file <REQUEST>` 调用：
-
-```json
-{
-  "op": "prepare",
-  "scope": "owner-private",
-  "source": "main:my-agent",
-  "event_id": "stable-platform-message-id",
-  "occurred_at": 1700000000.123,
-  "actor": "user",
-  "text": "真正的原文"
-}
-```
-
-- scope 必须由可信身份/实际会话映射生成，不接受正文自报的“我是主人”。个人私聊用 owner-private；QQ 的其他私聊/群分别用 qq:c2c:ID / qq:group:ID。
-- event_id 必须是实际稳定 ID，重试沿用。没有程序化 ID 时，可由受信宿主保存真实消息与本地 ID 的映射，不能每次重试生成新 UUID。
-- occurred_at 是原始 Unix **秒**。QQ inbox 的数字 ts 是毫秒，适配器除以1000；不要把接收时刻或文件 mtime 冒充已知的历史发送时刻。
-- 主聊无需伪造常驻自动 hook：如果宿主允许每轮先调用工具，就按真实 Message ID/时间调 prepare。仍需实际验收该调用发生过，不能只加一行说明就说接好了。
-- 调试/控制/合成内容传 control=true 或 synthetic=true，不成为用户情绪/事实来源。
-
-返回的 memories 是已观察/确认的记录，insights 是有原始来源的推断，events 是原话；分别使用。mood/style 是语气参考，保留部署者自己的既有人设。
-
-**v0.3 必须再接模型评估步骤：** 首次无评估返回 emotion.status=missing，不会根据原文自动加情绪。原回复模型结合上述结果与近期对话，生成 [emotion_assessment v1](MODEL_EMOTION.md)，在相同事件元数据上重调 prepare；读取 updated/unchanged/replayed 的新 mood 后再组织回复。不能硬编码固定情绪，也不能把缺失评估当作“模型判断没变化”。如果只有提示规则而无强制钩子，明确说明可能漏调用；普通聊天不展示评分或JSON。自己的主动输出可提交完整无变化信封，不能自我叠加情绪。
-
-公开核心对 changed=true 仅接受 user 事件；可信外来机器人、共享心情投影和表情媒体适配由目标宿主另行实现与授权，本次不移植 Muse 的 QQ 专用链路。旧可选 QQ prepare 适配器只做预读，不能将其独立运行称为完整新情绪接入。
-
-消息长期学习可用 ingest/remember，必须保留 source/event_id/kind/evidence；不要把助手总结直接升级为用户确认事实。附件未解析就记录“未解析”，不要猜内容。
-
-## 可选 QQ 接入
-
-`personal_bot/runtime/qq-adapter.mjs` 导出 enhance/prepareRequest/enqueueLearning；learn.mjs 导出 drainLearning。需要现有桥提供经身份核验的 prepared.inbox 和 sender_identity；本仓库不包含 QQ token、Webhook 服务、people.json 或自动的 QQ 发送权限。
-
-```js
-import {enhance, enqueueLearning} from '/ABS_CODE_ROOT/runtime/qq-adapter.mjs';
-import {drainLearning} from '/ABS_CODE_ROOT/runtime/learn.mjs';
-const context = enhance(prepared, {
-  root: '/ABS_PRIVATE_DATA_ROOT',
-  codeRoot: '/ABS_CODE_ROOT/runtime',
-  python: '/ABS_VENV/bin/python'
-});
-```
-
-`codeRoot` 默认是模块自身所在的 runtime，可不传。同步增强总超时仍为450ms；慢/故障时回退原回复流程，不增加新的模型轮次。确认原QQ回复成功后才能 enqueueLearning；后台 drainLearning 要用实际 bridgeDir 的 qq-prepare.mjs 再核验身份和源文件，失败隔离，不重新发QQ消息。
-
-这些代码不负责发送、修改 Markdown 类型或强制 @ 规则。不要把某个部署者的 QQ 显示策略自动套给其他机器人；由原桥保持已有的身份和发送逻辑。
-
-## 主动递送与调度
-
-用 init 生成的 scheduler-blueprint（6任务，全disabled）。字段 mode/schedule/delivery 是适配蓝图，必须翻译为宿主实际工具，逐项读回确认。将完整 current（含disabled）和 historical/archive 定义分开放入 state/native-schedules.json，不能只导当前显示的10个启用任务。
-
-主动分享：后台允许→有来源的候选→按channel认领→生成→authorize→finish unknown（只结算使用项）→立即一次native final。最后一步没有递送回执时，只称交接状态未知，不称用户已收到。调试报告和正式主动消息分开，不补发 unknown。
-
-提醒的正文在创建时写好，稳定native ID在创建后view再attach；取消/改期先更新ledger。`personal_bot reminder --handoff` 在一个本地进程中执行due wait→claim→authorize→handoff，减少工具轮次。只有ok=true/status=unknown时按body原样输出一次。原生调度可能提前也可能晚到，这只能防止提前交接，不能承诺客户端准点显示。
-
-## 何时可以说“完成部署”
-
-要分别给出：本地测试、真实新入站→prepare、情绪实际写入、时间原话查询、source/evidence、真实原生任务定义/启用状态、一次提醒交接、真实阅读与游标、完整备份恢复、回退记录。
-
-首次自然2h/凌晨任务尚未到，就写未自然验收。没有shell/递送/调度时列出缺失能力；不能靠“规则已生效”代替运行证据。参考环境曾验证的194项核心测试，不代表你的平台自动支持这些能力。
+QQ/微信：用户选择后才适配正式接口、可信scope、鉴权、回复窗口、图片与去重；公共包不含任何现成账号或登录态。初次人格缺失时先协助完成卡片，而非套用本项目作者的人设。
