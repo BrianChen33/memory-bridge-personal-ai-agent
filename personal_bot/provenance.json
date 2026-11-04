@@ -134,7 +134,7 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "43c61ff87056223f65a82b4f4802ab2eddbe64fb238601758ce3874d3310a038",
-    "vault.py": "631f02a1093b87c3931773b5e498befb3162ae85e034590d58ef1ef53609856b"
+    "vault.py": "191cf0800a01903c02a7dce36399a239776dd4fecedfd5cc5a87919a670ba73a"
   },
   "emotion48_update": {
     "date": "2026-11-05",

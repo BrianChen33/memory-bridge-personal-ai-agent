@@ -85,6 +85,8 @@ class CompanionV04(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'daily_summary_not_completed'):
             vault.export_snapshot(self.root,self.base/'daily','a'*40,day='2026-11-05')
         out=self.base/'snapshot';m=vault.export_snapshot(self.root,out,'a'*40,bootstrap=True)
+        from personal_bot import __version__
+        self.assertEqual(m['architecture']['version'],__version__)
         self.assertEqual(m['aliases']['native/same.md'],'native/person.md')
         self.assertEqual((out/'native/person.md').read_bytes(),person.read_bytes())
         with closing(sqlite3.connect(out/'brain.sqlite')) as db:self.assertEqual(db.execute('PRAGMA quick_check').fetchone()[0],'ok')
