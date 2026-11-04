@@ -98,7 +98,7 @@
   "current_code_hashes": {
     "cli.py": "a8427be668e1b146488836da1f3d5d4adcb122dbd18ed2d604a6cc3b4496aad5",
     "deploy.py": "8d3e72ae6fd9b7d323133c1a9569319c2045b24aa0d88654dfc567c0f0ccf876",
-    "vault.py": "63b38681d8388bb6a4b0b6fdd10e156ea6811835e3993cbf7d72523a9406aca0",
+    "vault.py": "3f7ec81649f5eb21e90a1e1c43df30fd50f7b00bfcdeb459c47d85003242b172",
     "__init__.py": "d4416a92cfc34aadcd2346369cb209d8c41d7f86f2b583f1a331d390ad642aa8",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",

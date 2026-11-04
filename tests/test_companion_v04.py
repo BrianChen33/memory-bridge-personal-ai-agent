@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from unittest.mock import MagicMock
 
 from personal_bot import deploy, vault
 
@@ -97,6 +98,22 @@ class CompanionV04(unittest.TestCase):
             vault.scan_file(secret)
         with self.assertRaisesRegex(ValueError,'outside_live_state'):
             vault.export_snapshot(self.root,self.root/'exports','a'*40,bootstrap=True)
+
+    def test_ssh443_proxy_env_auth_and_refusal(self):
+        connection=MagicMock()
+        header=b'HTTP/1.1 200 Connection established\r\n\r\n'
+        connection.recv.side_effect=[bytes([x]) for x in header]
+        with patch.object(vault.socket,'create_connection',return_value=connection) as dial:
+            self.assertIs(vault.proxy_tunnel('http://fixture-user:fixture-pass@proxy.invalid:3128'),connection)
+        dial.assert_called_once_with(('proxy.invalid',3128),timeout=20)
+        sent=connection.sendall.call_args.args[0]
+        self.assertIn(b'CONNECT ssh.github.com:443 HTTP/1.1',sent)
+        self.assertIn(b'Proxy-Authorization: Basic ',sent)
+        denied=b'HTTP/1.1 407 Proxy Authentication Required\r\n\r\n'
+        connection.recv.side_effect=[bytes([x]) for x in denied]
+        with patch.object(vault.socket,'create_connection',return_value=connection),self.assertRaisesRegex(ValueError,'proxy_CONNECT_refused'):
+            vault.proxy_tunnel('http://proxy.invalid:3128')
+        connection.close.assert_called_once()
 
     def test_vault_push_receipt_is_idempotent_with_mock_transport(self):
         key=self.base/'repo-key';key.write_text('synthetic-key-only');os.chmod(key,0o600)

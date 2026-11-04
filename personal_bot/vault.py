@@ -4,6 +4,7 @@ May also be copied to a host and executed as a standalone script. Credentials
 are NEVER read, serialized, committed, printed, or transported by this module.
 """
 import argparse
+import base64
 from contextlib import closing
 import hashlib
 import json
@@ -11,14 +12,19 @@ import os
 import re
 import shutil
 import shlex
+import socket
 import sqlite3
+import ssl
 import subprocess
+import sys
 import tempfile
+import threading
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path, PurePosixPath
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+from urllib.parse import unquote, urlsplit
 
 SCHEMA='companion-memory-vault-v1'
 SECRET=re.compile(rb'-----BEGIN (?:OPENSSH |RSA |EC )?PRIVATE KEY-----|github_pat_[A-Za-z0-9_]{30,}|gh[pousr]_[A-Za-z0-9_]{30,}|sk-[A-Za-z0-9_-]{30,}')
@@ -186,6 +192,55 @@ def git(args,cwd=None,env=None,timeout=90,check=True):
     return result
 
 
+def proxy_tunnel(proxy):
+    """Use the host's existing proxy; credentials never enter argv or files."""
+    parsed=urlsplit(proxy)
+    if parsed.scheme not in ('http','https') or not parsed.hostname:
+        raise ValueError('HTTP_CONNECT_proxy_required')
+    connection=socket.create_connection((parsed.hostname,parsed.port or (443 if parsed.scheme=='https' else 80)),timeout=20)
+    try:
+        if parsed.scheme=='https':
+            connection=ssl.create_default_context().wrap_socket(connection,server_hostname=parsed.hostname)
+        headers=['CONNECT ssh.github.com:443 HTTP/1.1','Host: ssh.github.com:443']
+        if parsed.username is not None:
+            auth=(unquote(parsed.username)+':'+unquote(parsed.password or '')).encode('utf-8')
+            headers.append('Proxy-Authorization: Basic '+base64.b64encode(auth).decode('ascii'))
+        connection.sendall(('\r\n'.join(headers)+'\r\n\r\n').encode('ascii'))
+        response=bytearray()
+        # Read only the headers, leaving any following SSH banner untouched.
+        while not response.endswith(b'\r\n\r\n'):
+            chunk=connection.recv(1)
+            if not chunk or len(response)>=65536: raise ValueError('proxy_CONNECT_response_invalid')
+            response.extend(chunk)
+        status=bytes(response).split(b'\r\n',1)[0].split()
+        if len(status)<2 or status[1]!=b'200': raise ValueError('proxy_CONNECT_refused')
+        connection.settimeout(None)
+        return connection
+    except Exception:
+        connection.close()
+        raise
+
+
+def ssh_proxy():
+    """OpenSSH ProxyCommand, restricted to the official GitHub SSH443 host."""
+    proxy=next((os.environ[k] for k in ('HTTPS_PROXY','https_proxy','HTTP_PROXY','http_proxy','ALL_PROXY','all_proxy') if os.environ.get(k)),None)
+    if not proxy: raise ValueError('proxy_environment_missing')
+    with closing(proxy_tunnel(proxy)) as connection:
+        def upload():
+            try:
+                while True:
+                    data=os.read(sys.stdin.fileno(),65536)
+                    if not data: break
+                    connection.sendall(data)
+                connection.shutdown(socket.SHUT_WR)
+            except OSError: pass
+        threading.Thread(target=upload,daemon=True).start()
+        while True:
+            data=connection.recv(65536)
+            if not data: break
+            sys.stdout.buffer.write(data);sys.stdout.buffer.flush()
+
+
 def finish_receipt(root,ledger,receipts,record_key,receipt):
     ledger['receipts'][record_key]=receipt
     ledger.setdefault('pending',{}).pop(record_key,None)
@@ -197,8 +252,9 @@ def finish_receipt(root,ledger,receipts,record_key,receipt):
     return dict(ok=True,already_uploaded=False,**receipt)
 
 
-def publish(root,worktree,repo,key,architecture_ref,day=None,bootstrap=False,identity_file=None,architecture_repo='https://github.com/BrianChen33/personal-ai-companion-kit'):
+def publish(root,worktree,repo,key,architecture_ref,day=None,bootstrap=False,identity_file=None,architecture_repo='https://github.com/BrianChen33/personal-ai-companion-kit',ssh_transport='standard'):
     if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+',repo): raise ValueError('invalid_repository')
+    if ssh_transport not in ('standard','github443','github443-proxy'): raise ValueError('invalid_SSH_transport')
     root=safe_source(root).resolve(); worktree=Path(worktree).expanduser().resolve()
     if worktree==root or root.is_relative_to(worktree) or worktree.is_relative_to(root): raise ValueError('worktree_must_be_separate')
     key=Path(key).expanduser().resolve()
@@ -216,9 +272,13 @@ def publish(root,worktree,repo,key,architecture_ref,day=None,bootstrap=False,ide
     hostkeys=[x for x in hostkeys if x.startswith(('ssh-ed25519 ','ecdsa-sha2-nistp256 ','ssh-rsa '))]
     if not hostkeys: raise ValueError('github_host_keys_unavailable')
     hosts=root/'state/github-vault-known-hosts'
-    hosts.parent.mkdir(parents=True,exist_ok=True);hosts.write_text(''.join('github.com '+x+'\n' for x in hostkeys),encoding='utf-8');os.chmod(hosts,0o600)
+    hosts.parent.mkdir(parents=True,exist_ok=True);hosts.write_text(''.join('github.com,[ssh.github.com]:443 '+x+'\n' for x in hostkeys),encoding='utf-8');os.chmod(hosts,0o600)
     env=os.environ.copy();env['GIT_TERMINAL_PROMPT']='0'
-    env['GIT_SSH_COMMAND']=shlex.join(['ssh','-i',key.as_posix(),'-o','IdentitiesOnly=yes','-o','StrictHostKeyChecking=yes','-o','UserKnownHostsFile='+hosts.as_posix(),'-o','BatchMode=yes'])
+    command=['ssh','-i',key.as_posix(),'-o','IdentitiesOnly=yes','-o','StrictHostKeyChecking=yes','-o','UserKnownHostsFile='+hosts.as_posix(),'-o','BatchMode=yes','-o','ConnectTimeout=20','-o','ServerAliveInterval=15','-o','ServerAliveCountMax=2']
+    if ssh_transport!='standard': command+=['-o','HostName=ssh.github.com','-p','443']
+    if ssh_transport=='github443-proxy':
+        command+=['-o','ProxyCommand='+shlex.join([sys.executable,Path(__file__).resolve().as_posix(),'--ssh-proxy'])]
+    env['GIT_SSH_COMMAND']=shlex.join(command)
     url='git@github.com:'+repo+'.git'
     git(['ls-remote',url],env=env)  # authenticates exact repository, including404 case
     if not (worktree/'.git').is_dir():
@@ -268,15 +328,22 @@ def publish(root,worktree,repo,key,architecture_ref,day=None,bootstrap=False,ide
 
 
 def main(argv=None):
+    argv=list(sys.argv[1:] if argv is None else argv)
+    if argv==['--ssh-proxy']:
+        try: ssh_proxy();return 0
+        except Exception:
+            # Never include proxy URLs, auth headers or network exceptions.
+            print('GitHub proxy tunnel failed',file=sys.stderr);return 1
     parser=argparse.ArgumentParser(description='Private GitHub native-format cognitive snapshot')
     parser.add_argument('--root',required=True);parser.add_argument('--worktree',required=True)
     parser.add_argument('--repo',required=True);parser.add_argument('--ssh-key',required=True)
     parser.add_argument('--architecture-ref',required=True);parser.add_argument('--day');parser.add_argument('--bootstrap',action='store_true')
     parser.add_argument('--architecture-repo',default='https://github.com/BrianChen33/personal-ai-companion-kit')
     parser.add_argument('--identity-file')
+    parser.add_argument('--ssh-transport',choices=('standard','github443','github443-proxy'),default='standard')
     args=parser.parse_args(argv)
     try:
-        result=publish(args.root,args.worktree,args.repo,args.ssh_key,args.architecture_ref,args.day,args.bootstrap,args.identity_file,args.architecture_repo)
+        result=publish(args.root,args.worktree,args.repo,args.ssh_key,args.architecture_ref,args.day,args.bootstrap,args.identity_file,args.architecture_repo,args.ssh_transport)
         print(json_text(result));return 0
     except Exception as exc:
         print(json_text({'ok':False,'error':type(exc).__name__,'reason':str(exc)[:220],'uploaded':False}));return 1

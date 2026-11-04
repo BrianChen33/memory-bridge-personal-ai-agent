@@ -23,6 +23,8 @@ python -m personal_bot.vault --root "<STATE>" --worktree "<PRIVATE_VAULT_CHECKOU
 
 每天由真正成功的总结链先调用`companion_summary_done {day,reference}`，再运行同一命令但以`--day YYYY-MM-DD`替代`--bootstrap`。可加`--identity-file`显式保存已授权渠道名册；不自动扫描桥接目录。
 
+出口封锁22端口时，可加`--ssh-transport github443`使用GitHub官方`ssh.github.com:443`。已有HTTP/HTTPS CONNECT代理的宿主用`--ssh-transport github443-proxy`；代理地址与认证仅从现有代理环境变量读取，不写命令参数、日志、Git或SSH配置。服务器密钥仍从官方HTTPS meta获取并严格校验，不关闭校验。[GitHub官方说明](https://docs.github.com/en/authentication/troubleshooting-ssh/using-ssh-over-the-https-port)。不支持CONNECT的代理需由宿主解决正式网络能力，程序不会擅自改变网络策略。
+
 5. 发布器只在受管理的current/和LATEST中暂存并正常commit/push，不force push，不覆盖README或用户未提交改动。只有远端分支实际commit匹配才写回执；状态文件在本机STATE/state/github-vault-receipts.json。
 6. 结果不明时保存精确待确认commit，下次先检查其可达性；需要时只推同一个commit，不重新生成同一天的新快照冒充重试。普通重试不会重复每日提交。
 7. 将原“发旁聊备份”的任务改为调用发布器，不再向旁聊发一百多个文件。总结后直接调用为主，23:35/04:10可做有界补偿；只能检查/补传已完成总结，不能在补偿时伪造summary_done。
