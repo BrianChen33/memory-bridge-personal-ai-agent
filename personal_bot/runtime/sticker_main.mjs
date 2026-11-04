@@ -24,7 +24,8 @@ function bounded(p){
   return {memories:(p.memories||[]).slice(0,5).map(x=>({id:x.id,text:String(x.text||'').slice(0,500)})),
     insights:(p.insights||[]).slice(0,3),companion:p.companion||null,
     scene_context:(p.scene_context||[]).slice(0,3),persona_context:(p.persona_context||[]).slice(0,3),
-    reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null};
+    reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
+    expression_context:p.expression_context||null,emotion_effect:p.emotion_effect||null};
 }
 function main(){
   let q;try{q=JSON.parse(readFileSync(0,'utf8'));}catch{return {ok:false,error:'JSON_stdin_required'};}
@@ -44,6 +45,7 @@ function main(){
   const req={op:'prepare',scope:'owner-private',source:actor==='assistant'?'main:proactive':'main:sticker',
     event_id:q.turnId,occurred_at:at,text:q.text,actor,person_id:'owner',sender_type:'human'};
   if(phase==='finalize'&&q.emotion_assessment!==undefined)req.emotion_assessment=q.emotion_assessment;
+  if(phase==='finalize')for(const key of ['humor_assessment','meme_updates'])if(q[key]!==undefined)req[key]=q[key];
   const p=runBrain(req);
   let status=p.emotion?.status||(p.ok?'missing':'error');
   if(status==='missing'&&p.reaction&&['updated','unchanged','replayed'].includes(cached?.assessment_status))status='replayed';

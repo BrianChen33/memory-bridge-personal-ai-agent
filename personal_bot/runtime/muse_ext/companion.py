@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.1.0'
+VERSION = '2.2.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -47,10 +47,12 @@ def _set(b, key, value):
 
 
 def initialize(b):
+    from muse_ext.humor import initialize as initialize_humor
     if b.db.execute("SELECT 1 FROM sqlite_master WHERE name='ct_kv'").fetchone():
         if _get(b,'version')!=VERSION or _get(b,'emotion_catalog')!=CATALOG_VERSION:
             with b.db:
                 _set(b,'version',VERSION);_set(b,'emotion_catalog',CATALOG_VERSION)
+        initialize_humor(b)
         return
     b.db.executescript('''
     CREATE TABLE ct_kv(key TEXT PRIMARY KEY,value TEXT NOT NULL);
@@ -93,6 +95,7 @@ def initialize(b):
     _set(b,'life',dict(activity=None,next_at=stamp()+RNG.randint(600,1800)))
     b.db.execute('INSERT OR IGNORE INTO ct_person(id,name,role,at) VALUES(?,?,?,?)',('owner','用户','owner',stamp()))
     b.db.commit()
+    initialize_humor(b)
 
 
 def quiet(now=None):
@@ -223,7 +226,7 @@ def assess(b,event_id,raw,legacy_submit):
     payload=dump(raw)
     prev=b.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(event_id,)).fetchone()
     if prev:
-        return dict(status='replayed' if prev[0]==payload else 'conflict')
+        return dict(status='replayed' if prev[0]==payload else 'conflict',effect=emotion_effect(b,event_id))
     if b.db.execute('SELECT 1 FROM assessment_log WHERE event_id=?',(event_id,)).fetchone():
         return legacy_submit(b,event_id,raw) if raw['version']==1 else dict(status='conflict')
     life=b.db.execute('SELECT * FROM ct_life WHERE source_event=?',(event_id,)).fetchone()
@@ -240,11 +243,20 @@ def assess(b,event_id,raw,legacy_submit):
         # Recheck under the writer lock: two workers may finish the same event.
         again=b.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(event_id,)).fetchone()
         if again:
-            return dict(status='replayed' if again[0]==payload else 'conflict')
+            return dict(status='replayed' if again[0]==payload else 'conflict',effect=emotion_effect(b,event_id))
+        from muse_ext.humor import settings
+        current_settings=settings(b)
+        gain=current_settings['values']['emotion_gain']
+        applied_delta={k:0.0 for k in delta}
+        raw_labels=([{ 'label':raw['label'],'delta':intensity}]+[
+                    {'label':x['label'],'delta':x['delta']} for x in raw.get('emotions',[])]) if raw['changed'] else []
+        applied_labels=[]
         if raw['changed']:
             old=mood(b,scope)
-            vals={k:clamp(old[k]+delta[k],-1,1) for k in delta}
-            b.db.execute('INSERT OR REPLACE INTO mood VALUES(?,?,?,?,?)',(scope,vals['p'],vals['a'],vals['d'],now))
+            vals={k:clamp(old[k]+delta[k]*gain,-1,1) for k in delta}
+            applied_delta={k:round(vals[k]-old[k],8) for k in delta}
+            if any(applied_delta.values()):
+                b.db.execute('INSERT OR REPLACE INTO mood VALUES(?,?,?,?,?)',(scope,vals['p'],vals['a'],vals['d'],now))
             changes={raw['label']:dict(label=raw['label'],delta=intensity)}
             for item in raw.get('emotions',[]):
                 changes[item['label']]=item
@@ -253,15 +265,25 @@ def assess(b,event_id,raw,legacy_submit):
                 meta=b.db.execute('SELECT half FROM ct_label WHERE scope=? AND label=?',(scope,label)).fetchone()
                 half=meta[0] if meta else .75
                 before=r['intensity']*.5**(max(0,now-r['at'])/(half*3600)) if r else 0
-                value=clamp(before+item['delta'],0,.6)
+                value=clamp(before+item['delta']*gain,0,.6)
+                effective=round(value-before,8)
+                applied_labels.append(dict(label=label,delta=effective))
                 half=item.get('half_life_hours',HALF.get(label,2))
-                b.db.execute('INSERT OR REPLACE INTO emotion VALUES(?,?,?,?,?)',
-                             (scope,label,value,'inference:model_assessment:'+str(event_id),now))
-                b.db.execute('INSERT OR REPLACE INTO ct_label VALUES(?,?,?)',(scope,label,half))
-            b.db.execute('INSERT INTO emotion_events VALUES(?,?,?,?,?,?)',
-                         (event_id,scope,raw['label'],dump(delta),'inference',now))
+                if effective:
+                    b.db.execute('INSERT OR REPLACE INTO emotion VALUES(?,?,?,?,?)',
+                                 (scope,label,value,'inference:model_assessment:'+str(event_id),now))
+                    b.db.execute('INSERT OR REPLACE INTO ct_label VALUES(?,?,?)',(scope,label,half))
+            if any(applied_delta.values()) or any(x['delta'] for x in applied_labels):
+                b.db.execute('INSERT INTO emotion_events VALUES(?,?,?,?,?,?)',
+                             (event_id,scope,raw['label'],dump(applied_delta),'inference',now))
+            else:
+                status='unchanged'
+        b.db.execute('INSERT INTO ct_emotion_effect VALUES(?,?,?,?,?,?,?,?)',
+                     (event_id,gain,current_settings['revision'],dump(delta),dump(applied_delta),
+                      dump(raw_labels),dump(applied_labels),now))
+        effective_intensity=next((x['delta'] for x in applied_labels if x['label']==raw.get('label')),0)
         b.db.execute('INSERT INTO assessment_log VALUES(?,?,?,?,?,?,?,?)',
-                     (event_id,scope,int(raw['changed']),raw.get('label'),dump(delta),intensity,'inference',now))
+                     (event_id,scope,int(status=='updated'),raw.get('label'),dump(applied_delta),effective_intensity,'inference',now))
         b.db.execute('INSERT INTO ct_appraisal VALUES(?,?,?)',(event_id,payload,now))
         if pid and actor_ok:
             b.db.execute('INSERT OR IGNORE INTO ct_person(id,name,at) VALUES(?,?,?)',(pid,pid,now))
@@ -295,7 +317,15 @@ def assess(b,event_id,raw,legacy_submit):
         if life:
             b.db.execute('UPDATE ct_life SET appraised=1,lease_until=0,share=? WHERE id=?',
                          ('pending' if raw.get('share') else 'none',life['id']))
-    return dict(status=status,source_event=event_id,version=2,evidence='inference')
+    return dict(status=status,source_event=event_id,version=2,evidence='inference',effect=emotion_effect(b,event_id))
+
+
+def emotion_effect(b,event_id):
+    row=b.db.execute('SELECT * FROM ct_emotion_effect WHERE event=?',(event_id,)).fetchone()
+    if not row: return None
+    return dict(source_event=event_id,gain=row['gain'],settings_revision=row['settings_revision'],
+                raw_delta=json.loads(row['raw_delta']),applied_delta=json.loads(row['applied_delta']),
+                raw_labels=json.loads(row['raw_labels']),applied_labels=json.loads(row['applied_labels']))
 
 
 ACTIVITIES = [
@@ -498,12 +528,31 @@ def install(Brain):
         if self.config().get('companion_v2') is not True:
             return old_dispatch(self,q)
         op=q.get('op','')
+        if op in ('meme_search','meme_learn','meme_feedback','meme_record_use','meme_preference'):
+            from brain import scope_ok
+            scope_ok(q.get('scope'))
+            if not self.available('style'):
+                return dict(ok=True,disabled=True,items=[])
+            from muse_ext import meme_store,humor
+            if op=='meme_search': return meme_store.search(self,q)
+            if op=='meme_learn': return meme_store.learn(self,q)
+            if op=='meme_feedback': return meme_store.feedback(self,q)
+            if op=='meme_record_use': return meme_store.record_use(self,q)
+            return humor.preference(self,q)
         if op.startswith('companion_'):
             if q.get('scope','owner-private')!='owner-private':
                 raise ValueError('companion_owner_scope_required')
-            if not self.config().get('enabled') and op not in ('companion_bind','companion_context','companion_panel','companion_schema'):
+            if not self.config().get('enabled') and op not in ('companion_bind','companion_context','companion_panel','companion_schema','companion_expression_config','companion_meme_status'):
                 return dict(ok=False,disabled=True)
-            if op=='companion_schema': return dict(ok=True,**emotion_schema())
+            if op=='companion_expression_config':
+                from muse_ext.humor import configure
+                return configure(self,q)
+            if op=='companion_meme_status':
+                from muse_ext.meme_store import status as meme_status
+                return dict(ok=True,**meme_status(self))
+            if op=='companion_schema':
+                from muse_ext.humor import settings
+                return dict(ok=True,**emotion_schema(),emotion_gain=settings(self),gain_policy='validate raw; multiply signed emotion increments once; clip final state; do not scale relationships/energy/half-lives')
             from muse_ext.companion_io import operations
             if op=='companion_tick':
                 if not self.available('life'): return dict(ok=True,disabled=True,created=[])
@@ -539,6 +588,18 @@ def install(Brain):
             eid=(result.get('event') or {}).get('id')
             row=self.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(eid,)).fetchone() if eid else None
             result['reaction']=reaction(json.loads(row[0]),eid) if row else None
+            result['emotion_effect']=emotion_effect(self,eid) if eid else None
+            if result['reaction'] and result['emotion_effect']:
+                effect=result['emotion_effect']
+                result['reaction']['emotions']=effect['applied_labels']
+                result['reaction']['changed']=any(effect['applied_delta'].values()) or any(x['delta'] for x in effect['applied_labels'])
+                result['reaction']['emotion_gain']=effect['gain']
+            from muse_ext import humor
+            if self.available('style') and eid and (q.get('humor_assessment') is not None or q.get('meme_updates')):
+                result['humor_updates']=humor.apply_updates(self,q,eid)
+            result['expression_context']=humor.context(self,q,eid) if self.available('style') else dict(disabled=True)
+            if not self.available('style') and (q.get('humor_assessment') is not None or q.get('meme_updates')):
+                result['humor_updates']=dict(disabled=True,status='disabled_by_config')
         return result
 
     Brain.__init__,Brain.dispatch,Brain.recall=init,dispatch,recall

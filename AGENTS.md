@@ -1,6 +1,6 @@
 # Repository instructions
 
-Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.5,
+Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.6,
 not a vendor plugin or a platform API. Preserve all six layers and legacy
 memory_bridge compatibility. New roots opt into companion_v2; old roots do not.
 
@@ -34,3 +34,9 @@ without repeatedly broadening tests. Clean owned temporary fixtures afterward.
 Update personal_bot/provenance.json for portable source changes. Runtime code,
 HTML package data and installed wheel must agree. GitHub backup success requires
 an actual remote commit, not an admitted delivery or local commit.
+
+Read docs/HUMOR.md for canonical SQLite expression settings, scoped evolving
+meme knowledge, anonymous public API synchronization and signed emotion gain.
+Banter level defaults to50; reactive counterattack is independent of proactive
+banter. Multiply validated raw emotion increments once, never relationships or
+half-lives. No chat text/submissions/credential registration to the Wiki.

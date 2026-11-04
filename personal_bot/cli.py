@@ -18,6 +18,7 @@ def main(argv=None):
     s=sub.add_parser('restore');s.add_argument('--snapshot',required=True);s.add_argument('--destination',required=True)
     s=sub.add_parser('model');s.add_argument('operation',choices=['download','check','serve','service']);s.add_argument('--output')
     s=sub.add_parser('reminder');s.add_argument('--id',required=True);s.add_argument('--version',type=int,required=True);s.add_argument('--handoff',action='store_true')
+    s=sub.add_parser('meme-sync');s.add_argument('--seed',action='store_true');s.add_argument('--seed-file');s.add_argument('--mode',choices=('incremental','full'),default='incremental');s.add_argument('--max-pages',type=int,default=30);s.add_argument('--max-details',type=int,default=60);s.add_argument('--budget-seconds',type=int,default=180)
     args=p.parse_args(argv)
     try:
         if args.action=='self-test':result=d.self_test()
@@ -33,6 +34,11 @@ def main(argv=None):
                         host=json.loads((root/'state/host-bindings.json').read_text(encoding='utf-8')),
                         deployment_scope='local_runtime_only_not_native_delivery_receipt')
                 elif args.action=='enable':result=d.enable(root,args.features.split(',') if args.features else [])
+                elif args.action=='meme-sync':
+                    opts=['--root',str(root),'--mode',args.mode,'--max-pages',str(args.max_pages),'--max-details',str(args.max_details),'--budget-seconds',str(args.budget_seconds)]
+                    if args.seed:opts+=['--seed']
+                    if args.seed_file:opts+=['--seed-file',args.seed_file]
+                    return d.module(root,'muse_ext.meme_sync',opts,timeout=args.budget_seconds+45)
                 elif args.action=='companion-upgrade':
                     cfg=json.loads((root/'config.json').read_text(encoding='utf-8'))
                     cfg['companion_v2']=True;d.write_json(root/'config.json',cfg)

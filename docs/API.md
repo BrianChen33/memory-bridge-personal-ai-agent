@@ -1,4 +1,18 @@
-# v0.5 additions
+# v0.6 additions
+
+See HUMOR.md for complete host bindings and official read-only sync contract.
+
+- companion_expression_config(scope=owner-private,patch?,expected_revision?): shared validated SQLite controls; default banter_level50, independent counterattack and emotion_gain1.0.
+- companion_meme_status: public/private knowledge counts and real synchronization state.
+- prepare adds expression_context/emotion_effect; optional humor_assessment and at most3 meme_updates reuse the same reply model and captured event. Applied reaction increments reflect gain and state clipping.
+- meme_search(scope,text,limit<=5), meme_learn(scope,source_event,title,meaning,basis,confidence,mechanism,bridges,...), meme_feedback(scope,source_event,id,outcome,note).
+- meme_preference(scope,source_event,muted_until): the real bound speaker opts out; no global permission change.
+- meme_record_use(scope,source_event,keys,outcome=model_reported): only actual delivery receipts justify accepted.
+- CLI meme-sync --seed or --mode incremental|full --max-pages N --max-details N --budget-seconds N: background anonymous public GET only, resumable partial state, no submissions.
+
+Global control is trusted local administration after the host authenticates the owner; a body-provided owner/scope claim is not authentication. Scoped knowledge references must be active external events. Runtime rules are not sourced from Wiki content.
+
+## Earlier v0.5 additions
 
 Fresh CLI roots set companion_v2=true; upgrade old roots explicitly.
 All companion_* operations are trusted local administration, owner-private only.

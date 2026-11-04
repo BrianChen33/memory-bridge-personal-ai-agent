@@ -96,18 +96,19 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "547cac242a4121d1b8d8916e5c80a755c8d573433bfcb781312ad48ab0d765c8",
+    "__init__.py": "6ce94d846a346cccdc9de189cc9008a4154d34e493e51e8b3b6b1ea26e4916c8",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
-    "cli.py": "a8427be668e1b146488836da1f3d5d4adcb122dbd18ed2d604a6cc3b4496aad5",
-    "deploy.py": "0251782c75eed9e4dd334823537bf119f27d707b715175595657a6e07bfc51a9",
+    "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
+    "deploy.py": "3ad5a4a90070331b99577b3863cc71b163745beba39e1a23a0ba307bea0fb950",
     "runtime/__init__.py": "0982936c2756201cd74c82711cf33c9063e2df95828ee25a47b6f884fafc0e98",
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
     "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
+    "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "e8de1011d2120de17bfb2cc8fe37c30c780043ea26f16e57003a0fdb42466b6f",
-    "runtime/muse_ext/companion_io.py": "bf2731bf122f89e4fad160d68288051e8e560913ff7dbc2a081f967b8bb067b1",
-    "runtime/muse_ext/companion_panel.html": "56f632e9b51d5f69cca08bc97e55d6ccefe02877cff3b8d53ad8c7bb2be42ac1",
+    "runtime/muse_ext/companion.py": "91c980c35542e6ac89473914de6ce435f52937eafb36fd6a1e62f85b01401da1",
+    "runtime/muse_ext/companion_io.py": "0da1473880adba4e8ba90663badd1b1fa8ae740628adc85b722e08d74487e548",
+    "runtime/muse_ext/companion_panel.html": "b48a38ed7119fd9162b0f6bc8b99bcdcd966417d1e5deeefb10f7e9bbb691033",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -116,7 +117,10 @@
     "runtime/muse_ext/emotion_current.py": "b875cf28fa7cded27adb07445ef9cfd5f76f663393d62245f4694e7ac491bba9",
     "runtime/muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83",
     "runtime/muse_ext/expression.py": "e9222762caf9c67c43d7887e2a6342a82f815f877d2264f363fc1cb08cb8ad91",
+    "runtime/muse_ext/humor.py": "59cc0967d959191f33751f4bcfb1368f127d7ba0804b7639a539a1d07d68505c",
     "runtime/muse_ext/insights.py": "9999fdbd4e931c728431d3983b09ffa54363810b02f7e56741ac438a437a8a0f",
+    "runtime/muse_ext/meme_store.py": "f7fb09e648421d4f2a3045159485c79b9dc2925ff874da0c7cc0fc63b1cf934c",
+    "runtime/muse_ext/meme_sync.py": "c8ae3ef8bb2b0de7d03282055d733f30201c7e821298d82d68341dcdc8c194d0",
     "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
     "runtime/muse_ext/reading.py": "3263e14c71108655328ea7467124e89890b980791a5d99a5315271314cc483ca",
     "runtime/muse_ext/reminders.py": "a0f8ab2d3f92a1c6e5a73fe1c7bc7a2d3e0c57aaadbdb2f0012656f3ec5cb3ba",
@@ -125,10 +129,11 @@
     "runtime/ops.py": "cc52bf4c364784a1c09d9129a38f6fa789853f3997847a40030796c6cbc29e8c",
     "runtime/proactive.py": "50ab1b55db3cc35c2d9d2036eb6b704acb51bf9e88c6167c03437eda3d40f4aa",
     "runtime/qq-adapter.mjs": "2302e48614d96149cc131ecb0546848021822001b2a443f3c371c662d5b7da8c",
+    "runtime/requirements-embedding.txt": "1843de70ebdd99b72b76b9208cb1ffbb6684a50d7a0501f4e3a2dba7cf051d84",
     "runtime/sticker_decision.mjs": "bd0e979774075ca3f48a704c6db8e391652f96410d688cd99ac52d97df950115",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "ff7a630c5513868b0c290636ecfa1eced6a5bcd79f493ece2c71af84d49f49fe",
+    "runtime/sticker_main.mjs": "43c61ff87056223f65a82b4f4802ab2eddbe64fb238601758ce3874d3310a038",
     "vault.py": "631f02a1093b87c3931773b5e498befb3162ae85e034590d58ef1ef53609856b"
   },
   "emotion48_update": {
@@ -145,6 +150,23 @@
       "retired active old emotion instructions",
       "architecture-aware private snapshot idempotency",
       "mandatory GitHub architecture synchronization"
+    ]
+  },
+  "humor_and_gain_update": {
+    "date": "2026-11-05",
+    "release": "0.6.0",
+    "runtime": "2.2.0",
+    "reference_repository": "https://github.com/thawline/dsh-memewiki",
+    "reference_commit": "d6d2344663ab9ed60fb493e49b255c6f6d9bcadf",
+    "seed_sha256": "5d1d1857985b1d5602b886ed8ec79759a97b41451c1a855c354d7b2d9b820c4a",
+    "public_api": "https://cnmeme.wiki/developers/api/submissions.md",
+    "adaptations": [
+      "independent Python adapter; no DSH runtime dependency",
+      "public data not bundled; anonymous read-only periodic API sync",
+      "scoped teachable humor mechanisms and feedback; no extra model",
+      "one canonical expression config and offline panel snapshot",
+      "signed gain after raw validation; actual effect audit and idempotence",
+      "generic bindings only; no private channel code/persona/IDs"
     ]
   }
 }

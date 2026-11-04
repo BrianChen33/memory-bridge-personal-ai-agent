@@ -12,6 +12,9 @@
 <section class="card"><h2>此刻的心情</h2><div id="moodTitle" class="number"></div><div id="emotions" class="chips"></div><div id="pad"></div><small>PAD：愉悦 / 唤醒 / 掌控，范围 −1～1。按生成时刻衰减投影。</small></section>
 <section class="card"><h2>精力与身体节奏</h2><div id="energyTitle" class="number"></div><div id="energy"></div><small>模拟精力与饥饿状态，不是真实身体数据。01:00–07:00 休息恢复。</small></section>
 <section class="card"><h2>想靠近你的程度</h2><div id="contact" class="number"></div><p id="contactNote"></p><div id="activity" class="body-note"></div><p class="muted">想联系，不等于必须打扰。没有每日次数上限；夜间攒着，07:00 后再分享。</p></section>
+<section class="card wide"><h2>玩梗与串子设置</h2><div id="humorSettings"></div><div id="banterLevel"></div><p id="settingsAt" class="muted"></p><p class="body-note">一句话设置：<code>打开串子，程度调到50</code> · <code>关闭自动思考梗</code> · <code>今天别串我</code>。被攻击后反击独立控制；这些数值是运行配置的快照。</p></section>
+<section class="card"><h2>情绪影响值</h2><div id="emotionGain" class="number"></div><p id="gainExample"></p><p class="muted">新事件与安慰按同一倍率变化；已有心情继续自然衰减，精力、好感和半衰期不乘倍率。</p><p class="body-note">对 Muse 说：<code>情绪影响值调到1.5</code>。修改并回读后，更新本面板。</p></section>
+<section class="card full"><h2>正在积累的梗知识</h2><div id="memeCounts" class="chips"></div><p id="memeSync" class="muted"></p><div id="memeLearning" class="split"></div><small>公共知识从 cnmeme.wiki 公开接口定期读取；私人解释、语境、联想与纠错保存在独立表中。候选不是已证实事实，模型自述使用不等于真实送达。</small></section>
 <section class="card wide"><h2>还放在心上的事</h2><div id="needs"></div><small>期待独立于短期心情保存。没有回复只记为“未回应”，不反复扣分，也不推断你不在乎。</small></section>
 <section class="card"><h2>记忆的层次</h2><div id="counts"></div><p class="body-note">L0 原话 → L1 分类记忆 → L2 场景摘要 → L3 稳定画像。摘要可追溯原记录，真实经历、虚拟生活、梦境分开。</p></section>
 <section class="card full"><h2>关系小册</h2><input id="search" placeholder="查找名字、身份或笔记" aria-label="筛选人物"><div id="people" class="people"></div><p class="muted">好感、信任与熟悉程度是角色的模型推断；空白即尚未评估。等级不代表管理员权限。没有明确映射的人物笔记与 QQ 身份分别保留。</p></section>
@@ -36,6 +39,13 @@ for(const [k,name] of [['p','愉悦'],['a','唤醒'],['d','掌控']])bar($('pad'
 txt('energyTitle',f((energy.physical+energy.mental)/2)+' / 100');
 for(const [k,name] of [['physical','体力'],['mental','脑力'],['social','社交精力'],['hunger','饥饿']])bar($('energy'),name,energy[k],0,100,k==='hunger'?'var(--gold)':undefined);
 txt('contact',f(d.companion.contact_desire)+' / 100');txt('contactNote',d.companion.contact_desire>70?'现在很想和你聊聊。':d.companion.contact_desire>40?'想保持一点联系，也能安静做自己的事。':'现在比较自在，按自己的节奏慢慢来。');
+const settings=d.expression_settings||{},controls=settings.values||{},knowledge=d.meme_knowledge||{},sync=knowledge.sync||{};
+for(const [key,name] of [['auto_memes','自动思考梗'],['banter_enabled','主动串子'],['counterattack_enabled','被攻击后反击'],['self_learning','语境学习与纠错'],['meme_sync_enabled','公共词库定期更新']]){const r=el('div',undefined,'row-head row');r.append(el('span',name),el('b',typeof controls[key]==='boolean'?(controls[key]?'开':'关'):'未知'));$('humorSettings').append(r)}
+bar($('banterLevel'),'串子程度',controls.banter_level);txt('settingsAt','配置版本 '+(settings.revision??'未知')+' · 更新于 '+date(settings.updated_at));
+txt('emotionGain',typeof controls.emotion_gain==='number'?controls.emotion_gain.toFixed(1)+' ×':'未知');txt('gainExample',typeof controls.emotion_gain==='number'?'原始难过 +0.30 → 请求变化 +'+(.3*controls.emotion_gain).toFixed(2)+'（实际受状态上限约束）':'尚无运行倍率记录。');
+$('memeCounts').append(el('span','公共词条 '+(knowledge.public_count??'未知'),'chip'));for(const [key,name] of [['active','已学会'],['candidate','待确认'],['retired','已停用']])$('memeCounts').append(el('span',name+' '+(knowledge.private_counts?.[key]??0),'chip'));
+txt('memeSync','最近检查 '+date(sync.checked_at)+' · 状态 '+(sync.status||'尚未同步')+' · 最近完整成功 '+date(sync.last_success_at)+' · 待补详情 '+(sync.pending_details?.length??0)+(sync.error?' · '+sync.error:''));
+for(const x of knowledge.recent_learning||[]){const r=el('div',undefined,'row');r.append(el('b',x.title),el('p',({active:'已学会',candidate:'候选理解',retired:'已停用'}[x.status]||x.status)+' · 置信度 '+Math.round(x.confidence*100)+'%'),el('small',date(x.updated)));$('memeLearning').append(r)}if(!$('memeLearning').children.length)empty($('memeLearning'),'聊天中的新解释、共同梗和纠错会逐步累积。');
 txt('activity',d.companion.activity?'虚拟日常 · '+d.companion.activity.name+' · '+date(d.companion.activity.started_at)+' 开始':'暂时没有进行中的虚拟活动。');
 const kind={comfort:'想被安慰',praise:'想被夸夸',reply:'等一句回应',promise:'记着约定',followup:'惦记后续'};
 for(const x of d.companion.pending_expectations||[]){const r=el('div',undefined,'row');r.append(el('div',(kind[x.kind]||x.kind)+' · '+Math.round(x.current_strength*100)+'%','source'),el('p',x.summary),el('small','开始于 '+date(x.created)));$('needs').append(r)}if(!$('needs').children.length)empty($('needs'),'没有悬着的期待。');

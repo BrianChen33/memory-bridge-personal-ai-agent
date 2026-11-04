@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.5；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.6；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -20,12 +20,13 @@ flowchart TD
     O --> B
 ```
 
-| 模块 | v0.5 包含的实现 | 宿主需要完成的接入 |
+| 模块 | v0.6 包含的实现 | 宿主需要完成的接入 |
 |---|---|---|
 | 输入与记忆 | SQLite 原话、分类记忆、时间查询；关键词/可选本地向量/实体邻接；45s有界缓存；后台L2/L3摘要与来源失效检查 | 每轮提供可信身份、稳定消息ID、原始时间、scope；后台提交摘要 |
 | 模型情绪 | v2/48标签共享词表、本轮reaction与持续mood、PAD限幅/半衰期、持续期待；模拟体力/脑力/社交精力/饥饿；每人联系欲望与关系数值 | 当前回复模型先评估、保存结果，再按读回状态回复；不额外调用外部情绪模型 |
 | 生活 | 16类带权随机活动、开始/完成分开、梦境、未回应期待一次性观察；真实文章注册入口 | 真实阅读工具、模型事件评估、主聊主动发送；虚拟与真实来源始终区分 |
 | 表达与表情 | 可选通用策略：40%基础概率，随强度上升；显式索图/拒图；先抽再宽松选前10候选；跨渠道1h避重 | 人格卡、合法素材索引、媒体API、文字完成后图片发送与回执 |
+| 梗知识与表达 | 独立公共梗库、带来源的私人解释/纠错/联想机制；主动串与反击分开；默认程度50；情绪反应倍率1.0 | 模型转交expression_context、认证主人自然语言设置；每日/每周匿名公共API更新 |
 | 观察与备份 | 单文件离线HTML、关系/情绪/任务/送达记录；原格式私有GitHub快照、SHA清单与代码版本锁 | 本机或原生资料库文件交付；私库写权限；每日总结成功后的调用 |
 
 `personal_bot/runtime/muse_ext/companion.py` 是伙伴扩展，`emotion_catalog.py` 是唯一词表，`companion_io.py` 是检索/摘要/面板；`expression.py` 是表情策略，`runtime/sticker_main.mjs` 是可选宿主主聊入口；`personal_bot/vault.py` 是原格式私库发布器。没有捆绑QQ/微信账号、机器人密钥、平台登录态或第三方表情素材。
@@ -116,6 +117,19 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 
 15. 此后每次架构、协议、代码和部署说明完善，按MAINTENANCE.md同步本公开GitHub，
     核验真实远端commit并更新私库快照架构锁；日常记忆与情绪数值变化仅走私库日备份。
+
+16. 阅读docs/HUMOR.md并接入梗知识。默认自动查梗/语境学习开启，主动串子关闭、程度50，
+    被攻击后反击独立开启；最高档允许“损长相、怎么损怎么来”，仍服从宿主规则与停止要求。
+    主人一句话调开关/程度/情绪影响值时，认证真实身份后写companion_expression_config并回读，
+    所有渠道共享，不在各处复制配置。情绪模型先给原始增量，程序乘emotion_gain一次；正负都乘，
+    只裁剪最终状态，不放大精力/关系/半衰期。对话prepare实际转交expression_context/emotion_effect，
+    同一次提交可带humor_assessment/meme_updates；没有正式强制主聊hook时不能宣称100%执行。
+    学习不仅存解释，还存场景、避用、反转/类比等机制和可解释的联想桥；首次观察/自创是候选，
+    明确教学/独立证据/反馈才晋升，纠错可撤回，私人共同梗不跨scope。不要额外启动一个想梗模型。
+    可选meme-sync --seed导入校验过的上游数据；每天07:20增量、每周日07:40核对，按正式API
+    分页/slug/详情item信封/限流执行，普通回复只查本地。网络失败留旧资料并报告真实partial。
+    用户没要求向公共Wiki投稿，不能注册提交凭证或上传私人聊天。新知识和配置随原格式SQLite私库备份。
+    面板展示实际开关、程度、情绪倍率、词库与学习/更新状态；离线HTML更新后才显示新配置。
 ```
 
 ## 手动入口与已有版本升级
@@ -135,6 +149,7 @@ python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" doctor
 
 - [逐步部署指南](DEPLOY_FOR_BOT.md) · [人格初始化](docs/PERSONA_ONBOARDING.md)
 - [情绪v2协议](docs/MODEL_EMOTION.md) · [六层系统复刻](docs/SYSTEM_REPLICATION.md)
+- [梗知识、自我迭代、串子与情绪倍率](docs/HUMOR.md)
 - [宿主任务与可选渠道](docs/HOST_TASKS.md) · [API](docs/API.md)
 - [私有GitHub记忆备份](docs/GITHUB_VAULT.md) · [可继承记忆与步骤](docs/INHERITANCE.md)
 - [架构维护与GitHub同步](docs/MAINTENANCE.md)

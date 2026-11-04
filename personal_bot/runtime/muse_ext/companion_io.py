@@ -284,7 +284,10 @@ def delivery(b,q):
 
 
 def panel(b,q):
+    from muse_ext.humor import settings
+    from muse_ext.meme_store import status as meme_status
     snapshot=dict(version=VERSION,generated_at=stamp(),timezone='Asia/Shanghai',
+                  expression_settings=settings(b),meme_knowledge=meme_status(b),
                   mood=mood(b,'owner-private'),companion=context(b,'owner-private'),
                   stored_mood=[dict(r) for r in b.db.execute('SELECT * FROM mood')],
                   people=[dict(r) for r in b.db.execute('SELECT * FROM ct_person ORDER BY role,name')],

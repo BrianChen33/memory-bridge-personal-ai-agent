@@ -25,6 +25,15 @@ def main():
         request_file.write_text(json.dumps({'op':'companion_panel','scope':'owner-private'}),encoding='utf-8')
         run([py,'-m','personal_bot','--root',state,'request','--file',request_file],work,env)
         if not (state/'exports/Companion面板.html').is_file():raise RuntimeError('installed HTML template missing')
+        for request in [dict(op='companion_expression_config',scope='owner-private',patch=dict(emotion_gain=2,banter_level=50)),
+                        dict(op='meme_search',scope='owner-private',text='isolated wheel fixture'),
+                        dict(op='companion_panel')]:
+            request_file.write_text(json.dumps(request),encoding='utf-8')
+            run([py,'-m','personal_bot','--root',state,'request','--file',request_file],work,env)
+        html=(state/'exports/Companion面板.html').read_text(encoding='utf-8')
+        snapshot=json.loads(html.split('id="snapshot">')[1].split('</script>')[0])
+        if snapshot['expression_settings']['values']['emotion_gain']!=2:raise RuntimeError('installed humor settings not in panel')
+        run([py,'-m','personal_bot','--root',state,'meme-sync','--help'],work,env)
     print('Wheel accepted outside checkout; synthetic state cleaned.')
 
 if __name__=='__main__':main()

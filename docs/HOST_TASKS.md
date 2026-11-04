@@ -10,6 +10,8 @@
 | 维护 | 每日 | 跳过繁忙消息队列；按scope合并候选、冲突与derive；people_sync |
 | 每日总结 | 用户选择，如23:30 | 真实写日记→导出完整native定义→summary_done |
 | 私库备份 | 紧接总结，或23:35补偿 | 只有summary_done存在才调用vault发布；验证远端commit |
+| 公共梗知识更新 | 每日07:20 | meme-sync增量；匿名GET、持久进度、静默，不传聊天 |
+| 公共梗知识核对 | 每周日07:40 | meme-sync --mode full；缺席先核实详情，私人解释不覆盖 |
 | 提醒对账 | 5m | 对账真实runonce与账本，不能替代准点路径 |
 
 01:00–07:00 Asia/Shanghai默认后台允许、主动分享暂停；用户主动来聊照常回复。无每日分享次数上限。备份可作为静默数据任务运行。失败记录并日间报告，不冒充已发消息。
@@ -33,3 +35,5 @@
 可选表情策略操作为`op:expression`，source_event来自已完成有效模型评估的真实事件。配置源STATE/expression-policy.json供主bot和全部渠道读取；改策略不逐渠道写多份。
 
 当前词表统一从companion_schema/emotion_catalog.py导出：v2、48标签。任务不得继续提交旧信封；新评估返回reaction供当前回复参考。原生主聊没有强制final钩子时如实报告，不能用轻量hook伪装全量消息观察。
+
+梗API契约、配置/学习指令与预算见HUMOR.md。阅读任务可在真实article源事件上学习机制/联想，不能把自己的摘要冒充外部刺激；首次观察不自动成为确定理解。宿主注册新增任务时先查同名避免重复，用实际工具读回时区/周期/enabled/delivery。蓝图本身仍不等于已启用。

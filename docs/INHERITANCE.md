@@ -12,6 +12,9 @@
 | 人格文档 | 选择延续原角色才采用；保留目标人格时只参考选定事实 |
 | mood/emotion/ct_label/ct_expectation/模拟精力 | 按旧时间投影衰减，不重放为新刺激；未解期待向用户确认是否继续 |
 | ct_life及阅读笔记 | 保留virtual/dream/observed来源；不声称是用户真实活动 |
+| ct_meme_private/ct_meme_event/偏好 | 按scope继承解释、教学、纠错、联想机制与来源；candidate不当确定事实 |
+| ct_meme_public/ct_meme_term | 公共知识缓存可重建；更新不能覆盖私人解释；同步状态照实保留 |
+| expression_settings/ct_emotion_effect | 控制值先核对主人偏好，反应倍率只作用于新事件；旧刺激不重乘 |
 | 提醒和发送账本 | 审计可保留；已完成/unknown不重发；待办先重新确认 |
 | 原生任务、宿主路径、渠道映射 | 部署参考，默认不激活；重新绑定当前宿主与已授权身份 |
 | 向量/缓存/面板 | 可重建；不能作为唯一事实来源 |

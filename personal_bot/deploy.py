@@ -111,6 +111,7 @@ def blueprint(root):
             'reading claim from the allowlisted library; read actual chunk, summarize as inference, reading commit with chunk_id/lease. '
             'Advance cursor only on successful commit. Useful note: life sources=[quote_id], stable reading:document:hash:chunk topic. '
             'After actual articles: capture actor=article with true source, companion_observe source_event=<captured id>; do not appraise your own output. '
+            'When self_learning is on, learn useful public humor mechanisms/aliases/association bridges with meme_learn using this real article source event; observations remain candidates until independently supported. Read docs/HUMOR.md. '
             'If companion_v2=true, run companion_summary_work for one scope, commit source-grounded L2/L3, ack the actual batch revision. '
             'After new notes, vector_index limit20 if enabled. No source: select an authorized relevant public document, cache text/URL/hash in library; never pretend to have read a book or watched a video.'),
            ('maintenance',{'kind':'daily','at':'03:35'},[],
@@ -127,6 +128,12 @@ def blueprint(root):
             'Unknown is terminal; never resend. This is recovery, not a5minute replacement for due-time runonce. '
             'Runonce body executes '+command(root,'reminder','--id','LEDGER_ID','--version','VERSION','--handoff')+
             ' and emits body unchanged only when ok=true/status=unknown. This guard waits for actual due then checks version/cancel/epoch/quiet.')]
+    specs += [('meme-sync',{'kind':'daily','at':'07:20'},[],
+               'Silent data-only task; read HUMOR.md. Run '+command(root,'meme-sync','--max-pages','40','--max-details','80','--budget-seconds','180')+'. '
+               'Only anonymous public GETs; never register credentials, submit changes, upload conversations or invent freshness. Keep partial cursor and retry at next scheduled run. No model call to summarize the whole corpus.'),
+              ('meme-reconcile',{'kind':'weekly','weekday':'Sunday','at':'07:40'},[],
+               'Silent data-only task; run '+command(root,'meme-sync','--mode','full','--max-pages','300','--max-details','200','--budget-seconds','600')+'. '
+               'Preserve private learning and source corrections. Record actual status/count/error; unknown or partial is not fully current.')]
     for name,schedule,channels,body in specs:
         tasks.append(dict(id='personal-memory-'+hashlib.sha256(str(root).encode()).hexdigest()[:8]+'-'+name,enabled=False,mode='task',timezone='Asia/Shanghai',
                           delivery='host-main-chat',schedule=schedule,channels=channels,

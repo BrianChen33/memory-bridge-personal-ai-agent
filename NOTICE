@@ -16,6 +16,16 @@ Muse/Dot SDK; private memories, credentials and deployment records are excluded.
 Preserve applicable upstream attribution and license notices if incorporating
 upstream material in later revisions.
 
+The v0.6 meme knowledge adapter is inspired by dsh-memewiki:
+  https://github.com/thawline/dsh-memewiki
+Reference commit: d6d2344663ab9ed60fb493e49b255c6f6d9bcadf (code: MIT).
+The optional seed database originates from that project and cnmeme.wiki;
+its data copyright is separate from the code's MIT license. This distribution
+does not include that database. Preserve its upstream NOTICE and source when
+obtaining it for a private deployment; verify data rights before redistribution.
+Public API integration follows https://cnmeme.wiki/developers/api/submissions.md.
+It performs anonymous public GETs only, not registration or submissions.
+
 The full AGPL version 3 text in LICENSE was extracted from the installed Debian
 package copyright file /usr/share/doc/ghostscript/copyright, AGPL-3 section.
 Debian paragraph indentation and blank-line markers were normalized; the license

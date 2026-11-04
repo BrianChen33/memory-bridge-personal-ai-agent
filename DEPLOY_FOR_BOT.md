@@ -1,4 +1,4 @@
-# 给部署 Agent 的执行手册（v0.5）
+# 给部署 Agent 的执行手册（v0.6）
 
 先读README里的完整提示词。它规定顺序：能力摸底→人格与选择→核心→真实宿主接线→专用任务→面板/可选私库→一次最终隔离验收。不要只写几条规则就宣布完成。
 
@@ -29,6 +29,10 @@ STATE必须在源码checkout外。init默认保留已有配置，拒绝覆写非
 3. 当前回复模型读取companion_schema的48词表，结合人设/事件/对象/责任/期待提交v2评估。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed，不能把missing/invalid当成功。
 4. 按新状态组文；若启用表情，调用expression策略并按宿主真实媒体接口发送，先全部文字后图片。自己的最终输出只可记原话，不产生自循环情绪。
 5. 能提供正式hook就使用hook；只能靠prompt约定时如实标注。任何channel数据不得写入其他人的私有scope。
+
+6. 按docs/HUMOR.md转交expression_context/emotion_effect；原回复模型可在已有prepare里带humor_assessment/meme_updates。主人一句话改串子/情绪倍率时认证身份，调用companion_expression_config、核对revision再生成面板；群友只能停止对自己的定向调侃。默认主动串关、程度50、独立反击开、倍率1.0。不要把倍率再乘进模型的原始情绪增量。
+
+7. 梗库可选seed，普通聊天只读本地。原生任务按蓝图每天07:20增量、每周日07:40公开API核对，静默并保存partial进度；不注册投稿凭证、不向Wiki上传聊天。公共更新与私人语境学习分开，所有认知表都在原格式SQLite内。
 
 纯@必须由可信QQ归一化层保留mention元数据、metadata_only=true/content_type=mention_only；保持原始空正文。无负载垃圾空白应在入口忽略；有媒体空正文需单独的媒体适配，不能伪造用户原话。
 
