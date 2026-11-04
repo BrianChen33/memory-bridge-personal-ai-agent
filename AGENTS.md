@@ -1,6 +1,6 @@
 # Repository instructions
 
-Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.4,
+Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.5,
 not a vendor plugin or a platform API. Preserve all six layers and legacy
 memory_bridge compatibility. New roots opt into companion_v2; old roots do not.
 
@@ -13,6 +13,13 @@ Use the SAME host reply model for v2 appraisals; no emotion keyword fallback or
 extra external model. Wire real before-reply context and prompts. Virtual life,
 dreams and observed reading must keep distinct provenance. Relationship scores
 never confer permissions. Every event/draw/receipt is idempotent.
+Current companion requests accept only v2 with the shared emotion48 catalogue.
+Retire obsolete operational rules from active prompts and retrievable memories;
+do not erase unrelated personal history. Return current-event reaction separately
+from background mood. Assessment errors must not silently suppress every draw.
+After every architecture/protocol/code/docs improvement, synchronize the public
+GitHub repository and verify its remote SHA; update the private snapshot code
+lock separately. Never publish private data. Follow docs/MAINTENANCE.md.
 
 First install must preserve or help create a complete persona card. Ask only
 missing preferences. QQ, WeChat, media and private GitHub backups are opt-in;

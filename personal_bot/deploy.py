@@ -279,7 +279,7 @@ def self_test():
         t=datetime.now(timezone(timedelta(hours=8))).replace(hour=9,minute=0,second=0,microsecond=0)-timedelta(days=1)
         q=dict(op='prepare',scope='owner-private',text='谢谢你，帮了大忙',source='fixture:isolated',event_id='test-event',occurred_at=t.timestamp())
         pre=request(root,q)
-        q['emotion_assessment']=dict(version=1,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
+        q['emotion_assessment']=dict(version=2,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
         a=request(root,q);b=request(root,q)
         r=request(root,dict(op='recall',scope='owner-private',text='昨天早上我说了什么'))
         if (pre['event']['status']!='captured' or pre['emotion']['status']!='missing'

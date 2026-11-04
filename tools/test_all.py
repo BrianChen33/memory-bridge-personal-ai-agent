@@ -16,7 +16,7 @@ def main():
     env['PYTHONPATH']=str(RUNTIME)
     run([sys.executable,str(RUNTIME/'tests/run_baseline.py'),*NAMES],RUNTIME,env)
     if shutil.which('node'):
-        run(['node','--test','tests/qq-adapter.test.mjs','tests/learn.test.mjs'],RUNTIME,env)
+        run(['node','--test','tests/qq-adapter.test.mjs','tests/learn.test.mjs','tests/sticker-turn.test.mjs'],RUNTIME,env)
     else:print('SKIP Node adapter tests: node is not installed',flush=True)
     print('All available suites passed.',flush=True)
 

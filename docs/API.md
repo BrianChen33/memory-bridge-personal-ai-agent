@@ -1,10 +1,10 @@
-# v0.4 additions
+# v0.5 additions
 
 Fresh CLI roots set companion_v2=true; upgrade old roots explicitly.
 All companion_* operations are trusted local administration, owner-private only.
-prepare now adds companion, scene_context, persona_context.
+prepare adds companion, scene_context, persona_context, emotion_protocol and current-event reaction. Current companion roots accept only assessment version2 with the shared48-label catalogue. Expression can record an honest degraded draw if assessment is missing; it never fabricates an emotion update.
 
-- companion_context / companion_tick / companion_pending(claim) / companion_life_assess(id,assessment)
+- companion_schema / companion_context / companion_tick / companion_pending(claim) / companion_life_assess(id,assessment)
 - companion_observe(source_event) / companion_share(action=claim|settle,lease,outcome)
 - companion_people_sync / companion_bind(host_paths,person_map,task_bindings)
 - companion_summary_work(target_scope) / companion_summary_commit(target_scope,origin,level,key,content,source_ids) / companion_summary_ack(target_scope,origin,revision)
@@ -26,7 +26,7 @@ The existing companion_backup/companion_delivery ops remain for explicitly selec
 
 | op | 关键字段 | 含义 |
 |---|---|---|
-| prepare | scope/text/source/event_id/occurred_at/actor，可附 emotion_assessment v1 | 捕获 + 检索；无评估返回 missing，有评估则校验/去重更新后返回新 mood |
+| prepare | scope/text/source/event_id/occurred_at/actor，可附 emotion_assessment v2 | 捕获 + 检索；无评估返回 missing，有评估则校验/去重更新后返回新 mood |
 | capture | 同上，actor=user/assistant/bot/article | 仅记录真实事件，emotion=pending_assessment，无情绪副作用；不能充当递送回执 |
 | remember / ingest | scope/text/source/event_id/kind/evidence | 存储带出处的记忆/附件解析证据 |
 | recall | scope/text，可选start/end | 中文时间解析或显式半开数字范围；返回原话/记忆/有来源推断 |

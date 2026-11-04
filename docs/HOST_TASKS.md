@@ -31,3 +31,5 @@
 裸@：只允许归一化层根据真实mention标识派生metadata_only=true/content_type=mention_only，正文不伪造；普通无负载空白直接安全归档，媒体消息另行处理。单条异常隔离，不能卡死整条队列。
 
 可选表情策略操作为`op:expression`，source_event来自已完成有效模型评估的真实事件。配置源STATE/expression-policy.json供主bot和全部渠道读取；改策略不逐渠道写多份。
+
+当前词表统一从companion_schema/emotion_catalog.py导出：v2、48标签。任务不得继续提交旧信封；新评估返回reaction供当前回复参考。原生主聊没有强制final钩子时如实报告，不能用轻量hook伪装全量消息观察。

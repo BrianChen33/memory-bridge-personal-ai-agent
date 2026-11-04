@@ -1,32 +1,8 @@
-"""Model-judged tone assessments (v1 protocol). Validate + store only.
+"""Internal storage compatibility for unupgraded data roots.
 
-No keyword heuristics: the model judges every turn from input, recent context,
-persona and current mood, and submits a structured assessment. This module only
-validates the assessment envelope and persists it. It never infers emotion from
-word lists and never stores the model's full thinking/reasons.
-
-Protocol: emotion_assessment = {
-    version: 1,
-    changed: bool,                 # False => evaluated, no change
-    label: str | null,             # one of LABELS when changed, else null
-    delta: {p: float, a: float, d: float},
-    intensity_delta: float,        # signed change applied to decayed intensity
-}
-Rules:
-  - all numbers finite reals, not bool; |PAD delta| <= 0.12; |intensity_delta| <= 0.12
-  - changed=False requires label null, delta all 0, intensity_delta 0;
-    records "evaluated, no change" WITHOUT touching mood/labels/at
-  - changed=True requires at least one non-zero change
-  - intensity update: clamp(decayed_old + intensity_delta, 0, 0.6);
-    NO +0.1 base is added (zero amplitude stays zero)
-  - half-lives kept: mood 6h (21600s), labels 45min (2700s)
-
-Statuses: updated / unchanged / replayed / conflict / missing / invalid /
-          disabled / ignored
-  - missing/invalid do NOT consume the event's assessment opportunity:
-    a later valid submit for the same event_id still works.
-  - replayed: identical assessment resubmitted -> no re-apply, no accumulation.
-  - conflict: a different assessment after one was recorded -> original kept.
+Current companion requests are validated by companion.py and the shared
+emotion_catalog.py. This module is NOT a deployment protocol or prompt source.
+Do not infer current labels or policy from compatibility constants.
 """
 import json
 import math
@@ -65,7 +41,8 @@ def _is_num(v):
 def _validate_assessment(a):
     """Returns (ok, error, clean). clean={changed,label,delta,intensity_delta}.
 
-    Strict v1: version must be non-bool int 1 (True==1 is rejected);
+    Internal compatibility only; current callers use companion_schema.
+    Stored format version must be an integer (bool is rejected);
     delta must contain ALL PAD keys; intensity_delta must be present.
     No silent defaults: missing/invalid -> 'invalid', no state change,
     assessment opportunity preserved.

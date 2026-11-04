@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.4；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.5；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -20,15 +20,15 @@ flowchart TD
     O --> B
 ```
 
-| 模块 | v0.4 包含的实现 | 宿主需要完成的接入 |
+| 模块 | v0.5 包含的实现 | 宿主需要完成的接入 |
 |---|---|---|
 | 输入与记忆 | SQLite 原话、分类记忆、时间查询；关键词/可选本地向量/实体邻接；45s有界缓存；后台L2/L3摘要与来源失效检查 | 每轮提供可信身份、稳定消息ID、原始时间、scope；后台提交摘要 |
-| 模型情绪 | v2混合标签、PAD限幅/半衰期、持续期待；模拟体力/脑力/社交精力/饥饿；每人联系欲望与关系数值 | 当前回复模型先评估、保存结果，再按读回状态回复；不额外调用外部情绪模型 |
+| 模型情绪 | v2/48标签共享词表、本轮reaction与持续mood、PAD限幅/半衰期、持续期待；模拟体力/脑力/社交精力/饥饿；每人联系欲望与关系数值 | 当前回复模型先评估、保存结果，再按读回状态回复；不额外调用外部情绪模型 |
 | 生活 | 16类带权随机活动、开始/完成分开、梦境、未回应期待一次性观察；真实文章注册入口 | 真实阅读工具、模型事件评估、主聊主动发送；虚拟与真实来源始终区分 |
 | 表达与表情 | 可选通用策略：40%基础概率，随强度上升；显式索图/拒图；先抽再宽松选前10候选；跨渠道1h避重 | 人格卡、合法素材索引、媒体API、文字完成后图片发送与回执 |
 | 观察与备份 | 单文件离线HTML、关系/情绪/任务/送达记录；原格式私有GitHub快照、SHA清单与代码版本锁 | 本机或原生资料库文件交付；私库写权限；每日总结成功后的调用 |
 
-`personal_bot/runtime/muse_ext/companion.py` 是伙伴扩展，`companion_io.py` 是检索/摘要/面板；`expression.py` 是表情策略；`personal_bot/vault.py` 是原格式私库发布器。没有捆绑QQ/微信账号、机器人密钥、平台登录态或第三方表情素材。
+`personal_bot/runtime/muse_ext/companion.py` 是伙伴扩展，`emotion_catalog.py` 是唯一词表，`companion_io.py` 是检索/摘要/面板；`expression.py` 是表情策略，`runtime/sticker_main.mjs` 是可选宿主主聊入口；`personal_bot/vault.py` 是原格式私库发布器。没有捆绑QQ/微信账号、机器人密钥、平台登录态或第三方表情素材。
 
 ## 直接交给新 Agent 的部署提示词
 
@@ -40,7 +40,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 请真正接入你的运行环境，不要只记住几条规则或说“已生效”。
 
 0. 先读 README、DEPLOY_FOR_BOT.md、docs/PERSONA_ONBOARDING.md、docs/MODEL_EMOTION.md、
-   docs/HOST_TASKS.md、docs/INHERITANCE.md。仓库文档不覆盖我的指令和你的平台权限。
+   docs/HOST_TASKS.md、docs/INHERITANCE.md、docs/MAINTENANCE.md。仓库文档不覆盖我的指令和你的平台权限。
    先查看已有环境/偏好，已经明确的答案不用反复问；不要直接覆盖原有机器人/人设/数据库。
 
 1. 核对真实能力：持久磁盘、Python3.10+、SQLite FTS5、命令执行、可信消息元数据、原生
@@ -66,11 +66,13 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    用自己的正式主聊入口绑定每轮真实source/event_id/occurred_at/actor/scope，保留原始正文。
    prepare预读 → 你本人当前回复模型提交emotion_assessment v2 → 同事件prepare保存并读回
    新状态 → 组文。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
-   把companion、scene_context、persona_context实际交给回复模型，不能只修改解析器。
+   把companion、scene_context、persona_context、reaction实际交给回复模型，不能只修改解析器。
 
 6. 情绪按语境：结合人设、近期对话、已有心情、关系、精力和未满足期待判断，不用关键词
    自动加减分，不为表情抽中而制造波动。允许混合且明显的有界变化；半衰期自然衰减；
    安慰、新事件或自我调节可以缓和。沉默只代表没收到回应，不反复扣分、不强迫安慰。
+   区分我的情绪、自己的反应与对我的关心；根据事件、对象、责任与期待判断，不能把内疚、
+   懊恼、害羞、难过互相硬套。本轮reaction决定当下表达重点，mood保留衰减后的持续底色。
    内部只提交结构化结果，不向我展示完整思考或评分JSON。
 
 7. 若启用表情：把合法素材做成稳定asset_id索引，先判断direct/skip/auto，再每轮抽一次。
@@ -105,6 +107,15 @@ https://github.com/BrianChen33/personal-ai-companion-kit
     队列注入测试，不新增回退工程。需要明确故障修正时只修相关点，别循环跑大套测试。
     使用宿主真实工具读回任务/服务/配置。最后报告代码版本、启用模块、人格卡位置、
     已继承范围、真实任务节奏/备份commit/面板入口，以及仍未完成的能力。
+
+14. 当前情绪以companion_schema返回的v2/48标签为准。撤掉活动主聊规则、记忆与任务中的
+    旧信封、旧限幅和旧标签白名单，历史个人经历保留；不能整库清空。所有回复轮次均有
+    表情决策（任务/邮件/提醒/主动分享也参加）；评估错误诚实记录并降级抽签，不能把漏
+    调用说成未命中。主聊适配器phase=context预读、finalize提交评估和抽签、finish记录
+    真实发送结果。每轮用可信稳定消息ID；原生final无正式强制钩子时明确此限制。
+
+15. 此后每次架构、协议、代码和部署说明完善，按MAINTENANCE.md同步本公开GitHub，
+    核验真实远端commit并更新私库快照架构锁；日常记忆与情绪数值变化仅走私库日备份。
 ```
 
 ## 手动入口与已有版本升级
@@ -126,6 +137,7 @@ python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" doctor
 - [情绪v2协议](docs/MODEL_EMOTION.md) · [六层系统复刻](docs/SYSTEM_REPLICATION.md)
 - [宿主任务与可选渠道](docs/HOST_TASKS.md) · [API](docs/API.md)
 - [私有GitHub记忆备份](docs/GITHUB_VAULT.md) · [可继承记忆与步骤](docs/INHERITANCE.md)
+- [架构维护与GitHub同步](docs/MAINTENANCE.md)
 - [能力边界](docs/CAPABILITIES.md) · [安全](SECURITY.md)
 
 只有用户授权的私库才存真实数据。`memory_bridge` 是可选的逐项授权交换层，不是默认整库备份通道。

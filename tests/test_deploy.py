@@ -34,7 +34,7 @@ class DeployTests(unittest.TestCase):
         q=dict(op='prepare',scope='owner-private',text='谢谢你，帮了大忙',source='synthetic:isolated',event_id='test-one',occurred_at=100)
         p,r=self.cli('request',q=q);self.assertEqual(p.returncode,0);self.assertEqual(r['event']['status'],'captured')
         self.assertEqual(r['emotion']['status'],'missing');self.assertEqual(r['mood']['p'],0)
-        q['emotion_assessment']=dict(version=1,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
+        q['emotion_assessment']=dict(version=2,changed=True,label='欣喜',delta=dict(p=.04,a=.02,d=0),intensity_delta=.07)
         p,r=self.cli('request',q=q);self.assertEqual(p.returncode,0);self.assertEqual(r['emotion']['status'],'updated');self.assertGreater(r['mood']['p'],0)
         _,r=self.cli('request',q=dict(op='recall',scope='owner-private',text='',start=99,end=101))
         self.assertEqual(r['events'][0]['event_id'],'test-one')

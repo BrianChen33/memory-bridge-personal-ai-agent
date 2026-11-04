@@ -12,13 +12,10 @@ import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.0.0'
+VERSION = '2.1.0'
 TZ = timezone(timedelta(hours=8))
-LABELS = ('欣喜','难过','委屈','生气','害羞','期待','关切','专注','放松','失落','好奇','平静',
-          '害怕','不安','满足','烦躁','安心','得意','想念','无聊')
-HALF = {'委屈':10, '失落':10, '难过':8, '期待':8, '想念':8, '满足':6,
-        '得意':4, '害怕':1, '不安':2, '害羞':.5, '生气':2, '烦躁':1}
 RNG = random.SystemRandom()
 
 
@@ -51,6 +48,9 @@ def _set(b, key, value):
 
 def initialize(b):
     if b.db.execute("SELECT 1 FROM sqlite_master WHERE name='ct_kv'").fetchone():
+        if _get(b,'version')!=VERSION or _get(b,'emotion_catalog')!=CATALOG_VERSION:
+            with b.db:
+                _set(b,'version',VERSION);_set(b,'emotion_catalog',CATALOG_VERSION)
         return
     b.db.executescript('''
     CREATE TABLE ct_kv(key TEXT PRIMARY KEY,value TEXT NOT NULL);
@@ -88,6 +88,7 @@ def initialize(b):
     END;
     ''')
     _set(b,'version',VERSION)
+    _set(b,'emotion_catalog',CATALOG_VERSION)
     _set(b,'vitals',dict(physical=76,mental=78,social=72,hunger=25,at=stamp(),origin='virtual_state_initialization'))
     _set(b,'life',dict(activity=None,next_at=stamp()+RNG.randint(600,1800)))
     b.db.execute('INSERT OR IGNORE INTO ct_person(id,name,role,at) VALUES(?,?,?,?)',('owner','用户','owner',stamp()))
@@ -161,13 +162,13 @@ def context(b, scope, person=None):
 
 
 def _validate(raw):
-    if not isinstance(raw,dict) or type(raw.get('version')) is not int or raw['version'] not in (1,2):
+    if not isinstance(raw,dict) or type(raw.get('version')) is not int or raw['version']!=2:
         raise ValueError('invalid_assessment_version')
     if type(raw.get('changed')) is not bool:
         raise ValueError('invalid_changed')
-    cap=.12 if raw['version']==1 else .35
+    cap=.35
     delta={k:num(raw.get('delta',{}).get(k),cap) for k in ('p','a','d')}
-    intensity=num(raw.get('intensity_delta'),.12 if raw['version']==1 else .45)
+    intensity=num(raw.get('intensity_delta'),.45)
     label=raw.get('label')
     if raw['changed']:
         if label not in LABELS or not (any(delta.values()) or intensity or raw.get('emotions')):
@@ -183,6 +184,8 @@ def _validate(raw):
         num(item.get('delta'),.45)
         if 'half_life_hours' in item and not .15<=num(item['half_life_hours'],24)<=24:
             raise ValueError('invalid_half_life')
+    labels=([label] if label else [])+[item['label'] for item in emotions]
+    if len(labels)!=len(set(labels)): raise ValueError('duplicate_emotion_label')
     relation=raw.get('relationship') or {}
     if not isinstance(relation,dict):
         raise ValueError('invalid_relationship')
@@ -210,9 +213,10 @@ def assess(b,event_id,raw,legacy_submit):
     if not event_id:
         return dict(status='missing')
     try:
+        raw=normalize(raw)
         delta,intensity=_validate(raw)
     except (ValueError,TypeError,KeyError,AttributeError):
-        return dict(status='invalid',error='invalid_companion_assessment')
+        return dict(status='invalid',error='invalid_companion_assessment',assessment_version=2,catalog_version=CATALOG_VERSION)
     event=b.db.execute('SELECT * FROM source_events WHERE id=? AND status=\'active\'',(event_id,)).fetchone()
     if not event:
         return dict(status='missing')
@@ -497,8 +501,9 @@ def install(Brain):
         if op.startswith('companion_'):
             if q.get('scope','owner-private')!='owner-private':
                 raise ValueError('companion_owner_scope_required')
-            if not self.config().get('enabled') and op not in ('companion_bind','companion_context','companion_panel'):
+            if not self.config().get('enabled') and op not in ('companion_bind','companion_context','companion_panel','companion_schema'):
                 return dict(ok=False,disabled=True)
+            if op=='companion_schema': return dict(ok=True,**emotion_schema())
             from muse_ext.companion_io import operations
             if op=='companion_tick':
                 if not self.available('life'): return dict(ok=True,disabled=True,created=[])
@@ -530,6 +535,10 @@ def install(Brain):
             from muse_ext.companion_io import summaries
             result['companion']=context(self,q['scope'],q.get('person_id'))
             result.update(summaries(self,q))
+            result['emotion_protocol']={'assessment_version':2,'catalog_version':CATALOG_VERSION,'label_count':len(LABELS)}
+            eid=(result.get('event') or {}).get('id')
+            row=self.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(eid,)).fetchone() if eid else None
+            result['reaction']=reaction(json.loads(row[0]),eid) if row else None
         return result
 
     Brain.__init__,Brain.dispatch,Brain.recall=init,dispatch,recall

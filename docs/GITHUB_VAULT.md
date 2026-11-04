@@ -34,3 +34,5 @@ python -m personal_bot.vault --root "<STATE>" --worktree "<PRIVATE_VAULT_CHECKOU
 私库README应包含docs/INHERITANCE.md的完整流程；代码与数据以commit锁定。原生任务定义只用于参考，不自动激活。SSH key、账号登录态、模型工具权限不继承。
 
 GitHub普通Git单文件限制要求发布器在95MiB停止并报告；不能静默改格式或拆碎SQLite。Git历史可能增长，应按实际用量选择归档策略，删除历史需另行明确处理。当前导出不包含程序运行环境、依赖安装和云端账号权限，因此是完整认知/人格快照，不是整台VM镜像。
+
+去重同时包含真实总结证明与架构commit；同一天真实升级程序后可以生成匹配新版本的快照，不删除旧回执、不伪造新总结。

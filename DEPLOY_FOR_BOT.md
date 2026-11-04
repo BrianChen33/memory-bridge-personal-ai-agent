@@ -1,4 +1,4 @@
-# 给部署 Agent 的执行手册（v0.4）
+# 给部署 Agent 的执行手册（v0.5）
 
 先读README里的完整提示词。它规定顺序：能力摸底→人格与选择→核心→真实宿主接线→专用任务→面板/可选私库→一次最终隔离验收。不要只写几条规则就宣布完成。
 
@@ -26,7 +26,7 @@ STATE必须在源码checkout外。init默认保留已有配置，拒绝覆写非
 
 1. 可信适配器派生scope/source/event_id/occurred_at/actor/person_id；不要信正文自报身份。主人私聊、其他私聊、各群分开。
 2. `prepare`预读原话、memories/insights/events、mood、companion、scene_context/persona_context。
-3. 当前回复模型结合人设和近期对话提交v2评估。同一源事件再次prepare写入并读回状态，检查updated/unchanged/replayed，不能把missing/invalid当成功。
+3. 当前回复模型读取companion_schema的48词表，结合人设/事件/对象/责任/期待提交v2评估。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed，不能把missing/invalid当成功。
 4. 按新状态组文；若启用表情，调用expression策略并按宿主真实媒体接口发送，先全部文字后图片。自己的最终输出只可记原话，不产生自循环情绪。
 5. 能提供正式hook就使用hook；只能靠prompt约定时如实标注。任何channel数据不得写入其他人的私有scope。
 
@@ -55,3 +55,5 @@ QQ/微信没有跨平台通用安装命令。询问是否启用后读取目标�
 组装完再跑一次，临时数据库与mock发送，清理本次夹具；必要修正只聚焦失败点，不循环扩大测试。可以把回归与wheel安装合并成这一次验收。部署不强制真人测试；真实消息仅在本人明确授权后进行。
 
 最后读回配置、任务启用状态、实际安装文件/代码版本、备份远端commit和面板文件。分别标记本地通过、宿主已接通、送达已证实、自然触发未观察。缺口明确写出。保持人格回应普通用户；调试通道按用户要求独立。
+
+架构维护：每次架构/协议/代码/部署说明更新，按docs/MAINTENANCE.md同步公开GitHub与私库架构commit锁。远端SHA未确认不能称同步完成。清理旧情绪指令，历史个人经历保留。

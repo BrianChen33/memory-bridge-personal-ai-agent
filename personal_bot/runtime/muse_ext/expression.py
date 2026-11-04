@@ -44,8 +44,7 @@ def dispatch(b,q):
             if decision['status']!='asset_required' or prev['status']!='prepared':
                 return dict(ok=True,replayed=True,delivery_status=prev['status'],**decision)
         else:
-            if not b.db.execute('SELECT 1 FROM assessment_log WHERE event_id=?',(event['id'],)).fetchone():
-                return {'ok':False,'reason':'valid_model_assessment_required'}
+            assessed=b.db.execute('SELECT 1 FROM assessment_log WHERE event_id=?',(event['id'],)).fetchone()
             intent=q.get('intent','auto')
             if intent not in ('auto','direct','skip'): raise ValueError('invalid_expression_intent')
             from muse_ext.events import is_control
@@ -61,6 +60,7 @@ def dispatch(b,q):
             hit=policy['enabled'] and (intent=='direct' or intent=='auto' and roll<probability)
             decision={'intent':intent,'probability':probability if intent=='auto' else None,'roll':roll,
                       'hit':bool(hit),'asset':None,'status':'asset_required' if hit else 'skip',
+                      'assessment_status':'recorded' if assessed else 'degraded_missing_assessment',
                       'order':'all_text_then_image','reason':'media_not_configured' if not policy['enabled'] else 'policy'}
         if decision['hit']:
             assets=q.get('assets',[])

@@ -163,7 +163,7 @@ def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,i
                 if p.is_symlink() or not p.resolve().is_relative_to(dest): raise ValueError('unsafe_stale_file')
                 p.unlink()
     manifest={'schema':SCHEMA,'created_at':time.time(),'summary_proof':proof,'files':files,'aliases':aliases,
-              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.4.0'},
+              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.5.0'},
               'inheritance':{'default':['native_memory_or_persona','cognitive_database'],'never_auto_activate':['operational_reference'],
                              'excluded':['credentials','SSH keys','channel login state','runtime code','models','generated panels','completed learning queue files']}}
     write_json(marker,manifest)
@@ -261,7 +261,7 @@ def publish(root,worktree,repo,key,architecture_ref,day=None,bootstrap=False,ide
     if not key.is_file() or key.is_symlink(): raise ValueError('host_local_SSH_identity_required')
     if os.name!='nt' and key.stat().st_mode&0o077: raise ValueError('SSH_identity_permissions_require_600')
     proof=summary_proof(root,day,bootstrap)
-    proof_key=hashlib.sha256(json_text(proof).encode()).hexdigest()
+    proof_key=hashlib.sha256(json_text({'summary':proof,'architecture_repo':architecture_repo,'architecture_commit':architecture_ref}).encode()).hexdigest()
     receipts=root/'state/github-vault-receipts.json'
     ledger=json.loads(receipts.read_text(encoding='utf-8')) if receipts.is_file() else {'version':1,'receipts':{}}
     record_key=repo+':'+proof_key
