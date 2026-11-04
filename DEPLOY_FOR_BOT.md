@@ -32,7 +32,7 @@ STATE必须在源码checkout外。init默认保留已有配置，拒绝覆写非
 
 6. 按docs/HUMOR.md转交expression_context/emotion_effect；原回复模型可在已有prepare里带humor_assessment/meme_updates。主人一句话改串子/情绪倍率时认证身份，调用companion_expression_config、核对revision再生成面板；群友只能停止对自己的定向调侃。默认主动串关、程度50、独立反击开、倍率1.0。不要把倍率再乘进模型的原始情绪增量。
 
-7. 梗库可选seed，普通聊天只读本地。原生任务按蓝图每天07:20增量、每周日07:40公开API核对，静默并保存partial进度；不注册投稿凭证、不向Wiki上传聊天。公共更新与私人语境学习分开，所有认知表都在原格式SQLite内。
+7. 梗库可选seed，普通聊天只读本地。原生任务按蓝图每周日07:40同步一次公开API，不默认建立每日任务；静默并保存partial进度，不注册投稿凭证、不向Wiki上传聊天。公共更新与私人语境学习分开，所有认知表都在原格式SQLite内。
 
 纯@必须由可信QQ归一化层保留mention元数据、metadata_only=true/content_type=mention_only；保持原始空正文。无负载垃圾空白应在入口忽略；有媒体空正文需单独的媒体适配，不能伪造用户原话。
 

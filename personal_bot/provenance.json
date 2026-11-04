@@ -99,7 +99,7 @@
     "__init__.py": "6ce94d846a346cccdc9de189cc9008a4154d34e493e51e8b3b6b1ea26e4916c8",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
-    "deploy.py": "3ad5a4a90070331b99577b3863cc71b163745beba39e1a23a0ba307bea0fb950",
+    "deploy.py": "75d26c439075efd11350a45e3344d3494337a67fd08ca41458c13898dab3ef36",
     "runtime/__init__.py": "0982936c2756201cd74c82711cf33c9063e2df95828ee25a47b6f884fafc0e98",
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
     "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
@@ -167,6 +167,7 @@
       "one canonical expression config and offline panel snapshot",
       "signed gain after raw validation; actual effect audit and idempotence",
       "generic bindings only; no private channel code/persona/IDs"
-    ]
+    ],
+    "public_sync_cadence": "weekly only; Sunday07:40 Asia/Shanghai; no daily public sync"
   }
 }

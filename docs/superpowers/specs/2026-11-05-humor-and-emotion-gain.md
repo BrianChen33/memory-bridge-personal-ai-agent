@@ -32,8 +32,8 @@ idempotence and provenance; no invented autobiographical facts or self-excitatio
 
 Use the official public list/detail GET API, explicit User-Agent, 30-item pages,
 canonical slugs, aware timestamps, rate limiting and bounded retries. Detail is
-the documented {schema_version,item} envelope. Daily incremental sync plus weekly
-full reconciliation; resume bounded unfinished work, don't advance completion
+the documented {schema_version,item} envelope. Weekly synchronization only
+(the user's subsequent cadence correction); resume bounded unfinished work, don't advance completion
 past failures. Keep a local good corpus on network failure; no credentials,
 registration, submissions, private search fragments or user conversations sent.
 Public update must not overwrite private learning or corrections.

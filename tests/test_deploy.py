@@ -24,7 +24,11 @@ class DeployTests(unittest.TestCase):
         self.assertEqual((self.root/'MEMORY.md').read_text(),'existing bot state')
     def test_schedules_are_disabled_real_commands_and_no_private_paths(self):
         self.init();text=(self.root/'state/scheduler-blueprint.json').read_text(encoding='utf-8');d=json.loads(text)
-        self.assertEqual(len(d['tasks']),8)
+        self.assertEqual(len(d['tasks']),7)
+        meme_tasks=[t for t in d['tasks'] if 'meme' in t['id']]
+        self.assertEqual(len(meme_tasks),1)
+        self.assertEqual(meme_tasks[0]['schedule'],dict(kind='weekly',weekday='Sunday',at='07:40'))
+        self.assertEqual(meme_tasks[0]['timezone'],'Asia/Shanghai')
         self.assertTrue(all(t['enabled'] is False for t in d['tasks']))
         self.assertIn('personal_bot',text);self.assertNotIn('/home/hatch',text)
         self.assertNotIn('179366',text);self.assertTrue(all(t['body'] for t in d['tasks']))

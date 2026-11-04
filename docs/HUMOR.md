@@ -75,13 +75,11 @@ source_event必须是该scope真实、active的外部来信/文章，不能伪�
 ```sh
 # 可选：导入固定SHA校验的上游种子数据，数据库不随公共包分发。
 python -m personal_bot --root STATE meme-sync --seed
-# 每日07:20，Asia/Shanghai：增量元数据与有界详情补齐。
-python -m personal_bot --root STATE meme-sync --max-pages 40 --max-details 80 --budget-seconds 180
-# 每周日07:40：更完整的扫描；partial保存进度，不能声称全库最新。
+# 每周日07:40，Asia/Shanghai：仅每周一次；partial保存进度，不能声称全库最新。
 python -m personal_bot --root STATE meme-sync --mode full --max-pages 300 --max-details 200 --budget-seconds 600
 ```
 
-数据任务静默运行，不在聊天热路径联网；若有消息积压可延后。全量分页期间站点会变化，列表缺席不直接删词，随后用详情404核实不可用。初始种子正文不伪称API实时验证；变更词条先提供新元数据，旧正文清掉，随后补详情。同步失败仍可查询现有本地资料，面板显示failed/partial与待补数量。
+公共梗知识默认只每周同步一次，不建立每日任务；已建立的每日任务应停用。用户明确要求时仍可手动运行有界增量。聊天语境学习与纠错照常，不受公共更新频率影响。数据任务静默运行，不在聊天热路径联网；若有消息积压可延后。全量分页期间站点会变化，列表缺席不直接删词，随后用详情404核实不可用。初始种子正文不伪称API实时验证；变更词条先提供新元数据，旧正文清掉，随后补详情。同步失败仍可查询现有本地资料，面板显示failed/partial与待补数量。
 
 这些命令只更新本地知识。不会注册凭证、投稿、修改Wiki或传输用户聊天。若未来用户另行要求向公共Wiki投稿，必须单独确认公开内容/来源，按submissions.md保存幂等key并等待审核；202不等于发布。
 

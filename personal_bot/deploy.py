@@ -128,12 +128,10 @@ def blueprint(root):
             'Unknown is terminal; never resend. This is recovery, not a5minute replacement for due-time runonce. '
             'Runonce body executes '+command(root,'reminder','--id','LEDGER_ID','--version','VERSION','--handoff')+
             ' and emits body unchanged only when ok=true/status=unknown. This guard waits for actual due then checks version/cancel/epoch/quiet.')]
-    specs += [('meme-sync',{'kind':'daily','at':'07:20'},[],
-               'Silent data-only task; read HUMOR.md. Run '+command(root,'meme-sync','--max-pages','40','--max-details','80','--budget-seconds','180')+'. '
-               'Only anonymous public GETs; never register credentials, submit changes, upload conversations or invent freshness. Keep partial cursor and retry at next scheduled run. No model call to summarize the whole corpus.'),
-              ('meme-reconcile',{'kind':'weekly','weekday':'Sunday','at':'07:40'},[],
+    specs += [('meme-reconcile',{'kind':'weekly','weekday':'Sunday','at':'07:40'},[],
                'Silent data-only task; run '+command(root,'meme-sync','--mode','full','--max-pages','300','--max-details','200','--budget-seconds','600')+'. '
-               'Preserve private learning and source corrections. Record actual status/count/error; unknown or partial is not fully current.')]
+               'Only one weekly public sync; do not create a daily sync. Anonymous public GETs only; no submissions, credentials or chat uploads. '
+               'Preserve private learning and source corrections; retain partial cursors for the next scheduled run. Record actual status/count/error; partial is not fully current.')]
     for name,schedule,channels,body in specs:
         tasks.append(dict(id='personal-memory-'+hashlib.sha256(str(root).encode()).hexdigest()[:8]+'-'+name,enabled=False,mode='task',timezone='Asia/Shanghai',
                           delivery='host-main-chat',schedule=schedule,channels=channels,
