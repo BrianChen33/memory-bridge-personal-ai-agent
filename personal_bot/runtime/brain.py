@@ -668,6 +668,9 @@ class Brain:
                 old.unlink()
             return dict(ok=True,path=str(dest))
         scope = scope_ok(q.get('scope'))
+        if op == 'sticker':
+            from muse_ext.stickers import dispatch
+            return dispatch(self,q)
         if op == 'reminder':
             from muse_ext.reminders import dispatch
             return dispatch(self,q)

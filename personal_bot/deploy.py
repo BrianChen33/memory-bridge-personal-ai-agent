@@ -146,6 +146,9 @@ def init(root):
     write_json(root/'proactive-policy.json',POLICY,True)
     write_json(root/'interests.json',{'interests':[]},True)
     write_json(root/'reading-sources.json',{'version':1,'documents':[]},True)
+    from .runtime.muse_ext.stickers_policy import DEFAULT_POLICY
+    write_json(root/'sticker-policy.json',DEFAULT_POLICY,True)
+    write_json(root/'sticker-catalog.json',{'version':1,'items':[]},True)
     write_json(root/'state/native-schedules.json',{'current':[],'historical':[],'export_status':'host_export_required'},True)
     write_json(root/'state/host-bindings.json',{'status':'unverified','message_capture':False,'outbound':False,'scheduler':False},True)
     write_json(root/'state/scheduler-blueprint.json',blueprint(root),True)
@@ -219,6 +222,16 @@ def relocate(root):
     sources=code_sources()+[dict(name='scheduler/definitions.json',path=str(root/'state/native-schedules.json'),required=True)]
     for entry in old['sources']:
         if entry['name'].startswith('project/code/personal_bot/') or entry['name']=='scheduler/definitions.json':continue
+        if entry['name'].startswith('project/media/stickers/'):
+            name=entry['name']
+            relative=PurePosixPath(name[len('project/'):])
+            path=root.joinpath(*relative.parts)
+            if ('\\' in name or '\0' in name or ':' in name or '..' in relative.parts
+                    or not path.resolve().is_relative_to(root/'media/stickers')
+                    or any(p.is_symlink() for p in (path,*path.parents))):
+                raise ValueError('unsafe_sticker_restore_path')
+            if not path.is_file() and entry.get('required'):raise ValueError('sticker_snapshot_copy_missing')
+            sources.append(dict(entry,path=str(path)));continue
         if not entry['name'].startswith('native/'):raise ValueError('manual_source_rebinding_required')
         # Restored copies are read-only input sources; never overwrite live persona.
         path=snapshot_native(root,entry['name'])

@@ -55,7 +55,10 @@
     "model-judged emotion v1 with strict assessment and no keyword fallback",
     "assessment-only no-change audit without refreshing mood timestamps",
     "legacy event replay guard on upgraded roots",
-    "deterministic synthetic quiet-boundary test clocks"
+    "deterministic synthetic quiet-boundary test clocks",
+    "source-bound transactional sticker decisions and media handoff ledger",
+    "disabled sticker bootstrap and allowlisted media backup relocation",
+    "capability-driven Dot engineering handoff documentation"
   ],
   "model_emotion_update": {
     "date": "2026-11-04",
@@ -78,5 +81,18 @@
       "legacy emotion event replay guard preserves existing state without fabricated assessments",
       "no QQ bridge/hook/sticker implementation copied"
     ]
+  },
+  "dot_preparation_update": {
+    "date": "2026-11-04",
+    "release": "0.3.1.dev0",
+    "base_commit": "3f82996bb34f214fb3f10c4debe0e4705e51ef4e",
+    "status": "local_synthetic_only_host_binding_required",
+    "new_implementation": "No Muse-private hooks, media assets, personas, identities or memories copied",
+    "portable_hashes": {
+      "runtime/brain.py": "e4cd194b5bfcf4181b0f7cc847daeb4d478650524ec6623fca41f992eae34473",
+      "runtime/muse_ext/stickers.py": "7880ccc7b0a6f2c5af8ec2f3052dd527b615d74817ab8df36ace0a0f844ec088",
+      "runtime/muse_ext/stickers_policy.py": "d2a53b3f932e4cb52146a6b4ba1edd2c7910a9b7f9b8111634de74b5ee84baab",
+      "deploy.py": "279f20da4ff2b7f2692b2e42aa3c8778f7639e6c117729fb95629c6a697aa60b"
+    }
   }
 }
