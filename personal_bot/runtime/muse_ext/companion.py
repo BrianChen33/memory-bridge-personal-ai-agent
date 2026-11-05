@@ -159,8 +159,8 @@ def context(b, scope, person=None):
                 pending_expectations=expectations,
                 activity=({k:v for k,v in life['activity'].items() if k not in ('outcome','cost')}
                           if owner and life.get('activity') else None),
-                expression=dict(mode='short_conversational',paragraphs='2-4, vary naturally',
-                                policy='日常短句补话，保持人设；心情影响措辞，不额外拖延，不固定套用哼/嘴硬模板'),
+                expression=dict(mode='short_conversational',paragraphs='1-3 short messages; one is enough when sufficient',
+                                policy='先接当前话，一句够了就停；少解释、不凑条数、不宣告人格模式。需要解释时再展开；心情影响措辞，不额外拖延。'),
                 provenance='model_state; life may be virtual; not verified human attributes')
 
 
@@ -445,7 +445,9 @@ def life_pending(b,q):
         if q.get('claim'):
             for row in rows:
                 b.db.execute('UPDATE ct_life SET lease_until=? WHERE id=?',(now+900,row['id']))
+    from muse_ext.presentation import camera, persona
     return dict(ok=True,events=[dict(r) for r in rows],context=context(b,'owner-private'),
+                current_persona=persona(b), camera_context=camera(b,'owner-private'),
                 mood=mood(b,'owner-private'),quiet_hours=quiet(now))
 
 
@@ -528,6 +530,10 @@ def install(Brain):
         if self.config().get('companion_v2') is not True:
             return old_dispatch(self,q)
         op=q.get('op','')
+        if op=='companion_photo':
+            from muse_ext.presentation import photo
+            if not self.available('life'): return dict(ok=True,disabled=True)
+            return photo(self,q)
         if op in ('meme_search','meme_learn','meme_feedback','meme_record_use','meme_preference'):
             from brain import scope_ok
             scope_ok(q.get('scope'))
@@ -584,6 +590,9 @@ def install(Brain):
             from muse_ext.companion_io import summaries
             result['companion']=context(self,q['scope'],q.get('person_id'))
             result.update(summaries(self,q))
+            from muse_ext.presentation import persona, camera
+            result['current_persona']=persona(self,q['scope'])
+            result['camera_context']=camera(self,q['scope'])
             result['emotion_protocol']={'assessment_version':2,'catalog_version':CATALOG_VERSION,'label_count':len(LABELS)}
             eid=(result.get('event') or {}).get('id')
             row=self.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(eid,)).fetchone() if eid else None

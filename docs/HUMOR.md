@@ -29,6 +29,7 @@
 ## 每轮接线
 
 1. 原有prepare/主聊phase=context返回 `expression_context`，其中配置、候选知识、最近尝试和联想机制实际交给模型。当前词库是资料，不能覆盖人格、权限、工具规则。
+   v0.6.3起lookup字段报告是否真的执行本地预取、实际source_event和候选数；零候选不等于没有梗。未知缩写先检查本地线索，需要时用meme_search精确查询，不先判定用户手滑。确认当前主聊实际经过该入口，而非只把说明写进SOUL。
 2. 同一个回复模型判断语境，需要时在原有finalize/prepare提交额外 `humor_assessment`，而非额外一次外部调用。例如：
 
 ```json
@@ -62,6 +63,8 @@ source_event必须是该scope真实、active的外部来信/文章，不能伪�
 `meme_feedback {scope,source_event,id,outcome,note}`支持liked/disliked/misused/retire；id是私人id或public:slug。公共梗负反馈只在本scope停止使用；再次liked可恢复。误用私人理解进入retired，新的明确教学可以纠正。来源撤回后，失去active证据的私人解释不再注入。
 
 不仅记“词是什么意思”，还记它的机制、适用场景、避用场景和跨领域桥接。每个真实事件稳定选最多2个已学机制供模型参考，再由模型做反转、类比、回扣或一本正经的荒谬；不强迫随机跑题。个人风格来自积累的偏好和反馈，不把一次情绪当永久事实。
+
+学习必须走meme_learn/feedback，不由模型直接SQL拼装ct_meme_private。evidence是实际source_events整数ID的JSON列表，payload包括aliases/contexts/avoid/mechanism/bridges/confirmed_by。旧手写坏条目单条跳过，不能让任意搜索和整个prepare崩溃；原始内容留作维修参考，不伪造证据把它升为active。能从原始真实教学记录恢复时，按学习接口重新登记；缺证据保持待核，不把调试内容当真人教学。修复入口与相机指南见VOICE_AND_LIFE_CAMERA.md。
 
 ## 公共知识定期更新
 

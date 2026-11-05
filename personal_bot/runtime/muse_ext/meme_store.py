@@ -104,10 +104,11 @@ def learn(b, q):
         if prev is not None:
             return prev
         old = b.db.execute('SELECT * FROM ct_meme_private WHERE id=?', (mid,)).fetchone()
-        old_data=json.loads(old['payload']) if old else {}
-        same=bool(old and all(old_data.get(k)==data.get(k) for k in ('meaning','usage','mechanism','bridges','contexts','avoid')))
+        parsed = _private_data(old) if old else None
+        old_data = parsed[0] if parsed else {}
+        same=bool(parsed and all(old_data.get(k)==data.get(k) for k in ('meaning','usage','mechanism','bridges','contexts','avoid')))
         # Evidence supports an interpretation, not merely the spelling of a title.
-        evidence = json.loads(old['evidence']) if same else []
+        evidence = parsed[1] if same else []
         evidence = list(dict.fromkeys(evidence + [event['id']]))[-32:]
         confirmed=list(old_data.get('confirmed_by',[])) if same else []
         if basis=='explained': confirmed.append(event['id'])
@@ -160,8 +161,11 @@ def feedback(b, q):
         prev = _replay(b, event['id'], 'feedback', mid, payload)
         if prev is not None:
             return prev
-        value = json.loads(row['payload']); value['last_feedback'] = dict(outcome=outcome, note=note)
-        evidence=json.loads(row['evidence'])
+        parsed = _private_data(row)
+        if parsed is None:
+            return dict(ok=False, error='legacy_meme_requires_source_backed_relearning')
+        value, evidence = parsed
+        value['last_feedback'] = dict(outcome=outcome, note=note)
         if outcome=='liked':
             evidence=list(dict.fromkeys(evidence+[event['id']]))[-32:]
             value['confirmed_by']=list(dict.fromkeys(value.get('confirmed_by',[])+[event['id']]))[-32:]
@@ -254,8 +258,10 @@ def search(b, q, automatic=False):
         if row:
             v = json.loads(row[0]); items.append(dict(v, key='public:' + slug, score=score, wiki_origin=v.get('origin',''), origin='public'))
     for row in b.db.execute("SELECT * FROM ct_meme_private WHERE scope=? AND status='active' ORDER BY updated DESC LIMIT 256", (q['scope'],)):
+        if not evidence_active(b, row):
+            continue
         v = json.loads(row['payload'])
-        if not evidence_active(b, row) or v.get('last_feedback',{}).get('outcome')=='disliked':
+        if v.get('last_feedback',{}).get('outcome')=='disliked':
             continue
         score = max([_score(query, row['title'].casefold(), 'title')] + [_score(query, term.casefold(), 'alias') for term in v['aliases']])
         if score >= (.75 if automatic else .5):
@@ -277,11 +283,36 @@ def search(b, q, automatic=False):
     return dict(ok=True, items=result, ambiguous=len(result) > 1, reference_only=True)
 
 
+def _private_data(row):
+    """A malformed legacy row must not break every prepare/search/pattern call."""
+    try:
+        ids = json.loads(row['evidence'])
+        value = json.loads(row['payload'])
+    except (ValueError, TypeError):
+        return None
+    if not isinstance(ids, list) or len(ids) > 32 or any(type(x) is not int for x in ids):
+        return None
+    if not isinstance(value, dict):
+        return None
+    for name in ('aliases', 'contexts', 'avoid'):
+        if not isinstance(value.get(name), list) or any(not isinstance(x, str) for x in value[name]):
+            return None
+    if not isinstance(value.get('mechanism'), str) or not isinstance(value.get('bridges'), list):
+        return None
+    if not isinstance(value.get('confirmed_by'), list) or any(type(x) is not int for x in value['confirmed_by']):
+        return None
+    if not isinstance(value.get('last_feedback', {}), dict):
+        return None
+    return value, ids
+
+
 def evidence_active(b, row):
-    ids=json.loads(row['evidence'])
+    parsed = _private_data(row)
+    if parsed is None:
+        return False
+    value, ids = parsed
     if not ids: return False
     active={r[0] for r in b.db.execute("SELECT id FROM source_events WHERE scope=? AND status='active' AND id IN ("+','.join('?' for _ in ids)+')', [row['scope']]+ids)}
-    value=json.loads(row['payload'])
     return bool(active.intersection(value.get('confirmed_by',[])) or len(active)>=2)
 
 
@@ -289,8 +320,10 @@ def patterns(b, scope, event_id):
     """Stable per-event variety, without a second LLM or an emotion lottery."""
     values=[]
     for row in b.db.execute("SELECT * FROM ct_meme_private WHERE scope=? AND status='active' ORDER BY updated DESC LIMIT 48", (scope,)):
+        if not evidence_active(b,row):
+            continue
         v=json.loads(row['payload'])
-        if not evidence_active(b,row) or v.get('last_feedback',{}).get('outcome')=='disliked':
+        if v.get('last_feedback',{}).get('outcome')=='disliked':
             continue
         values.append((hashlib.sha256(f'{event_id}:{row["id"]}'.encode()).hexdigest(),
                        dict(mechanism=v['mechanism'],bridges=v['bridges'],contexts=v['contexts'],avoid=v['avoid'])))

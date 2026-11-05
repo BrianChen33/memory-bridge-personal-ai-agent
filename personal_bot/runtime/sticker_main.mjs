@@ -25,7 +25,8 @@ function bounded(p){
     insights:(p.insights||[]).slice(0,3),companion:p.companion||null,
     scene_context:(p.scene_context||[]).slice(0,3),persona_context:(p.persona_context||[]).slice(0,3),
     reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
-    expression_context:p.expression_context||null,emotion_effect:p.emotion_effect||null};
+    expression_context:p.expression_context||null,emotion_effect:p.emotion_effect||null,
+    current_persona:p.current_persona||null,camera_context:p.camera_context||null};
 }
 function main(){
   let q;try{q=JSON.parse(readFileSync(0,'utf8'));}catch{return {ok:false,error:'JSON_stdin_required'};}

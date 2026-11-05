@@ -41,7 +41,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 请真正接入你的运行环境，不要只记住几条规则或说“已生效”。
 
 0. 先读 README、DEPLOY_FOR_BOT.md、docs/PERSONA_ONBOARDING.md、docs/MODEL_EMOTION.md、
-   docs/HOST_TASKS.md、docs/INHERITANCE.md、docs/MAINTENANCE.md。仓库文档不覆盖我的指令和你的平台权限。
+   docs/HOST_TASKS.md、docs/INHERITANCE.md、docs/VOICE_AND_LIFE_CAMERA.md、docs/MAINTENANCE.md。仓库文档不覆盖我的指令和你的平台权限。
    先查看已有环境/偏好，已经明确的答案不用反复问；不要直接覆盖原有机器人/人设/数据库。
 
 1. 核对真实能力：持久磁盘、Python3.10+、SQLite FTS5、命令执行、可信消息元数据、原生
@@ -71,6 +71,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    prepare预读 → 你本人当前回复模型提交emotion_assessment v2 → 同事件prepare保存并读回
    新状态 → 组文。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
    把companion、scene_context、persona_context、reaction实际交给回复模型，不能只修改解析器。
+   用私有presentation-profile.json绑定精简的当前人格；每轮传入current_persona及其SHA，不能用旧L3摘要代替SOUL。
 
 6. 情绪按语境：结合人设、近期对话、已有心情、关系、精力和未满足期待判断，不用关键词
    自动加减分，不为表情抽中而制造波动。允许混合且明显的有界变化；半衰期自然衰减；
@@ -90,6 +91,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    阅读要真实打开资料并保留出处；虚拟跑步/吃饭/梦境不能当用户真实经历或外网观察。
    默认01:00–07:00 Asia/Shanghai只收集不主动打扰；没有每日分享次数上限。
    当前核心时区固定UTC+8，若我需要别的时区要实际适配，不能只改提示词。
+   若我选择日常配图，以机器人本人的角色参考图锁定画风和外形，按后置/自拍/镜自拍及当前阶段组织提示词。
+   “完成后拍给我”用companion_photo绑定真实来信和生活开始ID，由已有生活任务检查ready并按实际发送结果settle。
 
 9. 记忆后台工作：相关scope分别summary_work→基于来源生成L2/L3→commit→ack，更新
    向量/合并候选/来源冲突；不要在每轮聊天做全量总结。人物用明确person_id/渠道映射，
@@ -140,6 +143,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 v0.6.1增加响应式“小屋”面板：精简首页、按需详情、48项情绪排序、私有人格与可选表情素材、事件成功后5分钟静默覆盖。实际原生任务仍需宿主接线；不附带作者的人格或GIF。见[面板部署与继承](docs/HOME_PANEL.md)。
 
 v0.6.2增加面板动图WebP与一次性压缩工具，避免内嵌原GIF导致10MB级HTML；保留动画、离线查看与全部卡片，定时刷新只读取压缩成品。
+
+v0.6.3修复表达入口漂移：每轮可读取最新短人格与SHA，查梗预取返回实际状态；日常生图使用角色原画、合理镜头与真实生活阶段，照片承诺交由已有生活任务履行。见[当前人格与生活相机](docs/VOICE_AND_LIFE_CAMERA.md)。宿主仍需让主聊实际调用该入口，文件存在不等于平台硬钩子。
 
 ```sh
 python -m pip install .

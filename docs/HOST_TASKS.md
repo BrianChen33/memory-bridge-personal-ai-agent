@@ -18,6 +18,8 @@
 
 小屋面板的具体接线、原生runonce时间格式、素材许可、人格继承与失败保留规则见[HOME_PANEL.md](HOME_PANEL.md)。不默认把蓝图当作已创建的任务。
 
+启用生活配图后，生活任务在tick/评估之后还需读取camera_context：使用实际阶段和对应角色参考图；ready的照片承诺通过同一次分享履行并settle，不另建照片定时器。保持原安静时段和真实发送回执。当前人格每轮读取，不把主聊启动时的旧SOUL当新版本。见[当前人格与生活相机](VOICE_AND_LIFE_CAMERA.md)。
+
 ## 生活调用
 
 `companion_pending`带claim=true返回待评估事件与context；对每条调用`companion_life_assess {id,assessment}`，可share=true。`companion_share`先claim，实际发送后settle accepted/failed/unknown。静默时段不认领分享；unknown不自动重复发送。

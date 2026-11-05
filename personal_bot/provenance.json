@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "7038836dd211d47d9c3d40afa080fb77150bed5f665378a529379e1c139a4fee",
+    "__init__.py": "454d5be6330579e2e9c5655ea80e650a124b27b9bdfe0e4fc38ee02d95982166",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
     "deploy.py": "75d26c439075efd11350a45e3344d3494337a67fd08ca41458c13898dab3ef36",
@@ -106,7 +106,7 @@
     "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "91c980c35542e6ac89473914de6ce435f52937eafb36fd6a1e62f85b01401da1",
+    "runtime/muse_ext/companion.py": "0c438c82b881c8272eb9939926571052e799e189d949dfc331ceba0569dec76c",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
     "runtime/muse_ext/companion_panel.html": "a5a8b4e8291f705e22aa4c9e98f4d465bd320f8675348eca739de5eb6eb5628d",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
@@ -117,9 +117,9 @@
     "runtime/muse_ext/emotion_current.py": "b875cf28fa7cded27adb07445ef9cfd5f76f663393d62245f4694e7ac491bba9",
     "runtime/muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83",
     "runtime/muse_ext/expression.py": "e9222762caf9c67c43d7887e2a6342a82f815f877d2264f363fc1cb08cb8ad91",
-    "runtime/muse_ext/humor.py": "59cc0967d959191f33751f4bcfb1368f127d7ba0804b7639a539a1d07d68505c",
+    "runtime/muse_ext/humor.py": "b429c0ead4def80dad8f32c8efe7da56e81148b085d1b4b87c838c6c3164daa9",
     "runtime/muse_ext/insights.py": "9999fdbd4e931c728431d3983b09ffa54363810b02f7e56741ac438a437a8a0f",
-    "runtime/muse_ext/meme_store.py": "f7fb09e648421d4f2a3045159485c79b9dc2925ff874da0c7cc0fc63b1cf934c",
+    "runtime/muse_ext/meme_store.py": "831877a465fb2854a5ffe8bc5029e864b046b8eccbb86f8c12b4c51b4aa1c6b9",
     "runtime/muse_ext/meme_sync.py": "c8ae3ef8bb2b0de7d03282055d733f30201c7e821298d82d68341dcdc8c194d0",
     "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
     "runtime/muse_ext/reading.py": "3263e14c71108655328ea7467124e89890b980791a5d99a5315271314cc483ca",
@@ -133,10 +133,11 @@
     "runtime/sticker_decision.mjs": "bd0e979774075ca3f48a704c6db8e391652f96410d688cd99ac52d97df950115",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "43c61ff87056223f65a82b4f4802ab2eddbe64fb238601758ce3874d3310a038",
-    "vault.py": "9dd9c198eb61eba21fb771183cd7502f2f96bbf4e341fd272c25169e2a6b35b9",
+    "runtime/sticker_main.mjs": "adbb53990ea3d0279230796be939bc7c005ffee775170e1a189172b29b739eaa",
+    "vault.py": "ec05fa16e75defd46b8c3c0b1e6dacbeada57cf6f056daf3a486171f3edf31c6",
     "runtime/muse_ext/panel_home.py": "77745ec3361cc457e0a88a7671158007071d82d0511875220195fe6614e58c2a",
-    "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b"
+    "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b",
+    "runtime/muse_ext/presentation.py": "9cd95ecb1670fdb030c96eeb8a921a5e0244363e04780eae2b3bb704bec8fd77"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -196,5 +197,19 @@
       "original chat assets unchanged"
     ],
     "converter_sha256": "1aea74ac5c591330ab60c9ca233683af118b5a2737aedc4e871ade7bdfaba625"
+  },
+  "presentation_update": {
+    "date": "2026-11-05",
+    "release": "0.6.3",
+    "runtime": "2.2.0",
+    "changes": [
+      "current scoped persona file and SHA on every prepare",
+      "one canonical native main-chat adapter; honest soft-hook boundary",
+      "local meme lookup status and context-first short expression",
+      "reference-guided camera geometry and real lifecycle context",
+      "source-bound photo promises handled by existing life tasks",
+      "private persona and reference art excluded from public code",
+      "malformed legacy private meme rows skipped individually, source-backed relearning preserved"
+    ]
   }
 }
