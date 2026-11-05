@@ -300,6 +300,7 @@
       "read-only recent-turn audits without backfilling or reappraisal",
       "source-bound reading completion and combined finalize_reading"
     ],
-    "host_boundary": "Muse native final has no public pre-send interception; chat.send_message is an agent submission, not a sender"
+    "host_boundary": "Muse native final has no public pre-send interception; chat.send_message is an agent submission, not a sender",
+    "native_projection": "lossless owner-user items per returned turn; assistant/non-user items may be omitted; preserve chat,turn,seq,time and verbatim text"
   }
 }

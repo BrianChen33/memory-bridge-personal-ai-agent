@@ -13,7 +13,9 @@ chat.read_messages，也不能替当前模型判断48项情绪。单靠“我下
 
 ## 普通主聊：两阶段，复用同一个模型
 
-1. 主人新消息先用真实chat.read_messages读取当前主聊，保留完整返回。原生取源器
+1. 主人新消息先用真实chat.read_messages读取当前主聊，保留实际chat_id/page/turn.id及每个
+   保留turn内全部user项（原文、role、seq、occurred_at_ms）。可去掉assistant/非user项，
+   不必复制长助手回复；不可删同turn前面的user项、截断或摘要用户原文。原生取源器
    main_native_entry.mjs接收此真实结果，按role=user、seq、原始毫秒时间选人类原文，
    校验可信--chat-id；不手抄摘要、不取助手内容、不截断正文。仅支持已验证的字符串content；
    非字符串/媒体走实际媒体适配，结构不符不能猜。只有空白的无负载消息在可信入口忽略。
@@ -30,7 +32,7 @@ chat.read_messages，也不能替当前模型判断48项情绪。单靠“我下
 node /actual/stickers/src/main_native_entry.mjs --root /actual/workspace --chat-id ACTUAL_OWNER_CHAT < request.json
 ```
 
-request含phase和native_response（真实read_messages完整结果），commit另含emotion_assessment。
+request含phase和native_response（真实read_messages结果或上述无损用户项投影），commit另含emotion_assessment。
 每个turn最早的有效用户项固定保留原turnUUID，其余项使用派生ID turnUUID:user:seq，
 另保留原native turn ID；新增用户项不改变原项的键。查--help不会等stdin。工具/浏览器续执行不是新主人来信：同源成功评估可
 复用，不给自己回答再次加情绪。长任务返回后重读原生消息；如果出现更晚用户项，旧target
@@ -55,7 +57,7 @@ completion(document_id或lease_id)可只读核对。文档总数不必增加—�
 ## 轻量审计，不再加心跳
 
 安装时在私有STATE/state/formal-entry-policy.json记录真实enabled_at。复用原情绪15m任务：
-用chat.read_messages抽样最近少量真实主人turn，phase=audit交给同一取源器。只读检查回执，
+用chat.read_messages抽样最近少量真实主人turn（一般3–5个，安装验证1个即可，只保留用户项），phase=audit交给同一取源器。只读检查回执，
 不捕获补造事件、不重抽、不回放历史情绪、不重发旧回复。启用前消息标legacy_skipped；
 checked=0表示尚未覆盖启用后的自然消息，不能报告100%执行。state/formal-entry-health.json
 保存抽样范围/缺项/时间，不保存聊天原文；面板可读取。抽样结果不代表全历史合规率。

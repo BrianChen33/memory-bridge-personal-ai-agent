@@ -79,3 +79,5 @@ QQ/微信没有跨平台通用安装命令。询问是否启用后读取目标�
 按自己的schema适配。当前模型context后填full48，再commit；ready_to_send=false修同源，
 不把脚本检查说成平台拦截。长浏览返回重读新来信，真实读帖用finalize_reading+completion。
 既有情绪任务做只读抽样audit，不另起定时器，不回放历史情绪或重发旧消息。
+
+原生结果允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。
