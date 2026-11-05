@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.7；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -20,7 +20,7 @@ flowchart TD
     O --> B
 ```
 
-| 模块 | v0.6 包含的实现 | 宿主需要完成的接入 |
+| 模块 | v0.8 包含的实现 | 宿主需要完成的接入 |
 |---|---|---|
 | 输入与记忆 | SQLite 原话、分类记忆、时间查询；关键词/可选本地向量/实体邻接；45s有界缓存；后台L2/L3摘要与来源失效检查 | 每轮提供可信身份、稳定消息ID、原始时间、scope；后台提交摘要 |
 | 模型情绪 | v2/48标签共享词表、本轮reaction与持续mood、PAD限幅/半衰期、持续期待；模拟体力/脑力/社交精力/饥饿；每人联系欲望与关系数值 | 当前回复模型先评估、保存结果，再按读回状态回复；不额外调用外部情绪模型 |
@@ -61,7 +61,9 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    如果我给了私有记忆库，先读它的README/清单，按docs/INHERITANCE.md选择继承模式与范围。
    另询问是否安装“阅读与成长”可选插件，默认不安装。若选择安装，读plugins/social-reading/README.md
    和PROTOCOL.md；安装后由你本人再向我询问允许读哪些贴吧，链接优先、吧名须实测验证。
-   空许可库/验证失败不能自动逛。当前B站/抖音只是预留接口，不能声称已经会刷视频。
+   空许可库/验证失败不能自动逛。再询问是否允许阅读影响偏好与性情，默认关闭；主人已明确时不要再问。
+   开启后按docs/PERSONALITY_GROWTH.md将current_persona.growth_overlay实际用于回复，不能只学措辞。
+   当前B站/抖音只是预留接口，不能声称已经会刷视频。
 
 4. 安装：克隆公开仓库，建立独立虚拟环境，python -m pip install .；在代码目录外选择
    私有 STATE，运行 python -m personal_bot --root STATE init。
@@ -94,6 +96,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 
 8. 用原生调度注册专用任务：生活/情绪15m，新闻30m，阅读2h，维护每日；任务默认停用
    创建并读回，避免旧新两代同时运行。生活先tick生成事件，再由模型评估、保存、可选分享。
+   生活新活动默认40%琐事、60%刷手机，companion_life_config可改phone_probability，见docs/LIFE_ROUTINE.md。
+   所有自动社交阅读消费同一个phone_intent，plan传life_intent，不再独立抽第二次。
    阅读要真实打开资料并保留出处；虚拟跑步/吃饭/梦境不能当用户真实经历或外网观察。
    默认01:00–07:00 Asia/Shanghai只收集不主动打扰；没有每日分享次数上限。
    当前核心时区固定UTC+8，若我需要别的时区要实际适配，不能只改提示词。
@@ -145,6 +149,9 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 ```
 
 ## 手动入口与已有版本升级
+
+v0.8.0让阅读可以逐渐影响表达、偏好和性情：[人格成长](docs/PERSONALITY_GROWTH.md)由同一模型反思、来源积累、当前人格投影与主人反馈共同驱动，不冻结所有旧性格。首次部署需单独选择开启。
+[生活节奏](docs/LIFE_ROUTINE.md)默认40%生活琐事、60%刷手机，可一句话修改；真实平台读取与虚拟拿手机动作分开，B站/抖音尚未启用。
 
 v0.7.0新增独立可选的[阅读与成长插件](plugins/social-reading/README.md)：原生浏览器、主人许可
 来源库、逐楼/楼中楼/图片引用/抽样缓存、同模型反思与长期语言习惯；安装不会获得浏览器权限。

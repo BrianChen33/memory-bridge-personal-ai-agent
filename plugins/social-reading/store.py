@@ -5,7 +5,7 @@ import math
 import time
 from .sources import text, owner_event
 
-DEFAULTS = dict(auto_browse=True, language_learning=True, share_threshold=70,
+DEFAULTS = dict(auto_browse=True, language_learning=True, personality_growth=False, share_threshold=70,
                 max_threads=2, max_pages=3, budget_seconds=90, cache_ttl_seconds=600,
                 sample_mode='dynamic', sample_min=50, sample_max=120,
                 sample_fixed=50, sample_ratio=.2, max_text_chars=600)
@@ -28,6 +28,8 @@ def initialize(b):
       PRIMARY KEY(habit,url));
     CREATE TABLE IF NOT EXISTS sr_feedback(habit TEXT,event INTEGER,polarity TEXT,PRIMARY KEY(habit,event));
     ''')
+    from . import growth
+    growth.initialize(b)
 
 
 def get(b, key, default=None):
@@ -48,12 +50,12 @@ def configure(b, q):
     patch = q.get('patch')
     if not isinstance(patch, dict) or set(patch) - set(DEFAULTS):
         raise ValueError('unknown_social_reading_setting')
-    limits = dict(share_threshold=(0, 100), max_threads=(1, 5), max_pages=(1, 30),
-                  budget_seconds=(15, 180), cache_ttl_seconds=(60, 3600),
+    limits = dict(share_threshold=(0, 100), max_threads=(1, 5), max_pages=(1, 120),
+                  budget_seconds=(15, 1800), cache_ttl_seconds=(60, 3600),
                   sample_min=(1, 120), sample_max=(1, 300), sample_fixed=(1, 300),
                   sample_ratio=(.01, 1), max_text_chars=(80, 3000))
     for key, value in patch.items():
-        if key in ('auto_browse', 'language_learning'):
+        if key in ('auto_browse', 'language_learning', 'personality_growth'):
             if type(value) is not bool:
                 raise ValueError('boolean_setting_required')
         elif key == 'sample_mode':
@@ -77,6 +79,7 @@ def habit_rows(b):
 
 
 def reflect(b, q):
+    from . import growth
     doc = b.db.execute('SELECT * FROM sr_document WHERE id=?', (q.get('document_id'),)).fetchone()
     if not doc or not doc['event']:
         raise ValueError('real_observed_document_required')
@@ -86,7 +89,8 @@ def reflect(b, q):
         raise ValueError('reading_source_inactive')
     old = b.db.execute('SELECT * FROM sr_reflection WHERE document=?', (doc['id'],)).fetchone()
     if old:
-        return dict(ok=True, replayed=True, reflection=dict(old))
+        return dict(ok=True, replayed=True, reflection=dict(old),
+                    growth=growth.reflect(b, doc, q.get('growth_candidates')))
     summary = text(q.get('summary'), 1200, True)
     candidates = q.get('style_candidates', [])
     if not isinstance(candidates, list) or len(candidates) > 3:
@@ -127,7 +131,8 @@ def reflect(b, q):
                 b.db.execute('UPDATE sr_habit SET status=?,updated=? WHERE id=?', (status, time.time(), hid))
         b.db.execute('INSERT INTO sr_reflection VALUES(?,?,?,?)', (doc['id'], summary, note, time.time()))
     return dict(ok=True, note_id=note, learned=len(checked), habits=habit_rows(b),
-                authority='model_inference_from_observed_human_speech; subordinate_to_current_persona')
+                growth=growth.reflect(b, doc, q.get('growth_candidates')),
+                authority='self-adopted expression and optional evolving personality; retain core identity and appearance')
 
 
 def feedback(b, q):

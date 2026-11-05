@@ -52,3 +52,12 @@ these tables. Do not auto-activate imported tasks, media adapters or login state
 Ask the owner which permitted sources and learned habits to continue; a source
 permission is separate from current browser access verification. Rejected habits
 stay rejected. Raw media/profile/Cookie state is not part of this inheritance.
+
+## v0.8 人格成长与手机日常
+
+sr_growth/sr_growth_evidence/sr_growth_review/sr_growth_feedback保存自己逐渐采用的偏好和性情，
+与表达习惯一起选择性继承。按真实出处核对，不重放增长量，不把候选当成熟性格。
+SOUL底稿与current_persona.growth_overlay合成当前人格，原文件SHA不代表全部成长状态。
+主人须选择是否继承成长与personality_growth开关；停止项不复活。
+ct_kv.life_routine保存phone_probability（默认.6，琐事为其补数）。phone_intent是运行中的
+阅读意图，不应迁移后自动重跑；新宿主确认启用后从新活动选择开始。

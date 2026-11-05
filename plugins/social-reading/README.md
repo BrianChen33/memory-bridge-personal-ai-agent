@@ -1,6 +1,6 @@
 # 阅读与成长 · 可选插件
 
-需要 Kit0.7.0 / runtime2.4.0。插件单独安装，不随核心wheel启用，无额外依赖。
+需要 Kit0.8.0 / runtime2.5.0。插件单独安装，不随核心wheel启用，无额外依赖。
 使用宿主原生浏览器，不自行启动Chromium，不抓内部接口，不导出Cookie。
 
 ## 安装
@@ -51,9 +51,16 @@ observe成功才创建actor=article真实观察；不直接改情绪。appraise�
 
 reflect由同一阅读模型抽取最多3个表达机制，必须附实际短原句。独立帖子才增加曝光：
 3个帖子后试用；8个帖子，或3个帖子+2次主人正反馈后稳定。负反馈/停止立即排除，曝光不复活。
-prepare实际注入最多4条简短的expression_context.learned_voice/plugin_context提示；当前SOUL
-和用户要求优先，按场景自然改写，不机械复述示例，不另起模型、不写SOUL。候选、证据、反馈
-在SQLite中持久化。目前只向主人私聊投影私人学习，不把轨迹与示例自动转交群聊。
+prepare实际注入最多4条语言提示。若主人明确允许personality_growth，同一阅读模型还可提交
+growth_candidates，逐渐改变偏好与性情，进入current_persona.growth_overlay。底稿SOUL与成长
+共同构成人格；成长可修正旧的可变性格，外观、身份、真实历史与权限保持各自依据。
+不自动重写整个SOUL文件；基底SHA与成长revision分开。不增加额外模型，最多3条成长提示。
+候选、证据、反馈与成长均在SQLite持久化。目前只向主人私聊投影私人学习，不自动转交群聊。
+详细字段与同模型接线见../../docs/PERSONALITY_GROWTH.md。
+
+生活选择默认40%琐事、60%刷手机，参阅../../docs/LIFE_ROUTINE.md。原生任务从companion_tick
+或companion_phone取得pending手机意图，plan传life_intent；原2h阅读入口不另抽自动逛帖。
+稳定job固定life-phone:<id>；observe成功自动登记手机结果，验证/未配置不算看过。
 
 ## 面板与边界
 

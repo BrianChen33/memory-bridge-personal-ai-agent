@@ -1,6 +1,6 @@
 # Repository instructions
 
-Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.7,
+Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.8,
 not a vendor plugin or a platform API. Preserve all six layers and legacy
 memory_bridge compatibility. New roots opt into companion_v2; old roots do not.
 
@@ -27,7 +27,11 @@ Optional plugins are explicitly installed from hash-checked manifests; core init
 never installs one. Read plugins/social-reading/PROTOCOL.md before host binding.
 The bot asks the owner for permitted sources AFTER install, verifies names/URLs,
 and never treats a blocked page as reading. Learned voice is source-backed and
-persona-subordinate; future video providers stay disabled until implemented.
+identity-preserving. Owner-opted personality growth may revise flexible SOUL
+tendencies through source-backed self-reflection; read docs/PERSONALITY_GROWTH.md.
+Future video providers stay disabled until implemented. Read docs/LIFE_ROUTINE.md:
+new activity choices default to 40% ordinary life / 60% phone intents. Automatic
+social reading consumes that shared intent, not an additional independent draw.
 
 First install must preserve or help create a complete persona card. Ask only
 missing preferences. QQ, WeChat, media and private GitHub backups are opt-in;

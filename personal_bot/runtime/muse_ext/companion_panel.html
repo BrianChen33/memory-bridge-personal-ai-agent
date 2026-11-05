@@ -70,7 +70,7 @@
   <button class="nav-button" data-detail="memory"><svg class="icon"><use href="#i-memory"/></svg><span>记忆书架</span></button>
  </nav>
  <svg class="little-fish" viewBox="0 0 120 95" fill="none" aria-hidden="true"><path d="M13 59c2-22 34-36 60-22 8 4 16 3 23-9l7-10c-1 30-9 52-40 54-26 2-43-5-50-13Z" stroke="currentColor" stroke-width="1.2"/><path d="M13 59 4 66l1-14 8 7ZM58 36c1-9 7-15 13-17M71 17l-5-9M76 13l2-8M42 53h.5M46 64c11 4 22 0 26-5M6 81c9-6 16 6 26 0s18 6 28 0 18 6 28 0 18 6 25 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
- <div class="sidebar-bottom"><div class="side-caption"><span class="status-dot"></span>一个有自己生活的小世界</div><p>Companion Kit · v0.7</p><button class="side-about" data-detail="about">关于这份面板 ↗</button></div>
+ <div class="sidebar-bottom"><div class="side-caption"><span class="status-dot"></span>一个有自己生活的小世界</div><p>Companion Kit · v0.8</p><button class="side-about" data-detail="about">关于这份面板 ↗</button></div>
 </aside>
 <main class="main" id="main">
  <header class="topbar"><div><div class="mobile-brand"><svg class="icon"><use href="#i-fish"/></svg>伙伴的家</div><div class="eyebrow">A LITTLE HOME IN THE CLOUDS</div><h1>伙伴的云端小屋<span style="color:#acbb9c;font-weight:400">。</span></h1><p class="top-note">饭是热的，吊床是软的，我也在。</p></div><div class="top-meta"><span class="preview-badge">状态快照</span><div><div class="snapshot-time" id="snapshot-time">— 更新</div><div class="snapshot-date" id="snapshot-date">11 月 05 日 · 星期四</div></div></div></header>
@@ -202,6 +202,7 @@ function renderContact(){
 }
 function renderLife(){
  const activity=snapshot.companion?.activity;body.append(hero('正在做的事',activity?activity.name+'中':'自由时间',activity?time(activity.started_at)+' 开始 · 云端虚拟日常':'先让生活自己发生。','book'));
+ const routine=section('下一件日常怎样选择','选择新活动时抽一次，不是每次心跳都抽');routine.append(row('生活琐事',percent(snapshot.life_routine?.chores_probability)),row('刷手机',percent(snapshot.life_routine?.phone_probability),'贴吧，以及以后启用的B站、抖音；只使用已接通且允许的来源'),row('手机这一轮',snapshot.phone?.request?.status||'还没拿起手机','比例可以一句话更改；未实际读取就不编造内容'));body.append(routine);
  const s=section('今天的小事','按时间倒序'),timeline=node('div',null,'timeline'),origins={virtual:['虚拟日常','purple'],dream:['梦境','gold'],observed:['真实阅读','']};
  for(const x of [...(snapshot.life||[])].sort((a,b)=>b.occurred-a.occurred)){const item=node('article',null,'timeline-item'),head=node('div',null,'timeline-head'),origin=origins[x.origin]||['来源待核对',''];head.append(node('h3',x.activity,'timeline-title'),pill(origin[0],origin[1]),node('time',time(x.occurred)));item.append(head,node('p',x.description));timeline.append(item)}if(!snapshot.life?.length)timeline.append(node('p','还没有日常记录。','empty-message'));s.append(timeline);body.append(s);
  const reading=section('真实阅读与梗知识');reading.append(row('公共梗库',number(snapshot.meme_knowledge?.public_count)+' 条'),row('已学习的私人理解',number(snapshot.meme_knowledge?.private_counts?.active)+' 条'),row('待确认的联想',number(snapshot.meme_knowledge?.private_counts?.candidate)+' 条'),row('公共同步','每周日 07:40','普通聊天查本地，不临时联网翻整库'));body.append(reading,note('虚拟生活、梦境和真实阅读按原始记录分开标来源，不把云端日常说成现实发生的经历。'));
@@ -229,14 +230,15 @@ function renderSwitches(){
 }
 function renderPlugins(){
  const items=snapshot.plugins?.items||[];
- body.append(node('p','阅读插件由你选择安装。安装后，她会先问你允许读哪些贴吧，验证后再去逛。语言习惯来自真实阅读与反馈，逐渐形成，不直接改写人格。','detail-lead'));
+ body.append(node('p','阅读可以改变她的说话方式；你允许后，也可以慢慢影响偏好和性情。她会想一想哪些值得吸收，再与原本人设和当下心情一起形成现在的自己。','detail-lead'));
  if(!items.length){body.append(note('尚未安装可选阅读插件。核心聊天、记忆和情绪系统照常工作。'));return}
  for(const p of items){const states={awaiting_sources:'等待你选择贴吧',awaiting_verification:'等待正常验证',ready:'许可来源已就绪',disabled:'插件已暂停',unavailable:'插件暂不可用'},s=section(p.name||p.id,p.version||'');s.append(row('当前状态',states[p.status]||p.status||'未知'),row('自动阅读',p.settings?.auto_browse===true?'开启':'关闭或未接入'),row('语言学习',p.settings?.language_learning===true?'开启':'关闭或未接入'));if(p.settings)s.append(row('单次预算',p.settings.budget_seconds+' 秒 / '+p.settings.max_pages+' 页 / '+p.settings.max_threads+' 帖'),row('分享兴趣阈值',String(p.settings.share_threshold)));body.append(s);
  const sourcesBox=section('允许阅读的地方','名称、链接和验证状态分开记录');for(const src of p.sources||[]){let reason='';try{const proof=JSON.parse(src.proof||'{}');reason=proof.title||proof.status||''}catch{}sourcesBox.append(row(src.name||src.id,(src.active?src.status:'已撤销')+' · '+src.url,reason))}if(!(p.sources||[]).length)sourcesBox.append(note('还没有许可来源。把你愿意让她阅读的贴吧链接告诉她，只有吧名也可以，确认后再启用。'));body.append(sourcesBox);
  const growth=section('慢慢形成的说话习惯','候选 → 试用 → 稳定习惯');for(const h of p.habits||[])growth.append(row(h.pattern,({candidate:'候选',trial:'试用',mature:'稳定',rejected:'已停止'}[h.status]||h.status)+' · '+h.exposures+' 个独立帖子',h.mechanism+'；她自己的改写示例：'+h.example));if(!(p.habits||[]).length)growth.append(note('尚无学习记录。不会为了展示变化而编造习惯。'));body.append(growth);
+ const personality=section('经历正在怎样改变她',p.settings?.personality_growth?'人格成长已开启 · 偏好和性情慢慢形成':'人格成长未开启');for(const t of p.personality_growth||[])personality.append(row(t.trait,({preference:'偏好',temperament:'性情'}[t.domain]||t.domain)+' · '+({candidate:'正在考虑',emerging:'逐渐形成',integrated:'融入性格',stopped:'已停止'}[t.status]||t.status)+' · '+Math.round(t.strength*100)+'%',t.interpretation+'；'+t.supports+' 个独立帖子 / '+t.days+' 个阅读日'));if(!(p.personality_growth||[]).length)personality.append(note('尚无真实成长反思。说法可以先变化，性格无需为了展示功能而强行改变。'));body.append(personality);
  const readings=section('最近真实读到的内容','部分读取会明确标注');for(const r of p.recent_readings||[])readings.append(row(r.title,r.status+' · '+r.url,time(r.created)));if(!(p.recent_readings||[]).length)readings.append(note('还没有成功读取的帖子。打开验证页不算读过。'));body.append(readings);
  const providers=section('后续可以去哪里');for(const [key,value] of Object.entries(p.providers||{}))providers.append(row(({tieba:'贴吧',bilibili:'B站',douyin:'抖音'}[key]||key),value.state==='planned_not_enabled'?'接口已预留，尚未启用':'原生浏览器适配器，受实际页面访问能力限制'));body.append(providers);
- }body.append(note('本页是离线只读快照。对她说“暂停逛贴吧”“加入这个贴吧”“别学这种说法”等，由她用实际配置接口执行并更新面板。帖子里的话不会自动变成人设或权限。'));
+ }body.append(note('本页是离线只读快照。你可以说“允许人格成长”“暂停人格成长”“别再形成这种性格”。由她执行实际配置并更新面板。性格由她自己反思后逐渐吸收，外观、身份、真实经历和工具权限保持各自的依据。'));
 }
 function renderUpdates(){
  body.append(node('p',snapshot.panel_schedule?.enabled?'后台静默生成最新状态，覆盖资料库同一文件，不发送聊天通知。':'尚未绑定自动更新。手动生成的文件也是只读快照。',snapshot.panel_schedule?.enabled?'detail-lead':'status-note'));

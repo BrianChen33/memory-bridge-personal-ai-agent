@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.4.0'
+VERSION = '2.5.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -407,6 +407,9 @@ def tick(b):
         state=_get(b,'life',{})
         current=state.get('activity')
         if current and now>=current['ends_at']:
+            if current.get('phone_intent'):
+                from muse_ext.life_routine import outcome
+                current['outcome']=outcome(b,current['phone_intent'])
             made.append(_life_event(b,current['name'],'completed',current['outcome']))
             s=vitals(b,now)
             for key,d in zip(('physical','mental','social','hunger'),current['cost']):
@@ -449,16 +452,24 @@ def tick(b):
                 if a[0] in ('跑步','学习') and min(s['physical'],s['mental'])<25: w=.05
                 if a[0]==state.get('last_activity'): w*=.15
                 weights.append(w)
-            activity=RNG.choices(ACTIVITIES,weights=weights,k=1)[0]
+            from muse_ext.life_routine import settings as routine_settings, start as phone_start
+            phone_selected=RNG.random()<routine_settings(b)['phone_probability']
+            activity=(('刷手机',10,25,(-1,-3,0,2),['这一轮结束了，具体阅读以真实记录为准']) if phone_selected else
+                      RNG.choices(ACTIVITIES,weights=weights,k=1)[0])
             duration=RNG.randint(activity[1],activity[2])*60
             current=dict(name=activity[0],started_at=now,ends_at=now+duration,
                          outcome=RNG.choice(activity[4]),cost=activity[3],origin='virtual')
+            if phone_selected:
+                current['phone_intent']=phone_start(b,now,duration)['id']
+                b.db.commit()
             state['activity']=current
             state['last_activity']=activity[0]
             made.append(_life_event(b,activity[0],'started','准备'+activity[0]+'，想看看这次会有什么小收获'))
         _set(b,'life',state)
         b.db.commit()
-    return dict(ok=True,created=[x for x in made if x],quiet_hours=quiet(now),next_at=state.get('next_at'))
+    from muse_ext.life_routine import pending as phone_pending, settings as routine_settings
+    return dict(ok=True,created=[x for x in made if x],quiet_hours=quiet(now),next_at=state.get('next_at'),
+                life_routine=routine_settings(b),phone=phone_pending(b))
 
 
 def life_pending(b,q):
@@ -588,6 +599,9 @@ def install(Brain):
             if op=='companion_expression_config':
                 from muse_ext.humor import configure
                 return configure(self,q)
+            if op in ('companion_life_config','companion_phone'):
+                from muse_ext import life_routine
+                return life_routine.configure(self,q) if op=='companion_life_config' else life_routine.pending(self)
             if op=='companion_meme_status':
                 from muse_ext.meme_store import status as meme_status
                 return dict(ok=True,**meme_status(self))
@@ -654,6 +668,9 @@ def install(Brain):
             result['plugin_context']=plugin_context(self,q) if self.available('style') else {}
             result['expression_context']['learned_voice']={k:v['voice_overlay'] for k,v in result['plugin_context'].items()
                                                          if isinstance(v,dict) and v.get('voice_overlay')}
+            result['current_persona']['growth_overlay']={k:v['persona_growth'] for k,v in result['plugin_context'].items()
+                                                        if isinstance(v,dict) and v.get('persona_growth',{}).get('enabled')}
+            result['current_persona']['composition']='base SOUL + self-adopted growth + present emotion; base SHA covers the file only'
             if not self.available('style') and (q.get('humor_assessment') is not None or q.get('meme_updates')):
                 result['humor_updates']=dict(disabled=True,status='disabled_by_config')
         return result

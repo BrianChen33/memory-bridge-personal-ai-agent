@@ -9,6 +9,20 @@ from . import sources, store
 
 
 def plan(b, q):
+    intent = q.get('life_intent')
+    if intent:
+        from muse_ext import life_routine
+        life_routine.require(b, intent)
+        q = dict(q, job_id='life-phone:' + intent, manual=False)
+    result = _plan(b, q)
+    if intent:
+        if result.get('action') not in ('browse', 'busy', 'run_budget_used'):
+            life_routine.mark(b, intent, 'unavailable', reason=result.get('action'))
+        result.update(life_intent=intent, job_id='life-phone:' + intent)
+    return result
+
+
+def _plan(b, q):
     p = store.settings(b)
     manual = q.get('manual') is True
     if not b.available('input') or not b.available('memory') or not b.feature('reading'):
@@ -27,6 +41,12 @@ def plan(b, q):
     now = time.time()
     with b.db:
         b.db.execute('BEGIN IMMEDIATE')
+        intent = q.get('life_intent')
+        if intent:
+            from muse_ext import life_routine
+            phone_request = life_routine.require(b, intent)
+            if b.db.execute('SELECT 1 FROM sr_lease WHERE job=?', (job,)).fetchone():
+                return dict(ok=True, action='run_budget_used')
         if b.db.execute("SELECT 1 FROM sr_lease WHERE status='claimed' AND deadline>?", (now,)).fetchone():
             return dict(ok=True, action='busy')
         if b.db.execute('SELECT count(*) FROM sr_lease WHERE job=?', (job,)).fetchone()[0] >= p['max_threads']:
@@ -36,9 +56,14 @@ def plan(b, q):
             raise ValueError('requested_source_not_allowed')
         selected = selected or allowed[0]
         lease = uuid.uuid4().hex
+        policy = dict(p, life_intent=intent) if intent else p
         b.db.execute('INSERT INTO sr_lease VALUES(?,?,?,?,?,?,?,?)',
                      (lease, selected['id'], 'claimed', now, now + p['budget_seconds'], int(manual),
-                      json.dumps(p), job))
+                      json.dumps(policy), job))
+        if intent:
+            from muse_ext.companion import _set
+            phone_request.update(status='claimed', provider='tieba', lease_id=lease)
+            _set(b, 'phone_intent', phone_request)
     previous = b.db.execute('SELECT url,payload,status FROM sr_document WHERE source=? ORDER BY created DESC LIMIT 1', (selected['id'],)).fetchone()
     resume = None
     if previous and previous['status'] == 'partial':
@@ -194,6 +219,20 @@ def ensure_observed(b, event):
 
 
 def observe(b, q):
+    result = _observe(b, q)
+    row = b.db.execute('SELECT settings FROM sr_lease WHERE id=?', (q.get('lease_id'),)).fetchone()
+    intent = json.loads(row['settings']).get('life_intent') if row else None
+    if intent:
+        from muse_ext import life_routine
+        if result.get('document_id'):
+            result['phone'] = life_routine.mark(b, intent, 'read', document_id=result['document_id'],
+                                                source_event=result['source_event'])
+        elif result.get('reading_saved') is False:
+            result['phone'] = life_routine.mark(b, intent, 'blocked', reason=result.get('status'))
+    return result
+
+
+def _observe(b, q):
     # Terminal leases may replay their exact receipt, never append new content.
     old_lease = b.db.execute('SELECT * FROM sr_lease WHERE id=?', (q.get('lease_id'),)).fetchone()
     if old_lease and old_lease['status'].startswith('done:'):

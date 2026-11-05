@@ -41,3 +41,11 @@
 当前词表统一从companion_schema/emotion_catalog.py导出：v2、48标签。任务不得继续提交旧信封；新评估返回reaction供当前回复参考。原生主聊没有强制final钩子时如实报告，不能用轻量hook伪装全量消息观察。
 
 梗API契约、配置/学习指令与预算见HUMOR.md。阅读任务可在真实article源事件上学习机制/联想，不能把自己的摘要冒充外部刺激；首次观察不自动成为确定理解。宿主注册新增任务时先查同名避免重复，用实际工具读回时区/周期/enabled/delivery。蓝图本身仍不等于已启用。
+
+## v0.8 生活选择与同一手机入口
+
+生活/情绪任务tick后读取phone.actionable或companion_phone；存在待执行意图时，按
+LIFE_ROUTINE.md调用插件plan(life_intent)，复用同一个原生浏览器任务与预算。原2h任务的
+社交分支只消费同一意图，不独立再抽；不改变ID/节奏、不新增常驻循环。
+阅读反思按PERSONALITY_GROWTH.md把模型自身判断纳入growth_candidates，正常聊天把
+current_persona.growth_overlay作为当前人格，不能继续套用“学习不影响人格”的旧说明。

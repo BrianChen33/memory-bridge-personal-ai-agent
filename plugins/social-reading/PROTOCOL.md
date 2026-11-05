@@ -1,4 +1,4 @@
-# 唯一宿主协议 · social-reading0.1.0
+# 唯一宿主协议 · social-reading0.2.0
 
 先读实际宿主工具schema。下列是本地brain.py请求，不表示Muse自动注册了新工具：
 
@@ -38,8 +38,12 @@
 5. 同一租约同内容重试replayed；成功后换正文conflict，不换ID重抽/重复感受。
    blocked/login_required等不生成阅读事件。成功返回document_id、source_event、quote_id。
 6. read(document_id)读有界抽样；source_event真实actor=article，来源plugin:social-reading:URL。
-7. 同一模型reflect(document_id,summary,style_candidates)。每项pattern/mechanism/example/
+7. 同一模型reflect(document_id,summary,style_candidates,growth_candidates)。每项pattern/mechanism/example/
    evidence_quote，最多3项，短引文必须在实际记录内。已有同一机制用existing_id，别反复建同义项。
+   personality_growth开启时，再问自己这段经历是否让我认同/反思某种偏好或性情；可无变化。
+   growth_candidates最多2项：domain=preference|temperament、trait、interpretation、example、
+   evidence_quote、resonance(0<值<=1)、direction=adopt|reconsider、已有项existing_id。先读status
+   合并同义项。按docs/PERSONALITY_GROWTH.md执行，不用关键词决定人格，不额外调用模型。
 8. 同一模型appraise(document_id,interest_score=0..100,emotion_assessment=full48模板)。
    评分考虑主人兴趣、真实内容和新鲜程度；assessment.share表示自己是否想分享。运行时再检查
    阈值/许可/启用状态。pipeline_ok=false读取具体错误修正同源；不额外启动情绪模型。
@@ -47,8 +51,13 @@
    plugin:social-reading来源走appraise，其余虚拟/梦境保持原流程。
    发送仍用companion_share的claim/实际发送/settle；claim前会重查插件/许可/阈值。
    quiet01–07按核心规则；不要在任务结尾强行报告。缓存重放不算新阅读。
-10. 正常聊天转交最新人设、expression_context.learned_voice和plugin_context。新句式按语境
-    取用，不能为展示学习每句都套用。
+10. 正常聊天转交最新current_persona及其growth_overlay、expression_context.learned_voice与
+    plugin_context。成长与底稿及当前情绪共同构成现在的人格，可修正旧可变倾向；不能说只影响
+    措辞/永不影响人格。外观、身份、真实历史与权限仍保留，按语境自然取用，不每句套用。
+11. 自动逛帖由生活40/60抽签产生手机意图；从companion_tick.phone或companion_phone取
+    actionable=true的request.id，plan传life_intent=id。运行时固定job_id=life-phone:<id>，
+    不另一次抽签，不再由2h任务独立选刷帖。手机意图不等于已读；observe真实成功才标read。
+    手动明确要求可用原manual入口，不计自主生活比例。参阅docs/LIFE_ROUTINE.md。
 
 ## 反馈和继承
 
