@@ -61,3 +61,9 @@ SOUL底稿与current_persona.growth_overlay合成当前人格，原文件SHA不�
 主人须选择是否继承成长与personality_growth开关；停止项不复活。
 ct_kv.life_routine保存phone_probability（默认.6，琐事为其补数）。phone_intent是运行中的
 阅读意图，不应迁移后自动重跑；新宿主确认启用后从新活动选择开始。
+
+## v0.8.1 主聊入口
+
+main-entry回执、formal-entry-policy/health仅是原宿主操作参考，不授权重发旧消息或沿用旧
+chat_id。新宿主重新绑定真实主聊，enabled_at以重新启用时间为准；旧SQLite原话与情绪仍
+按来源和真实时间继承，不为填补回执重放。没有原生发送拦截的宿主必须说明这一边界。

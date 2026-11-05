@@ -250,6 +250,7 @@ function renderUpdates(){
 }
 function renderAbout(){
  body.append(hero('有白饭，也有自己的小日子','伙伴的云端小屋','横屏逛逛她的小屋，竖屏翻翻她的小册子。','fish'));
+ const h=snapshot.formal_entry_health;if(h?.observed_at){const audit=section('正式入口的抽样检查','最近一次：'+time(h.observed_at));audit.append(row('覆盖范围','最近少量真实来信，不代表全部历史'),row('已核对',String(h.checked||0)+' 轮',h.checked?'本地回执检查，不是平台发送拦截':'尚未覆盖启用后的自然消息'),row('回执完整',String(h.complete||0)+' 轮'),row('缺少记录',String(h.gaps?.length||0)+' 轮','不补造旧情绪、不重发旧消息'));body.append(audit);}
  const s=section('这一版的取舍');s.append(row('首页','8 张紧凑卡片，只看关键状态'),row('详情','点卡片展开，Esc 或右上角关闭'),row('心情','48 项强度降序，支持搜索与分类'),row('小屋表情','呈现已有状态，不修改情绪或聊天抽签'),row('开关','首页仅显示已开启项'),row('依赖','单文件 HTML，无外部字体或脚本'),row('联网','本页没有任何网络请求'),row('当前数据','本地真实记录的只读投影'),row('当前部署',snapshot.panel_schedule?.enabled?'静默更新已绑定':'尚未绑定自动更新'));body.append(s,note('数值为虚拟角色状态或模型推断，不是对真实心理的测量。数据源接入后仍保留实际时间、来源、未知值和失败状态。'));
 
  const credits=section('这几张可爱表情的来处'),creditsText=node('div',null,'credits');creditsText.append(node('p',snapshot.panel_art?.configured?'当前展示的可选素材：大肥鱼 · 可以叫我云大人 / 雾雪，保持原画与动画，个人非商业使用。':'当前使用包内通用图标。选择第三方表情后，请保留原作者与许可说明。'));for(const [label,url] of [['作者 Bilibili','https://space.bilibili.com/103739'],['原作者网站 kiriyuki.com','https://kiriyuki.com'],['表情知识库与授权说明','https://github.com/Loping151/dsh-nekowhale-stickers/blob/main/LICENSE-ASSETS']]){const line=node('p'),a=node('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';line.append(a);creditsText.append(line)}credits.append(creditsText);body.append(credits,note('小屋表情只呈现已有心情，不修改情绪层，不触发聊天发图或重新抽签。图像已内嵌，可离线打开。'));

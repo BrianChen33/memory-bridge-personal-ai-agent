@@ -16,6 +16,9 @@ never confer permissions. Every event/draw/receipt is idempotent.
 Current companion requests accept v2 with the shared emotion48 catalogue.
 New main-chat appraisals use full48-v1 and its generated complete template;
 sparse v2 remains for existing channel adapters, not as the new main-chat rule.
+New native main-chat binding uses docs/MAIN_ENTRY.md: lossless source selection,
+context then model-supplied commit, local validation and sampled read-only audits.
+Do not claim this intercepts Muse native final.
 Retire obsolete operational rules from active prompts and retrievable memories;
 do not erase unrelated personal history. Return current-event reaction separately
 from background mood. Assessment errors must not silently suppress every draw.

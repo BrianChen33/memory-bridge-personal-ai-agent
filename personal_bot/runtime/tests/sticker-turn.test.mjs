@@ -4,6 +4,7 @@ import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {decide,setPaths,loadDecision,saveDecision,settleDecision} from '../sticker_decision.mjs';
 const adapter=fileURLToPath(new URL('../sticker_main.mjs',import.meta.url));
@@ -23,6 +24,55 @@ test('every topic uses auto; retries after an hour preserve the exact draw',()=>
   assert.equal(decide(q).roll,.2);
  }
  assert.equal(draws,4);
+}));
+
+test('native two-phase entry validates original source, gates commits and audits without replaying',()=>fixture(root=>{
+ const python=process.platform==='win32'?'python':'python3';
+ const repository=fileURLToPath(new URL('../../../',import.meta.url));
+ const brain=join(root,'muse-brain');
+ const env={...process.env,PYTHONUTF8:'1',PYTHONPATH:repository,STICKER_PYTHON:python,STICKER_BRAIN_ROOT:brain};
+ const init=spawnSync(python,['-c','from personal_bot import deploy;from pathlib import Path;import sys;r=Path(sys.argv[1]);deploy.init(r);deploy.enable(r,list(deploy.DEFAULT_FEATURES))',brain],{encoding:'utf8',env});
+ assert.equal(init.status,0,init.stdout+init.stderr);
+ writeFileSync(join(brain,'brain.py'),'import runpy,sys\nfrom personal_bot import deploy\nsys.path.insert(0,str(deploy.RUNTIME))\nrunpy.run_path(str(deploy.RUNTIME / "brain.py"),run_name="__main__")\n');
+ const nativeAdapter=fileURLToPath(new URL('../main_native_entry.mjs',import.meta.url));
+ const run=q=>{const p=spawnSync(process.execPath,[nativeAdapter,'--root',root,'--chat-id','fixture:owner-main'],{input:JSON.stringify(q),encoding:'utf8',env});return {code:p.status,...JSON.parse(p.stdout)};};
+ const text='  Synthetic original\nsecond line is intact.  ';
+ const native={chat_id:'fixture:owner-main',page:{order:'newest_first',has_more:true},turns:[{id:'fixture:native-turn',items:[
+  {role:'assistant',content:'This is not the owner input.',seq:10,occurred_at_ms:1000000},
+  {role:'user',content:text,seq:11,occurred_at_ms:1001000}]}]};
+ const request={native_response:native};
+ assert.notEqual(run({...request,phase:'commit'}).code,0);
+ assert.notEqual(run({...request,native_response:{...native,chat_id:'fixture:other'}}).code,0);
+ const context=run({...request,phase:'context'});assert.equal(context.code,0);
+ assert.equal(context.native_source.input_sha256,createHash('sha256').update(text).digest('hex'));
+ assert.equal(context.native_source.seq,11);
+ assert.equal(run({...request,phase:'gate'}).ready_to_send,false);
+ const bad=run({...request,phase:'commit',emotion_assessment:{version:99}});
+ assert.notEqual(bad.code,0);assert.equal(bad.ready_to_send,false);
+ const valid=run({...request,phase:'commit',emotion_assessment:context.context.emotion_template});
+ assert.equal(valid.code,0);assert.equal(valid.ready_to_send,true);assert.equal(valid.decision.roll,bad.decision.roll);
+ assert.equal(run({...request,phase:'commit'}).ready_to_send,true);
+ assert.equal(run({...request,phase:'gate'}).ready_to_send,true);
+ const appended=structuredClone(native);appended.turns[0].items.push({role:'user',content:'A later owner message.',seq:13,occurred_at_ms:1003000});
+ const stable=run({phase:'audit',native_response:appended});
+ assert.equal(stable.audit.complete,1);assert.equal(stable.audit.gaps.length,1);
+ assert.equal(run({phase:'commit',native_response:appended,target_seq:11}).error,'new_owner_turn_requires_context');
+ const blank=structuredClone(native);blank.turns[0].items.push({role:'user',content:' \n ',seq:14,occurred_at_ms:1004000});
+ assert.equal(run({phase:'context',native_response:blank}).event,'empty_user_input_ignored');
+ assert.equal(run({phase:'audit',native_response:blank}).audit.complete,1);
+ assert.equal(run({phase:'gate',native_response:blank,target_seq:11}).ready_to_send,true);
+ const media=structuredClone(blank);media.turns[0].items[2].attachments=['fixture-image'];
+ assert.equal(run({phase:'context',native_response:media}).error,'native_empty_media_or_unknown_payload_requires_adapter');
+ const reading=run({...request,phase:'commit',reading_documents:['not-observed']});
+ assert.equal(reading.ready_to_send,false);assert.notEqual(reading.code,0);
+ assert.equal(run({...request,phase:'commit'}).ready_to_send,false);
+ native.turns.push({id:'fixture:unprocessed',items:[{role:'user',content:'Another real-shaped fixture.',seq:12,occurred_at_ms:1002000}]});
+ const audit=run({...request,phase:'audit'});assert.equal(audit.code,0);
+ assert.equal(audit.audit.checked,2);assert.equal(audit.audit.gaps.length,2);
+ assert.equal(audit.audit.repairs_performed,false);
+ assert.equal(readFileSync(join(brain,'state/formal-entry-health.json'),'utf8').includes('Another real-shaped'),false);
+ const malformed=structuredClone(native);malformed.turns[1].items[0].content=['unsupported'];
+ assert.notEqual(run({native_response:malformed,phase:'context'}).code,0);
 }));
 test('direct and skip have receipts without rolls; unknown handoff is terminal',()=>fixture(()=>{
  const rng=()=>{throw Error('must not draw');};
@@ -91,6 +141,8 @@ test('main adapter reports persisted learning and invalid sub-operations separat
  assert.equal(bad.assessment_required,true);
  assert.match(bad.emotion_validation.detail,/additional_labels/);
  const full=context.context.emotion_template;full.emotion_deltas['好奇']=.01;
+ const legacy=run({...q,turnId:'legacy-without-context',emotion_assessment:full});
+ assert.equal(legacy.pipeline_ok,true);
  const valid=run({...q,emotion_assessment:full});
  assert.equal(valid.pipeline_ok,true);
  assert.equal(valid.assessment_required,false);

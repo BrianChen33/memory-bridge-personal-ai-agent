@@ -5,7 +5,7 @@ import time
 from . import reader, sources, store, growth
 
 API = 1
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 
 def initialize(b):
@@ -77,6 +77,32 @@ def appraise(b, q):
     return result
 
 
+def completion(b, q):
+    did = q.get('document_id')
+    if not did and q.get('lease_id'):
+        lease = b.db.execute('SELECT status FROM sr_lease WHERE id=?', (q['lease_id'],)).fetchone()
+        if lease and lease['status'].startswith('done:'):
+            did = lease['status'][5:]
+    doc = b.db.execute('''SELECT d.* FROM sr_document d JOIN source_events e ON e.id=d.event
+      AND e.actor='article' AND e.status='active' WHERE d.id=?''', (did,)).fetchone()
+    if not doc:
+        return dict(ok=True, complete=False, may_claim_read=False, may_claim_learned=False, missing=['observation'])
+    missing = []
+    if not b.db.execute('SELECT 1 FROM sr_reflection WHERE document=?', (did,)).fetchone():
+        missing.append('reflection')
+    assessment = b.db.execute('SELECT payload FROM ct_appraisal WHERE event=?', (doc['event'],)).fetchone()
+    payload = json.loads(assessment['payload']) if assessment else {}
+    if payload.get('format') != 'full48-v1' or len(payload.get('emotion_deltas', {})) != 48:
+        missing.append('full48_appraisal')
+    if store.get(b, 'interest:' + str(doc['event'])) is None:
+        missing.append('interest_score')
+    if store.settings(b)['personality_growth'] and not b.db.execute('SELECT 1 FROM sr_growth_review WHERE document=?', (did,)).fetchone():
+        missing.append('growth_review')
+    return dict(ok=True, complete=not missing, document_id=did, source_event=doc['event'],
+                may_claim_read=True, may_claim_learned=not missing, missing=missing,
+                next='Finish only the missing work on this same observed document; an empty growth_candidates list is a valid no-change review.')
+
+
 def dispatch(b, q):
     if q.get('scope', 'owner-private') != 'owner-private':
         raise ValueError('social_reading_owner_only')
@@ -124,6 +150,13 @@ def dispatch(b, q):
         return store.reflect(b, q)
     if action == 'appraise':
         return appraise(b, q)
+    if action == 'completion':
+        return completion(b, q)
+    if action == 'finalize_reading':
+        reflected = store.reflect(b, q)
+        appraised = appraise(b, q)
+        checked = completion(b, q)
+        return dict(checked, ok=checked['complete'] and appraised['pipeline_ok'], reflection=reflected, appraisal=appraised)
     if action == 'habit_feedback':
         return store.feedback(b, q)
     if action == 'growth_feedback':

@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.1；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -70,7 +70,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    新目录默认伙伴v2开启配置但总功能停用；旧v0.3目录需先确认版本，再 companion-upgrade。
    人设/资料不放代码checkout内；不把真实数据提交到公共仓库。
 
-5. 启用本地能力：python -m personal_bot --root STATE enable。
+5. 当前主聊先按docs/MAIN_ENTRY.md绑定真实原文取源、context/commit与门禁，平台没有发送钩子需如实说明。
+   启用本地能力：python -m personal_bot --root STATE enable。
    向量默认关闭，资源足够时再按README后的向量说明独立安装/常驻，不逐消息冷加载。
    用自己的正式主聊入口绑定每轮真实source/event_id/occurred_at/actor/scope，保留原始正文。
    prepare预读 → 你本人当前回复模型提交emotion_assessment v2 → 同事件prepare保存并读回
@@ -149,6 +150,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 ```
 
 ## 手动入口与已有版本升级
+
+v0.8.1增加[主聊正式入口与读帖闭环](docs/MAIN_ENTRY.md)：原生消息原文取源、context/commit两阶段、本地回执门禁与既有任务抽样检查。Muse没有公开原生final发送拦截，不能声称100%强制。
 
 v0.8.0让阅读可以逐渐影响表达、偏好和性情：[人格成长](docs/PERSONALITY_GROWTH.md)由同一模型反思、来源积累、当前人格投影与主人反馈共同驱动，不冻结所有旧性格。首次部署需单独选择开启。
 [生活节奏](docs/LIFE_ROUTINE.md)默认40%生活琐事、60%刷手机，可一句话修改；真实平台读取与虚拟拿手机动作分开，B站/抖音尚未启用。

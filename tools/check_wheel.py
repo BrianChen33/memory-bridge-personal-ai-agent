@@ -1,5 +1,5 @@
 """Build/install a wheel and exercise it with no checkout on the import path."""
-import json,os,subprocess,sys,tempfile,venv
+import json,os,shutil,subprocess,sys,tempfile,venv
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -16,6 +16,12 @@ def main():
         wheel=next(wheels.glob('personal_ai_companion_kit-*.whl'))
         run([py,'-m','pip','install','--no-deps',wheel],work,env)
         run([py,'-c','from pathlib import Path; import personal_bot,sys; assert Path(personal_bot.__file__).is_relative_to(Path(sys.prefix)); print("installed package origin verified")'],work,env)
+        installed=subprocess.run([str(py),'-c','from personal_bot import deploy; print(deploy.RUNTIME)'],cwd=work,env=env,capture_output=True,text=True,check=True)
+        installed_runtime=Path(installed.stdout.strip())
+        for entry in ('main_entry_guard.mjs','main_native_entry.mjs'):
+            if not (installed_runtime/entry).is_file():raise RuntimeError('installed main entry component missing')
+        if shutil.which('node'):
+            run(['node',installed_runtime/'main_native_entry.mjs','--help'],work,env)
         run([py,'-m','personal_bot','self-test'],work,env)
         state=work/'state with spaces'
         run([py,'-m','personal_bot','--root',state,'init'],work,env)

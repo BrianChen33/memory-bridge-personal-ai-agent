@@ -401,6 +401,27 @@ class SocialReading(unittest.TestCase):
         self.assertEqual(self.call('status')['settings']['max_pages'],50)
         self.assertEqual(self.call('status')['settings']['budget_seconds'],600)
 
+    def test_reading_completion_requires_real_observation_and_all_learning_steps(self):
+        self.assertEqual(self.call('completion',document_id='nonexistent')['missing'],['observation'])
+        sid=self.allow();self.enable_growth()
+        result,_,_=self.observe(sid,995)
+        did=result['document_id']
+        checked=self.call('completion',document_id=did)
+        self.assertTrue(checked['may_claim_read'])
+        self.assertFalse(checked['may_claim_learned'])
+        from muse_ext.emotion_full48 import template
+        request=dict(document_id=did,summary='真实合成摘录的自我反思。',style_candidates=[],
+                     emotion_assessment=template(),interest_score=90)
+        incomplete=self.call('finalize_reading',**request)
+        self.assertFalse(incomplete['ok'])
+        self.assertEqual(incomplete['missing'],['growth_review'])
+        complete=self.call('finalize_reading',growth_candidates=[],**request)
+        self.assertTrue(complete['ok'])
+        self.assertTrue(complete['may_claim_learned'])
+        self.assertTrue(self.call('finalize_reading',growth_candidates=[],**request)['complete'])
+        self.assertEqual(self.b.db.execute('SELECT count(*) FROM ct_appraisal').fetchone()[0],1)
+        self.assertEqual(self.b.db.execute('SELECT count(*) FROM sr_document').fetchone()[0],1)
+
 
 if __name__ == '__main__':
     unittest.main()

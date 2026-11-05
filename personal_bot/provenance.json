@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "d45e80f6312335cd2d941abdb629dfa6d27a2c24302f3978b68b8d1ac301886e",
+    "__init__.py": "7da6e27ece0e3f6ca12a01e5e8693aaabd3fdddf0e1b782caf49211c72fe6808",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7d827b169c9c9cc67f9823c2f494b9c0eb56d7f562ce7968595b62258e4c433b",
     "deploy.py": "5af8b6fcacf8f2d9ae281a482a1cc678eeddfb1b1041ad8c5be608d42d66ab23",
@@ -108,7 +108,7 @@
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
     "runtime/muse_ext/companion.py": "f7439e9cb1bc593460964cb164bd2db30f3ba4b7d894800cd59b9dfa2bbd89e5",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "2d9db76d3a9bebdd462d8ec79ca709a06b566d8533f8ac9ad501be603912a553",
+    "runtime/muse_ext/companion_panel.html": "399493ffa6fbcf7dd0373d07ef7726d3f570f5dce9c97114433572c4df2ca5a4",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -123,7 +123,7 @@
     "runtime/muse_ext/life_routine.py": "b1811f0e2c1095daf6948ecefdfc8d593986c9b806656549606a94d3df02f6ae",
     "runtime/muse_ext/meme_store.py": "831877a465fb2854a5ffe8bc5029e864b046b8eccbb86f8c12b4c51b4aa1c6b9",
     "runtime/muse_ext/meme_sync.py": "c8ae3ef8bb2b0de7d03282055d733f30201c7e821298d82d68341dcdc8c194d0",
-    "runtime/muse_ext/panel_home.py": "8be55e799f3f2012394d160da3856aec8dd39f67873baa2934a4163b879b038d",
+    "runtime/muse_ext/panel_home.py": "1604de3b588a11752584b98d0dd04b7a265233702e0f923014ab786330fa8718",
     "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b",
     "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
     "runtime/muse_ext/plugins.py": "9adffd2ca2515d4e95c4c0d3e7aff61330658f368b51015c83c13671a94e23ac",
@@ -139,12 +139,12 @@
     "runtime/sticker_decision.mjs": "bd0e979774075ca3f48a704c6db8e391652f96410d688cd99ac52d97df950115",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "ac24e8745b5a74176a821750ff96eed1d7223f94be6f8f153fe51cd2a455376c",
+    "runtime/sticker_main.mjs": "40c888d893c7a725f9d275246419b00d22a1e75ac83f10916439b3f41f6d53a2",
     "runtime/tests/benchmark_large_index.py": "f6824fadd92af76a93ad46fd6c35e3ec2b1ff669cc9b222a27e2b1cfebfd25ba",
     "runtime/tests/learn.test.mjs": "c9b7cf2ed25a9f4e007ef6d183b8f141bc7bdb2702ffa6273049a168fcebcffb",
     "runtime/tests/qq-adapter.test.mjs": "ca9ca878a67d0a2b420966af4cb21b41a5b5f70a69817a09d9265c109c307101",
     "runtime/tests/run_baseline.py": "d9e937bacb3b4a7160a5343db453105837b73af69f24a36755c859e5855cc79c",
-    "runtime/tests/sticker-turn.test.mjs": "ae59e25e584652a7f6da8d988ffa768f279824017a25dbc3a47a1ee678a1ee34",
+    "runtime/tests/sticker-turn.test.mjs": "915948e3864213dd15650578895980e55d33a96e2878b08307a05527f1d7a4d9",
     "runtime/tests/support.py": "5f15c0cc9850bf2a455711281ba5755f2f872fe12df1bfd1f7f83eb0c9048f50",
     "runtime/tests/test_brain.py": "eca8801df8719369b6392f2d5079afce770075de69bf5f3b4eb71613fbc9fec1",
     "runtime/tests/test_concurrency.py": "839c5b8cf27006a7249ab4fc95071980d560af38ea3fec1ae3221b4a94f506ca",
@@ -161,7 +161,9 @@
     "runtime/tests/test_retrieval.py": "a002a55b0827ba283b586c29e87a0c1297c10dbb093cb5c751e0e1dfe4f90cf8",
     "runtime/tests/test_sharing.py": "73d79e959f1178be005ba0e7603827ee239ae897fe34212ced54943b5bcd2e01",
     "runtime/tests/test_temporal.py": "617127b77c9ba3fc120b6a145e59bceb4b766a2e64936470e670a7cc95054158",
-    "vault.py": "780f1c25103c0e7f7ab71b0bc5b7f30a57d575e4d9ed381a5b116d0f431167c4"
+    "vault.py": "ed0be2636e5117c87c0571890a62e6842753a956f9d258e45fb0a9262bea74ca",
+    "runtime/main_entry_guard.mjs": "b9473ae45642fc7fdc9d2b6b90f2927dd432c928482ed61c3d9eea1d2092472e",
+    "runtime/main_native_entry.mjs": "52c0330774217083e06153fa875bbed213cac22b02f7962f0666398f17005ee3"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -285,5 +287,19 @@
       "real native reading consumes one stable phone intent; no invented content",
       "private SQLite inheritance, source revalidation and optional platform adapters"
     ]
+  },
+  "main_entry_update": {
+    "date": "2026-11-06",
+    "release": "0.8.1",
+    "runtime": "2.5.0",
+    "plugin_version": "0.2.1",
+    "plugin_manifest_sha256": "1799dd71fce412c4ad9de83f199d598be0d5c9c95fbf79479d98be65732f0172",
+    "changes": [
+      "strict native owner-turn extraction from observed tool contract",
+      "context/commit local receipts and explicit gate; old finalize compatibility",
+      "read-only recent-turn audits without backfilling or reappraisal",
+      "source-bound reading completion and combined finalize_reading"
+    ],
+    "host_boundary": "Muse native final has no public pre-send interception; chat.send_message is an agent submission, not a sender"
   }
 }

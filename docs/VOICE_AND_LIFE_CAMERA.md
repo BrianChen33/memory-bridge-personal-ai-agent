@@ -4,7 +4,7 @@
 
 ## 每轮同一入口
 
-真人消息使用真实原生ID运行现有主聊适配器的`phase=context`，将`context.current_persona`、`expression_context`、`camera_context`与reaction交给同一个回复模型；同事件`finalize`提交评估并做一次表情决策，发送后`finish`记录回执。调试按原control/skip规则，不伪造真人事件。
+真人消息使用真实原生ID运行现有主聊适配器的`phase=context`，将`context.current_persona`、`expression_context`、`camera_context`与reaction交给同一个回复模型；同事件`commit`提交评估、做一次表情决策并校验回执（旧`finalize`仅兼容），发送后`finish`记录回执。调试按原control/skip规则，不伪造真人事件。
 
 不得同时保留一份只prepare/capture的旧主聊说明和另一份context/finalize/finish说明。若宿主仅靠模型约定执行，明确这仍不是平台硬钩子。让当前主聊实际读取更新后的入口与SOUL；没有正式reload接口时不能声称已经调用它。
 
@@ -57,3 +57,5 @@ when还可为now，camera还可为selfie/mirror。请求存现有SQLite的ct_kv�
 本轮完成分享的配图可以同时履行照片请求，使用同一真实回执，不再生成第二张。实际交付后用`companion_photo action=settle,source_event=123,outcome=accepted|unknown|failed`登记；accepted需宿主真实结果，unknown不自动重发。只生成文件不等于送达。自动分享照常遵守安静时段；用户主动索图照常回应。不为每张照片另建原生任务，不给闲聊人为加等待。
 
 这些小型配置及请求随私库备份；参考图可以从已有合法素材重建，公共库不包含私人人格或图片。继承时先核对宿主图片能力和未完成请求，不重发旧unknown结果。
+
+当前主聊完整取源与门禁以[MAIN_ENTRY.md](MAIN_ENTRY.md)为准；native final硬边界不能用技能提示掩盖。

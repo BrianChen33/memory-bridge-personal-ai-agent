@@ -1,4 +1,4 @@
-# 唯一宿主协议 · social-reading0.2.0
+# 唯一宿主协议 · social-reading0.2.1
 
 先读实际宿主工具schema。下列是本地brain.py请求，不表示Muse自动注册了新工具：
 
@@ -58,6 +58,12 @@
     actionable=true的request.id，plan传life_intent=id。运行时固定job_id=life-phone:<id>，
     不另一次抽签，不再由2h任务独立选刷帖。手机意图不等于已读；observe真实成功才标read。
     手动明确要求可用原manual入口，不计自主生活比例。参阅docs/LIFE_ROUTINE.md。
+
+v0.2.1优先用finalize_reading(document_id,summary,style_candidates,growth_candidates,
+interest_score,emotion_assessment)一次完成上述reflect+appraise，然后检查complete。
+growth开启但无变化也填growth_candidates=[]。completion(document_id或lease_id)只读核对
+真实观察/反思/full48/兴趣/成长审视，缺项修同一document，不能强制增加文档计数。
+分享本轮帖子时主聊commit带reading_documents=[真实document_id]，见docs/MAIN_ENTRY.md。
 
 ## 反馈和继承
 

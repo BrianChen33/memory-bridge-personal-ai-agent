@@ -72,6 +72,7 @@ def enrich(b, snapshot):
     from muse_ext.life_routine import settings as life_settings, pending as phone_pending
     snapshot['life_routine'] = life_settings(b)
     snapshot['phone'] = phone_pending(b)
+    snapshot['formal_entry_health'] = read_json(b.root / 'state' / 'formal-entry-health.json')
     profile = read_json(b.root / 'panel-profile.json')
     snapshot['panel_profile'] = {k: profile[k][:200] for k in PROFILE_KEYS if isinstance(profile.get(k), str)}
     voice = profile.get('voice', {})
