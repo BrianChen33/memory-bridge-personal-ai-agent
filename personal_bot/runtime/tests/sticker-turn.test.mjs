@@ -54,3 +54,30 @@ test('main adapter explicit context and degraded finalize use a mock brain only'
  assert.equal(run({...q,phase:'finish',outcome:'unknown',text_finished:true,asset_id:'fixture'}).send_status,'unknown');
  assert.equal(run({...q,phase:'finish',outcome:'accepted',text_finished:true}).send_status,'unknown');
 }));
+
+test('main adapter reports persisted learning and invalid sub-operations separately',()=>fixture(root=>{
+ const python=process.platform==='win32'?'python':'python3';
+ const repository=fileURLToPath(new URL('../../../',import.meta.url));
+ const brain=join(root,'muse-brain');
+ const env={...process.env,PYTHONUTF8:'1',PYTHONPATH:repository,STICKER_PYTHON:python,STICKER_BRAIN_ROOT:brain};
+ const init=spawnSync(python,['-c','from personal_bot import deploy; from pathlib import Path; import sys; root=Path(sys.argv[1]); deploy.init(root); deploy.enable(root, list(deploy.DEFAULT_FEATURES))',brain],{encoding:'utf8',env});
+ assert.equal(init.status,0,init.stdout+init.stderr);
+ // The packaged deployer separates code/state; emulate the host's CLI path
+ // while executing the real packaged runtime, not a fake learning response.
+ writeFileSync(join(brain,'brain.py'),'import runpy,sys\nfrom personal_bot import deploy\nsys.path.insert(0,str(deploy.RUNTIME))\nrunpy.run_path(str(deploy.RUNTIME / "brain.py"), run_name="__main__")\n');
+ const q={turnId:'isolated-teaching',text:'Synthetic teaching: fixture-only means a shared joke. 不要发表情包',
+  phase:'finalize',timestamp:Date.now()/1000,meme_updates:[
+   {title:'Isolated shared joke',meaning:'A synthetic shared joke',aliases:['fixture-only'],basis:'explained',confidence:.9},
+   {title:3}
+  ]};
+ const result=spawnSync(process.execPath,[adapter,'--root',root],{input:JSON.stringify(q),encoding:'utf8',env});
+ assert.equal(result.status,0,result.stdout+result.stderr);
+ const response=JSON.parse(result.stdout);
+ assert.equal(response.humor_updates?.learning?.[0]?.status,'active');
+ assert.equal(response.humor_updates.learning[1].ok,false);
+ assert.equal(response.humor_updates.learning[1].status,'invalid');
+ const search=spawnSync(python,[join(brain,'brain.py'),'--root',brain],{
+  input:JSON.stringify({op:'meme_search',scope:'owner-private',text:'fixture-only'}),encoding:'utf8',env});
+ assert.equal(search.status,0,search.stdout+search.stderr);
+ assert.equal(JSON.parse(search.stdout).items[0].title,'Isolated shared joke');
+}));

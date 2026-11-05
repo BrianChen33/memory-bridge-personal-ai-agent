@@ -133,7 +133,7 @@
     "runtime/sticker_decision.mjs": "bd0e979774075ca3f48a704c6db8e391652f96410d688cd99ac52d97df950115",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "adbb53990ea3d0279230796be939bc7c005ffee775170e1a189172b29b739eaa",
+    "runtime/sticker_main.mjs": "61759d52b27cafc9d05beff77eec2b437c1b5c158a7ba32c69315c64cf48b086",
     "vault.py": "ec05fa16e75defd46b8c3c0b1e6dacbeada57cf6f056daf3a486171f3edf31c6",
     "runtime/muse_ext/panel_home.py": "77745ec3361cc457e0a88a7671158007071d82d0511875220195fe6614e58c2a",
     "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b",
@@ -209,7 +209,8 @@
       "reference-guided camera geometry and real lifecycle context",
       "source-bound photo promises handled by existing life tasks",
       "private persona and reference art excluded from public code",
-      "malformed legacy private meme rows skipped individually, source-backed relearning preserved"
+      "malformed legacy private meme rows skipped individually, source-backed relearning preserved",
+      "main adapter returns per-operation humor learning results without masking invalid sub-operations"
     ]
   }
 }

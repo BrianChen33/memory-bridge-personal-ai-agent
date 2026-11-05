@@ -39,6 +39,7 @@
 incoming可为neutral/playful/serious/attack/quoted/fiction；severity 0–1。只保留简短分类与结构化关联，不要求、存储或展示完整思考。引用或小说不自动等于针对自己的攻击。
 3. 读回最新expression_context和reaction，再组文。普通表情抽签不变；梗是文字策略，不是表情概率的替代。
 4. 可在同一次prepare带最多3条 `meme_updates`，或在现有后台学习任务用独立操作；失败单独记录，不阻断文字/情绪/表情。`meme_record_use {scope,source_event,keys,outcome}`记录尝试，默认model_reported；只有真实发送回执才报accepted。重试不另造事件。
+   主聊finalize在顶层返回实际`humor_updates`；逐条检查`learning`的ok/status，外层ok只表示本轮主流程结果，不能据此宣称学习成功。每条更新直接使用下文meme_learn的字段（去掉op/scope/source_event，可加action=learn），不是自定payload包装。已处理的真实来信要补学时，使用其已存在的整数source_event调用meme_learn，不重新生成来信、情绪或抽签。
 
 主聊sticker_main会转交新字段；QQ/微信宿主适配器也必须转交输出的expression_context/emotion_effect，并把模型产生的humor_assessment/meme_updates传进brain，而不是只改输出解析器。原生主聊没有正式强制final钩子时保持如实说明，不虚构watcher或消息API。
 

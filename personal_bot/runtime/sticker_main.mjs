@@ -52,6 +52,7 @@ function main(){
   if(status==='missing'&&p.reaction&&['updated','unchanged','replayed'].includes(cached?.assessment_status))status='replayed';
   const result={ok:true,turnId:q.turnId,event:p.event||null,emotion:status,mood:p.mood||null,
     context:bounded(p),reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
+    humor_updates:p.humor_updates||null,
     assessment_required:phase==='context',protocol:'companion-v2-emotion48'};
   if(phase==='context'){result.ok=p.ok===true;result.decision=null;return result;}
   // A real assessment error stays visible. It does not silently suppress the draw.
