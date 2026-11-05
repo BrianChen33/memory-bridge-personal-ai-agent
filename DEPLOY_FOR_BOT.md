@@ -26,7 +26,7 @@ STATE必须在源码checkout外。init默认保留已有配置，拒绝覆写非
 
 1. 可信适配器派生scope/source/event_id/occurred_at/actor/person_id；不要信正文自报身份。主人私聊、其他私聊、各群分开。
 2. `prepare`预读原话、memories/insights/events、mood、companion、scene_context/persona_context。
-3. 当前回复模型读取companion_schema的48词表，结合人设/事件/对象/责任/期待提交v2评估。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed，不能把missing/invalid当成功。
+3. 当前回复模型读取companion_schema的48词表，直接填写prepare返回的emotion_template（v2/full48-v1），结合人设/事件/对象/责任/期待逐项提交48个变化量。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed及主聊pipeline_ok；invalid读取emotion_validation.detail修正同一源，不重新抽签。具体字段、幅度与六类摘要见MODEL_EMOTION.md；不能把missing/invalid或降级抽签当作评估成功。
 4. 按新状态组文；若启用表情，调用expression策略并按宿主真实媒体接口发送，先全部文字后图片。自己的最终输出只可记原话，不产生自循环情绪。
 5. 能提供正式hook就使用hook；只能靠prompt约定时如实标注。任何channel数据不得写入其他人的私有scope。
 

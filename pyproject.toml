@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "personal-ai-companion-kit"
-version = "0.6.3"
+version = "0.6.4"
 description = "Six-layer personal AI companions: memory, model-appraised emotion, virtual life, expression and private inheritance"
 readme = "README.md"
 requires-python = ">=3.10"

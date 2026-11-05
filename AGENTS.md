@@ -13,7 +13,9 @@ Use the SAME host reply model for v2 appraisals; no emotion keyword fallback or
 extra external model. Wire real before-reply context and prompts. Virtual life,
 dreams and observed reading must keep distinct provenance. Relationship scores
 never confer permissions. Every event/draw/receipt is idempotent.
-Current companion requests accept only v2 with the shared emotion48 catalogue.
+Current companion requests accept v2 with the shared emotion48 catalogue.
+New main-chat appraisals use full48-v1 and its generated complete template;
+sparse v2 remains for existing channel adapters, not as the new main-chat rule.
 Retire obsolete operational rules from active prompts and retrievable memories;
 do not erase unrelated personal history. Return current-event reaction separately
 from background mood. Assessment errors must not silently suppress every draw.

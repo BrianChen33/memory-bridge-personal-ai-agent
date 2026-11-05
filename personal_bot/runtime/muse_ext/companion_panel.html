@@ -182,6 +182,8 @@ function renderMood(){
  search.addEventListener('input',refresh);filter.addEventListener('change',refresh);refresh();
  const legend=node('div',null,'group-legend');groupNames.forEach((name,i)=>{const item=node('span'),dot=node('i');dot.style.setProperty('--group-color',groupColors[i]);item.append(dot,document.createTextNode(name));legend.append(item)});all.append(legend,node('p','强度为生成快照时的衰减后状态，各项独立，不需要相加等于 100%。缺失值显示“未记录”，不编造为 0。','emotion-meta'));body.append(all);
  const reaction=section('这轮留下的一点变化');reaction.append(node('p',snapshot.reaction_note||'暂时没有本场景的情绪评估记录。','detail-text'));body.append(reaction,note('情绪由同一回复模型结合语境评估。新事件、安慰和休息会影响它，心情也会随时间慢慢缓和。这里展示状态，不展示内部完整思考。'));
+ const event=snapshot.emotion_assessment;
+ if(event){const changes=section('最近一次已保存变化 · 六类摘要','按变化绝对值选择，每类至多一项');for(const g of event.group_changes||[]){const row=node('p',null,'detail-text');row.textContent=g.group+'：'+(g.changed?g.label+' '+(g.delta>0?'+':'')+g.delta.toFixed(3):'无变化');changes.append(row)}changes.append(note('这是本轮事件实际写入的变化，不含自然衰减；48项完整记录均保留。'));const details=node('details'),summary=node('summary','展开该事件48项变化');details.append(summary);for(const label of catalog.labels){const value=event.applied?.[label];details.append(node('p',label+'：'+(typeof value==='number'?(value>0?'+':'')+value.toFixed(3):'未记录'),'detail-text'))}changes.append(details);body.append(changes)}
 }
 function renderEnergy(){
  const e=snapshot.companion?.energy||{},avg=typeof e.physical==='number'&&typeof e.mental==='number'?(e.physical+e.mental)/2:null;

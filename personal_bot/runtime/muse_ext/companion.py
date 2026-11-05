@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.2.0'
+VERSION = '2.3.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -47,6 +47,8 @@ def _set(b, key, value):
 
 
 def initialize(b):
+    from muse_ext.emotion_full48 import initialize as initialize_full48
+    initialize_full48(b)
     from muse_ext.humor import initialize as initialize_humor
     if b.db.execute("SELECT 1 FROM sqlite_master WHERE name='ct_kv'").fetchone():
         if _get(b,'version')!=VERSION or _get(b,'emotion_catalog')!=CATALOG_VERSION:
@@ -173,13 +175,14 @@ def _validate(raw):
     delta={k:num(raw.get('delta',{}).get(k),cap) for k in ('p','a','d')}
     intensity=num(raw.get('intensity_delta'),.45)
     label=raw.get('label')
+    full=raw.get('format')=='full48-v1'
     if raw['changed']:
-        if label not in LABELS or not (any(delta.values()) or intensity or raw.get('emotions')):
+        if (label not in LABELS and not (full and label is None)) or not (any(delta.values()) or intensity or raw.get('emotions')):
             raise ValueError('invalid_changed_assessment')
     elif label is not None or any(delta.values()) or intensity or raw.get('emotions'):
         raise ValueError('invalid_unchanged_assessment')
     emotions=raw.get('emotions',[])
-    if not isinstance(emotions,list) or len(emotions)>3:
+    if not isinstance(emotions,list) or len(emotions)>(47 if full else 3):
         raise ValueError('invalid_mixed_emotions')
     for item in emotions:
         if item.get('label') not in LABELS:
@@ -218,8 +221,9 @@ def assess(b,event_id,raw,legacy_submit):
     try:
         raw=normalize(raw)
         delta,intensity=_validate(raw)
-    except (ValueError,TypeError,KeyError,AttributeError):
-        return dict(status='invalid',error='invalid_companion_assessment',assessment_version=2,catalog_version=CATALOG_VERSION)
+    except (ValueError,TypeError,KeyError,AttributeError) as exc:
+        return dict(status='invalid',error='invalid_companion_assessment',detail=str(exc)[:240],
+                    assessment_version=2,catalog_version=CATALOG_VERSION,preferred_format='full48-v1')
     event=b.db.execute('SELECT * FROM source_events WHERE id=? AND status=\'active\'',(event_id,)).fetchone()
     if not event:
         return dict(status='missing')
@@ -247,19 +251,30 @@ def assess(b,event_id,raw,legacy_submit):
         from muse_ext.humor import settings
         current_settings=settings(b)
         gain=current_settings['values']['emotion_gain']
+        from muse_ext import emotion_full48 as full48
+        full=raw.get('format')==full48.FORMAT
+        bounded=full48.bound(raw) if full else None
+        before_state=full48.frame(b,scope,now)['values'] if full else None
+        effective_pad=bounded['pad'] if full else delta
         applied_delta={k:0.0 for k in delta}
-        raw_labels=([{ 'label':raw['label'],'delta':intensity}]+[
-                    {'label':x['label'],'delta':x['delta']} for x in raw.get('emotions',[])]) if raw['changed'] else []
-        applied_labels=[]
+        if full:
+            raw_labels=[dict(label=k,delta=raw['emotion_deltas'][k]) for k in LABELS]
+        else:
+            raw_labels=([dict(label=raw['label'],delta=intensity)]+
+                        [dict(label=x['label'],delta=x['delta']) for x in raw.get('emotions',[])]) if raw['changed'] else []
+        applied_labels=[dict(label=k,delta=0.0) for k in LABELS] if full else []
         if raw['changed']:
             old=mood(b,scope)
-            vals={k:clamp(old[k]+delta[k]*gain,-1,1) for k in delta}
+            vals={k:clamp(old[k]+effective_pad[k]*gain,-1,1) for k in delta}
             applied_delta={k:round(vals[k]-old[k],8) for k in delta}
             if any(applied_delta.values()):
                 b.db.execute('INSERT OR REPLACE INTO mood VALUES(?,?,?,?,?)',(scope,vals['p'],vals['a'],vals['d'],now))
-            changes={raw['label']:dict(label=raw['label'],delta=intensity)}
-            for item in raw.get('emotions',[]):
-                changes[item['label']]=item
+            changes=({k:dict(label=k,delta=bounded['labels'][k]) for k in LABELS} if full
+                     else {raw['label']:dict(label=raw['label'],delta=intensity)})
+            if not full:
+                for item in raw.get('emotions',[]):
+                    changes[item['label']]=item
+            applied_labels=[]
             for label,item in changes.items():
                 r=b.db.execute('SELECT * FROM emotion WHERE scope=? AND label=?',(scope,label)).fetchone()
                 meta=b.db.execute('SELECT half FROM ct_label WHERE scope=? AND label=?',(scope,label)).fetchone()
@@ -275,12 +290,15 @@ def assess(b,event_id,raw,legacy_submit):
                     b.db.execute('INSERT OR REPLACE INTO ct_label VALUES(?,?,?)',(scope,label,half))
             if any(applied_delta.values()) or any(x['delta'] for x in applied_labels):
                 b.db.execute('INSERT INTO emotion_events VALUES(?,?,?,?,?,?)',
-                             (event_id,scope,raw['label'],dump(applied_delta),'inference',now))
+                             (event_id,scope,raw['label'] or '平静',dump(applied_delta),'inference',now))
             else:
                 status='unchanged'
         b.db.execute('INSERT INTO ct_emotion_effect VALUES(?,?,?,?,?,?,?,?)',
                      (event_id,gain,current_settings['revision'],dump(delta),dump(applied_delta),
                       dump(raw_labels),dump(applied_labels),now))
+        if full:
+            full48.save(b,event_id,scope,raw,bounded,before_state,
+                        {x['label']:x['delta'] for x in applied_labels},gain,now)
         effective_intensity=next((x['delta'] for x in applied_labels if x['label']==raw.get('label')),0)
         b.db.execute('INSERT INTO assessment_log VALUES(?,?,?,?,?,?,?,?)',
                      (event_id,scope,int(status=='updated'),raw.get('label'),dump(applied_delta),effective_intensity,'inference',now))
@@ -323,9 +341,14 @@ def assess(b,event_id,raw,legacy_submit):
 def emotion_effect(b,event_id):
     row=b.db.execute('SELECT * FROM ct_emotion_effect WHERE event=?',(event_id,)).fetchone()
     if not row: return None
-    return dict(source_event=event_id,gain=row['gain'],settings_revision=row['settings_revision'],
+    result=dict(source_event=event_id,gain=row['gain'],settings_revision=row['settings_revision'],
                 raw_delta=json.loads(row['raw_delta']),applied_delta=json.loads(row['applied_delta']),
                 raw_labels=json.loads(row['raw_labels']),applied_labels=json.loads(row['applied_labels']))
+    from muse_ext.emotion_full48 import receipt
+    value=receipt(b,event_id)
+    if value:
+        result.update(full48=value,group_changes=value['group_changes'])
+    return result
 
 
 ACTIVITIES = [
@@ -446,8 +469,10 @@ def life_pending(b,q):
             for row in rows:
                 b.db.execute('UPDATE ct_life SET lease_until=? WHERE id=?',(now+900,row['id']))
     from muse_ext.presentation import camera, persona
+    from muse_ext.emotion_full48 import template,frame
     return dict(ok=True,events=[dict(r) for r in rows],context=context(b,'owner-private'),
                 current_persona=persona(b), camera_context=camera(b,'owner-private'),
+                emotion_template=template(),emotion_frame=frame(b,'owner-private',now),
                 mood=mood(b,'owner-private'),quiet_hours=quiet(now))
 
 
@@ -594,6 +619,12 @@ def install(Brain):
             result['current_persona']=persona(self,q['scope'])
             result['camera_context']=camera(self,q['scope'])
             result['emotion_protocol']={'assessment_version':2,'catalog_version':CATALOG_VERSION,'label_count':len(LABELS)}
+            from muse_ext import emotion_full48 as full48
+            full_schema=full48.schema()
+            result['emotion_protocol'].update(preferred_format=full48.FORMAT,
+                                              raw_budgets=full_schema['raw_budgets'],guidance=full_schema['guidance'])
+            result['emotion_template']=full48.template()
+            result['emotion_frame']=full48.frame(self,q['scope'],stamp())
             eid=(result.get('event') or {}).get('id')
             row=self.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(eid,)).fetchone() if eid else None
             result['reaction']=reaction(json.loads(row[0]),eid) if row else None
@@ -603,6 +634,8 @@ def install(Brain):
                 result['reaction']['emotions']=effect['applied_labels']
                 result['reaction']['changed']=any(effect['applied_delta'].values()) or any(x['delta'] for x in effect['applied_labels'])
                 result['reaction']['emotion_gain']=effect['gain']
+                if 'group_changes' in effect:
+                    result['reaction']['group_changes']=effect['group_changes']
             from muse_ext import humor
             if self.available('style') and eid and (q.get('humor_assessment') is not None or q.get('meme_updates')):
                 result['humor_updates']=humor.apply_updates(self,q,eid)

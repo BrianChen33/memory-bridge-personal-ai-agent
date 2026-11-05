@@ -80,4 +80,22 @@ test('main adapter reports persisted learning and invalid sub-operations separat
   input:JSON.stringify({op:'meme_search',scope:'owner-private',text:'fixture-only'}),encoding:'utf8',env});
  assert.equal(search.status,0,search.stdout+search.stderr);
  assert.equal(JSON.parse(search.stdout).items[0].title,'Isolated shared joke');
+ const run=input=>{
+  const p=spawnSync(process.execPath,[adapter,'--root',root],{input:JSON.stringify(input),encoding:'utf8',env});
+  assert.equal(p.status,0,p.stdout+p.stderr);return JSON.parse(p.stdout);
+ };
+ const context=run({...q,phase:'context'});
+ assert.equal(Object.keys(context.context.emotion_template.emotion_deltas).length,48);
+ const bad=run({...q,emotion_assessment:{version:2,additional_labels:[],appraisal:{event:'feedback',object:'self'}}});
+ assert.equal(bad.pipeline_ok,false);
+ assert.equal(bad.assessment_required,true);
+ assert.match(bad.emotion_validation.detail,/additional_labels/);
+ const full=context.context.emotion_template;full.emotion_deltas['好奇']=.01;
+ const valid=run({...q,emotion_assessment:full});
+ assert.equal(valid.pipeline_ok,true);
+ assert.equal(valid.assessment_required,false);
+ assert.equal(valid.emotion,'updated');
+ assert.equal(valid.context.emotion_effect.applied_labels.length,48);
+ assert.equal(valid.decision.roll,response.decision.roll);
+ assert.equal(run({...q,emotion_assessment:full}).emotion,'replayed');
 }));

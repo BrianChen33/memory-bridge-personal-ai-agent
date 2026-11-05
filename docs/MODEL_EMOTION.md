@@ -1,20 +1,45 @@
-# 当前情绪与表情协议：v2 / Emotion48
+# 当前情绪与表情协议：v2 / full48-v1
 
-这是当前代码的唯一情绪协议。运行时版本2.2.0，评估信封version=2，词表emotion48-2026-11-05。旧协议仅可作为历史数据理解，不得作为提示词、活动任务、人格规则或新的评估样例。当前伙伴目录拒绝新的version=1请求；底层数据兼容函数不是当前行为规范。
+这是当前代码的唯一情绪协议。Kit0.6.4、运行时2.3.0，评估信封version=2，首选format=full48-v1，词表emotion48-2026-11-05。旧稀疏v2保留给尚未迁移的频道适配器和历史解释；新主聊用完整48项，不再沿用“主情绪加零到两个附加”的活动规则。旧version=1不接受新的伙伴评估。
 
 ## 同一模型先理解，再回复
 
 1. 可信入口提供真实source/event_id/occurred_at/actor/scope/person_id。先prepare读取人格、有界近期记忆、衰减后的mood、精力、关系与期待。
 2. 当前负责回复的同一个模型判断本轮事件：发生什么、感受指向谁、责任是否明确、期待是否实现、判断有多确定。区分用户的情绪、自己的反应和对用户的关切。不调用额外情绪模型，不做情绪关键词正则。
-3. 同一事件提交emotion_assessment v2，再读取新mood与reaction。reaction是本轮反应，mood是持续底色；两者共同影响表达。一次错误不代表整体都很糟，原来开心也不妨碍此刻懊恼。
+3. 同一事件提交emotion_assessment full48-v1，再读取新mood与reaction。reaction是本轮反应，mood是持续底色；两者共同影响表达。一次错误不代表整体都很糟，原来开心也不妨碍此刻懊恼。
 4. 判断不确定时允许轻微、混合或不变；不能因为用户说“你生气了”就自动写生气。明确失误通常考虑内疚/懊恼，积极亲密关注才可能害羞；这是语境指南，不是固定触发规则。
-5. 只保存结构化结果和不超过120字符的感受短语，不保存或展示完整思考。正常聊天不显示评分、抽签旁白或部署JSON。
+5. 只保存结构化结果和不超过120字符的感受短语，不保存或展示完整思考。正常聊天不显示评分、抽签旁白或部署JSON；用户要求查看变化时，使用真实group_changes与effect，不能按感觉临时编数。
 
-```json
-{"version":2,"catalog_version":"emotion48-2026-11-05","changed":true,"label":"内疚","delta":{"p":-0.12,"a":0.04,"d":-0.02},"intensity_delta":0.18,"emotions":[{"label":"懊恼","delta":0.10}],"appraisal":{"kind":"feedback","target":"self","agency":"self","certainty":0.85,"feeling":"这次漏做了已答应的流程，有点懊恼，想先补好。","action":"repair"}}
+新主聊先运行sticker_main的phase=context，直接填写context.emotion_template。
+模板含完整48个emotion_deltas键；不能自己重写字段、用省略号或只挑一个标签。
+下面程序生成一份完整的合成示例，不表示真实发生，不得据此固定每轮数字：
+
+```python
+from muse_ext.emotion_full48 import template
+assessment = template()
+assessment['emotion_deltas']['好奇'] = 0.01
+assessment['emotion_deltas']['亲近'] = 0.005
+assessment['delta'] = {'p': 0.01, 'a': 0.01, 'd': 0}
+assessment['appraisal'].update(kind='other', target='self', agency='none',
+                             feeling='这次有一点新鲜感。', action='explore')
+# Pass this whole object as emotion_assessment, using the same real event.
 ```
 
-这是合成示例，不能硬编码为每次批评的结果。无变化用version2、changed=false、label=null、PAD全0、intensity_delta=0；可以附有依据的关系/期待变动。建议一个主要反应和零到两个伴随感受，校验上限仍为三个附加标签。
+全量格式：version=2、format=full48-v1、impact=ordinary|salient、delta={p,a,d}、emotion_deltas={48个规范标签:有符号数值}、appraisal={kind,target,agency,certainty,feeling,action}。changed/主标签由完整向量派生，不需要手写。无变化时48项与PAD均为0。未受影响的标签保持0，不要求每类变化、不为避免重复轮流挑标签；正负情绪不要求数量平衡。
+
+additional_labels不是合法字段，appraisal里event/object也不是kind/target/agency的替代品。主聊返回emotion_validation.detail指出具体结构问题，pipeline_ok只有在实际updated/unchanged/replayed时才为true。外层ok或表情抽签成功不表示情绪成功。修正后用同一ID、全文和时间再次finalize，既有抽签复用；不为修格式换ID、重抽或伪造以前已保存。
+
+原稀疏v2的label/intensity_delta/emotions最多三个附加仅为频道迁移兼容，不与full48混用。QQ/微信发送器无需因本升级改写；其回复模型应按新的共享协议及context模板适配，兼容分支不证明已完成每个频道的全量接线。
+
+## 幅度、完整保存与六类摘要
+
+先基于语境判断impact。ordinary为一般交流；salient用于有明显影响的肯定、伤害、安慰、重要进展等事件，不由词语正则触发，也不要求每次夸骂都到上限。
+
+以gain=1.5为校准基准，普通相关情绪常见实际变化0.01–0.03，明显事件可到0.1–0.2；0和更小变化都有效。固定原始单项上限为0.02/0.133333，标签单轮绝对变化总预算为0.04/0.266667，PAD单轴上限同单项。超预算整体等比例缩小，保留相对方向与比例，再乘当时gain一次并裁剪状态。提高gain仍会按比例放大，不在后台用当前gain除回去抵消设置。半衰期不乘倍率。
+
+每轮持久化48项原始值、预算约束后值、实际变化、衰减后事件前状态和事件后状态；记录倍率、预算比例与真实来源。自然衰减不冒充当前对话造成的变化。全部48项必须保留，同组多个感受可同时变化。
+
+group_changes仅作展示：六组各取实际变化绝对值最大的一项，负变化也参与；整组为0显示无变化。当前强度最高的标签不必是本轮变化最大的标签。完整48项及六组摘要随现有离线面板提供，历史稀疏记录不补造48项。没有新记录时不能拿上一轮摘要冒充本轮。
 
 ## 唯一词表
 
@@ -33,7 +58,7 @@
 
 ## 数值与持续性
 
-模型提交的原始PAD每轴单次±0.35、原始标签单次±0.45。程序验证后统一乘情绪影响值emotion_gain（默认1.0，0–3），再裁剪最终PAD到[-1,1]、标签到0–0.6；不能把乘后数值拿回原始上限拒绝。0.3×2可以增加0.6，已有0.2则最多再加0.4。负增量/安慰同样乘；倍率变化只影响后续新事件，gain=0不刷新旧心情。ct_emotion_effect记录原始值/当时倍率与配置版本/实际变化，重试不重新乘，reaction返回实际变化。
+输入的绝对校验边界为PAD每轴±0.35、标签±0.45；full48还必须先经过前述ordinary/salient预算，不把这个绝对边界当作日常幅度。预算处理后乘emotion_gain一次，再裁剪PAD到[-1,1]、标签到0–0.6。例如ordinary原始0.02在gain1.5下最多变化0.03；salient原始约0.133333最多变化0.2；原强度已0.59时最多增加0.01。负增量/安慰同样处理。倍率只影响后续新事件，不改变半衰期；gain=0不注入变化。ct_emotion_effect及ct_emotion_full48记录原始值、预算比例、当时倍率和实际变化，重试沿用原事件结果。
 
 PAD默认8h半衰期，标签半衰期0.15–24h，包括内疚3h、懊恼2h、尴尬20min、自豪6h。倍率不改变半衰期、精力、关系或期待。事情修好、安慰、新事件和自我调节都可缓和。期待仍独立按36h半衰期保留，沉默只观察一次，不反复扣分。控制、面板和梗知识联动见HUMOR.md。
 

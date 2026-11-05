@@ -93,6 +93,8 @@ python -m personal_bot --root STATE meme-sync --mode full --max-pages 300 --max-
 
 `ct_emotion_effect`保存原始增量、当时gain/配置版本、实际生效增量；重试沿用原事件结果，即使中间改倍率也不重算。reaction使用实际变化，避免饱和后仍向模型报告虚假增量。
 
+v0.6.4的full48模式先按ordinary/salient的单项和单轮总预算等比例收束，再乘gain一次；细节见MODEL_EMOTION.md。原始值与实际值之间可能还含预算比例和状态裁剪，不能只凭raw×gain推断最终数值。
+
 离线面板显示开关/程度/倍率/配置版本/更新时间、词库数量、学习状态和同步结果。修改由Muse真实写入并回读，再生成新HTML；页面上的显示不是在线控制API。
 
 全部新认知表都在原格式brain.sqlite里，现有私库一致性快照自然覆盖，无需为每个梗生成文件。继承时按scope和来源加载私人理解；公共词库可重建，配置重新核对主人偏好，旧定时任务默认不激活。系统架构/协议/代码更改按MAINTENANCE.md同步公开仓库，日常学习只进用户私库。

@@ -56,7 +56,12 @@ def canonical(label):
 
 def normalize(raw):
     if not isinstance(raw,dict): raise ValueError('assessment_object_required')
+    if 'additional_labels' in raw:
+        raise ValueError('additional_labels:unknown_field_use_full48_emotion_deltas_or_sparse_emotions')
     clean=copy.deepcopy(raw)
+    if clean.get('format') is not None or 'emotion_deltas' in clean:
+        from muse_ext.emotion_full48 import normalize as normalize_full
+        clean=normalize_full(clean)
     clean['label']=canonical(clean.get('label'))
     if isinstance(clean.get('emotions'),list):
         for item in clean['emotions']:
@@ -67,7 +72,7 @@ def normalize(raw):
     appraisal=clean.get('appraisal')
     if appraisal is not None:
         if not isinstance(appraisal,dict) or set(appraisal)-{'kind','target','agency','certainty','feeling','action'}:
-            raise ValueError('invalid_appraisal_fields')
+            raise ValueError('appraisal:expected_kind_target_agency_certainty_feeling_action_not_event_object')
         choices={'kind':('feedback','praise','care','loss','threat','achievement','expectation','life','reading','other'),
                  'target':('self','user','relationship','task','other'),
                  'agency':('self','other','shared','uncertain','none'),
@@ -84,7 +89,9 @@ def normalize(raw):
 
 
 def schema():
+    from muse_ext.emotion_full48 import schema as full_schema
     return {'assessment_version':ASSESSMENT_VERSION,'catalog_version':CATALOG_VERSION,
+            'preferred_format':'full48-v1','full48':full_schema(),
             'labels':list(LABELS),'groups':{k:list(v) for k,v in GROUPS.items()},
             'aliases':dict(ALIASES),'definitions':dict(DEFINITIONS),
             'half_life_hours':{k:HALF.get(k,2) for k in LABELS},

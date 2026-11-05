@@ -26,7 +26,8 @@ function bounded(p){
     scene_context:(p.scene_context||[]).slice(0,3),persona_context:(p.persona_context||[]).slice(0,3),
     reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
     expression_context:p.expression_context||null,emotion_effect:p.emotion_effect||null,
-    current_persona:p.current_persona||null,camera_context:p.camera_context||null};
+    current_persona:p.current_persona||null,camera_context:p.camera_context||null,
+    emotion_template:p.emotion_template||null,emotion_frame:p.emotion_frame||null};
 }
 function main(){
   let q;try{q=JSON.parse(readFileSync(0,'utf8'));}catch{return {ok:false,error:'JSON_stdin_required'};}
@@ -45,14 +46,15 @@ function main(){
   if(typeof at!=='number'||!Number.isFinite(at))return {ok:false,error:'invalid_timestamp'};
   const req={op:'prepare',scope:'owner-private',source:actor==='assistant'?'main:proactive':'main:sticker',
     event_id:q.turnId,occurred_at:at,text:q.text,actor,person_id:'owner',sender_type:'human'};
-  if(phase==='finalize'&&q.emotion_assessment!==undefined)req.emotion_assessment=q.emotion_assessment;
+  if(phase==='finalize'&&q.emotion_assessment!==undefined)
+    req.emotion_assessment={...q.emotion_assessment,format:'full48-v1'};
   if(phase==='finalize')for(const key of ['humor_assessment','meme_updates'])if(q[key]!==undefined)req[key]=q[key];
   const p=runBrain(req);
   let status=p.emotion?.status||(p.ok?'missing':'error');
   if(status==='missing'&&p.reaction&&['updated','unchanged','replayed'].includes(cached?.assessment_status))status='replayed';
   const result={ok:true,turnId:q.turnId,event:p.event||null,emotion:status,mood:p.mood||null,
     context:bounded(p),reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
-    humor_updates:p.humor_updates||null,
+    humor_updates:p.humor_updates||null,emotion_validation:p.emotion||null,
     assessment_required:phase==='context',protocol:'companion-v2-emotion48'};
   if(phase==='context'){result.ok=p.ok===true;result.decision=null;return result;}
   // A real assessment error stays visible. It does not silently suppress the draw.
@@ -62,6 +64,9 @@ function main(){
   result.image_action=result.decision.sampled&&result.decision.send_status==='not_handed_off'?'select_then_append_after_all_text':'do_not_send';
   result.ok=result.decision.mode!=='error';result.receipt_required=true;
   result.assessment_degraded=!['updated','unchanged','replayed'].includes(status);
+  result.pipeline_ok=p.ok===true&&result.ok&&!result.assessment_degraded;
+  result.assessment_required=result.assessment_degraded;
+  result.repair_hint=result.assessment_degraded?'Fill context.emotion_template; inspect emotion_validation.detail; retry this same turnId/text. Do not reroll or claim emotion was saved.':null;
   return result;
 }
 try{const r=main();process.stdout.write(JSON.stringify(r)+'\n');if(!r.ok)process.exitCode=1;}

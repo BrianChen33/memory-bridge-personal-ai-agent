@@ -72,6 +72,9 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    新状态 → 组文。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
    把companion、scene_context、persona_context、reaction实际交给回复模型，不能只修改解析器。
    用私有presentation-profile.json绑定精简的当前人格；每轮传入current_persona及其SHA，不能用旧L3摘要代替SOUL。
+   v0.6.4主聊直接填写context返回的emotion_template（full48-v1）：48项全部提交，不能猜additional_labels等字段。
+   ordinary事件在倍率1.5下通常0.01–0.03，salient事件可到0.1–0.2；允许0，程序限总量、倍率只乘一次。
+   检查pipeline_ok和emotion_validation，invalid按具体字段提示修正同一事件，不把降级抽签当作情绪保存成功。
 
 6. 情绪按语境：结合人设、近期对话、已有心情、关系、精力和未满足期待判断，不用关键词
    自动加减分，不为表情抽中而制造波动。允许混合且明显的有界变化；半衰期自然衰减；

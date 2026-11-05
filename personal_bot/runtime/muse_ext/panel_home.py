@@ -72,6 +72,8 @@ def enrich(b, snapshot):
     voice = profile.get('voice', {})
     snapshot['panel_profile']['voice'] = {k: voice[k][:200] for k in ART_KEYS if isinstance(voice, dict) and isinstance(voice.get(k), str)}
     snapshot['emotion_catalog'] = schema()
+    from muse_ext.emotion_full48 import latest
+    snapshot['emotion_assessment'] = latest(b,'owner-private')
     values = {}
     now = snapshot['generated_at']
     for row in b.db.execute('''SELECT e.label,e.intensity,e.at,c.half FROM emotion e
@@ -82,6 +84,9 @@ def enrich(b, snapshot):
         if half <= 0 or not all(math.isfinite(v) for v in (row['intensity'], row['at'], half)):
             continue
         values[row['label']] = round(row['intensity'] * .5 ** (max(0, now-row['at'])/(half*3600)), 6)
+    if snapshot['emotion_assessment']:
+        for label in LABELS:
+            values.setdefault(label, 0.0)  # full48 explicitly assessed the implicit-zero baseline
     snapshot['mood']['labels'] = sorted(
         [{'label': label, 'intensity': values.get(label)} for label in LABELS],
         key=lambda item: -(item['intensity'] if item['intensity'] is not None else -1))
