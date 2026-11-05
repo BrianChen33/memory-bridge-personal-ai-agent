@@ -13,6 +13,7 @@ def main(argv=None):
     for name in ('init','status','doctor','self-test','rollback','relocate','companion-upgrade'):sub.add_parser(name)
     s=sub.add_parser('enable');s.add_argument('--features',default=','.join(d.DEFAULT_FEATURES))
     s=sub.add_parser('request');s.add_argument('--file')
+    s=sub.add_parser('plugin');s.add_argument('operation',choices=('list','install','enable','disable'));s.add_argument('--id');s.add_argument('--source')
     s=sub.add_parser('backup');s.add_argument('--manual',action='store_true')
     s=sub.add_parser('verify');s.add_argument('--snapshot',required=True)
     s=sub.add_parser('restore');s.add_argument('--snapshot',required=True);s.add_argument('--destination',required=True)
@@ -34,6 +35,9 @@ def main(argv=None):
                         host=json.loads((root/'state/host-bindings.json').read_text(encoding='utf-8')),
                         deployment_scope='local_runtime_only_not_native_delivery_receipt')
                 elif args.action=='enable':result=d.enable(root,args.features.split(',') if args.features else [])
+                elif args.action=='plugin':
+                    result=d.request(root,dict(op='plugin_manage',scope='owner-private',action=args.operation,
+                                              plugin=args.id,source_dir=args.source))
                 elif args.action=='meme-sync':
                     opts=['--root',str(root),'--mode',args.mode,'--max-pages',str(args.max_pages),'--max-details',str(args.max_details),'--budget-seconds',str(args.budget_seconds)]
                     if args.seed:opts+=['--seed']

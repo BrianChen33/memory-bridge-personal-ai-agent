@@ -96,19 +96,19 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "9aa7c014ce022dbc37a9323b7bc7a34ece3526cf4155c2f4e0f711bff8454c50",
+    "__init__.py": "08109b787a7e8e014bc01f82aa987a1a82827d9806ee36e86ac733d6ca951b04",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
-    "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
-    "deploy.py": "75d26c439075efd11350a45e3344d3494337a67fd08ca41458c13898dab3ef36",
+    "cli.py": "7d827b169c9c9cc67f9823c2f494b9c0eb56d7f562ce7968595b62258e4c433b",
+    "deploy.py": "5af8b6fcacf8f2d9ae281a482a1cc678eeddfb1b1041ad8c5be608d42d66ab23",
     "runtime/__init__.py": "0982936c2756201cd74c82711cf33c9063e2df95828ee25a47b6f884fafc0e98",
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
     "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
     "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "df0bce7dbc87cdb2c72e14a3c7a82248d2c4f78ccab05d68afd560895e85b99d",
+    "runtime/muse_ext/companion.py": "83581e1fe8f026610b91f42e8c803c9e81eec7507c42e765fc5ecfd231ac5dd7",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "59de1f8f69ae83735a8c57aa1232d8f0794923d5dc779d1ab0d6a44764f4794c",
+    "runtime/muse_ext/companion_panel.html": "a816304eca4fc2523510cb24aa021c60ab2371d7f3486a040ad9a0bc57de088b",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -133,12 +133,13 @@
     "runtime/sticker_decision.mjs": "bd0e979774075ca3f48a704c6db8e391652f96410d688cd99ac52d97df950115",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "1eee6ebaca5671c4eaead9146bce777ce40be0316c480bf8fe6cbee43a29fb5a",
-    "vault.py": "7341e4c2ae273375f04ab4be8d299877a6f460fc7a1fddeba4e30b5d7e1fcd26",
-    "runtime/muse_ext/panel_home.py": "eef135ef56294196a98a6d3344628464400a5e672f15a112b0bea3b28ee86333",
+    "runtime/sticker_main.mjs": "ac24e8745b5a74176a821750ff96eed1d7223f94be6f8f153fe51cd2a455376c",
+    "vault.py": "32970092e2ae6b9f92b67661cbef1c75c4e1c62621d3f5eef02d9350707e68c0",
+    "runtime/muse_ext/panel_home.py": "643991dec150cf37a60f12d42773e37eaab099515750e0e3b0cf76751c9357c3",
     "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b",
     "runtime/muse_ext/presentation.py": "9cd95ecb1670fdb030c96eeb8a921a5e0244363e04780eae2b3bb704bec8fd77",
-    "runtime/muse_ext/emotion_full48.py": "b7af33e4db4229057d3a4e74708da2061f2791ec634444e815f72f075d522291"
+    "runtime/muse_ext/emotion_full48.py": "b7af33e4db4229057d3a4e74708da2061f2791ec634444e815f72f075d522291",
+    "runtime/muse_ext/plugins.py": "9adffd2ca2515d4e95c4c0d3e7aff61330658f368b51015c83c13671a94e23ac"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -226,6 +227,26 @@
       "context-generated template and field-level validation",
       "explicit main pipeline success; same-event correction preserves draw",
       "sparse v2 channel compatibility retained"
+    ]
+  },
+  "optional_social_reading_update": {
+    "date": "2026-11-06",
+    "release": "0.7.0",
+    "runtime": "2.4.0",
+    "plugin_version": "0.1.0",
+    "reference_repository": "https://github.com/referiw/dsh-plugin-tieba",
+    "reference_commit": "568cc4d75dc92984ec3cf625241e47a7f9c244d4",
+    "plugin_manifest_sha256": "1282163b7f9f03fb9deeacdefb25542acdeed20845f97d7db1da12868bde776d",
+    "original_probe": "npm reference matched; browser launch failed before content navigation",
+    "native_probe": "Baidu verification page; no live content verified",
+    "adaptations": [
+      "explicit optional manifest installation; no bundled browser or cookies",
+      "bot-led post-install source onboarding and verification",
+      "real article provenance, explicit partial coverage and bounded observations",
+      "same-model candidate/trial/mature speech habits and owner corrections",
+      "native browser task planner adapter; no invented DOM/download API",
+      "disabled video-provider contracts; no fake watch claims",
+      "extensions panel replaces refresh card; refresh remains in About"
     ]
   }
 }

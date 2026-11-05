@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "observation_schema": "social-observation-v1",
+  "adapter_operations": ["canonical_source", "verify", "discover", "normalize_observation"],
+  "source_types": ["forum", "creator", "collection", "single_content", "recommendation_feed"],
+  "common_fields": ["provider", "source_id", "content_id", "url", "title", "tool", "receipt", "status", "coverage"],
+  "coverage": ["seen_units", "total_units_or_null", "ended", "partial_reason", "next_cursor_or_url"],
+  "video_evidence": ["metadata_only", "subtitles_read", "frames_observed", "audio_observed"],
+  "observed_span": {"start_seconds": "number", "end_seconds": "number", "evidence": "actual_native_browser_receipt"},
+  "future_provider_state": {"bilibili": "planned_not_enabled", "douyin": "planned_not_enabled"},
+  "rule": "Metadata is not watched media. Unknown providers are rejected until an actual adapter is installed."
+}

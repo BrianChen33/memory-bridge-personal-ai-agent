@@ -42,3 +42,13 @@
 标题/隐私范围、代码库URL与锁定commit、LATEST与manifest入口、逐步继承提示词、模式与范围选择、当前数据类型、来源标签、任务不自动启动、凭据不继承、真实完成报告。参考examples/vault-readme.template.md。备份Git历史是用户私人档案；删除当前记忆不会自动清除旧commit。
 
 当前情绪规范以锁定代码的MODEL_EMOTION.md和companion_schema为准。旧日记、原话、任务归档或旧安装包中的情绪执行步骤不能继承为当前规则；最多保留历史升级概况。清理时先核对来源和用途，不按版本字符串整库删除。
+# Optional reading/voice inheritance (v0.7)
+
+`plugins.json` records explicitly installed/enabled plugins; `sr_` tables in the
+native SQLite snapshot contain permitted sources, native observation receipts,
+reading/reflection provenance and candidate/trial/mature/rejected speech habits.
+Install the matching public plugin from the architecture commit before using
+these tables. Do not auto-activate imported tasks, media adapters or login state.
+Ask the owner which permitted sources and learned habits to continue; a source
+permission is separate from current browser access verification. Rejected habits
+stay rejected. Raw media/profile/Cookie state is not part of this inheritance.

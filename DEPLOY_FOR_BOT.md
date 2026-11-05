@@ -52,6 +52,13 @@ QQ/微信没有跨平台通用安装命令。询问是否启用后读取目标�
 
 ## 6. 面板与GitHub
 
+可选“阅读与成长”插件：用户选择后按plugins/social-reading/README.md单独安装/启用，
+安装后由机器人在主聊用本人人设问主人许可的贴吧；别让安装者提前代填。读取PROTOCOL.md，
+接入真实原生浏览器与既有阅读/生活任务。来源未配置/未验证就暂停自动读；不复制DSH驱动。
+将plugin_context及expression_context.learned_voice实际交给回复模型。新增sr_认知表和plugins.json
+随私库继承；插件代码按锁定commit重建，旧登录态/任务不自动恢复。面板第8卡改为插件，
+原静默刷新照旧，状态详见“关于”。B站/抖音的disabled接口不是已完成部署。
+
 `companion_panel`输出`exports/Companion面板.html`。按实际资料库文档发布；没有API/刷新证据就保留离线方式。GitHub只在用户选择后配置，使用专用私库；`vault.py`保留原始SQLite、按SHA去重原生文件、锁定架构commit。
 
 ## 7. 一次最终隔离验收与报告

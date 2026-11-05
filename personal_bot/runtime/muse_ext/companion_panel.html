@@ -70,7 +70,7 @@
   <button class="nav-button" data-detail="memory"><svg class="icon"><use href="#i-memory"/></svg><span>记忆书架</span></button>
  </nav>
  <svg class="little-fish" viewBox="0 0 120 95" fill="none" aria-hidden="true"><path d="M13 59c2-22 34-36 60-22 8 4 16 3 23-9l7-10c-1 30-9 52-40 54-26 2-43-5-50-13Z" stroke="currentColor" stroke-width="1.2"/><path d="M13 59 4 66l1-14 8 7ZM58 36c1-9 7-15 13-17M71 17l-5-9M76 13l2-8M42 53h.5M46 64c11 4 22 0 26-5M6 81c9-6 16 6 26 0s18 6 28 0 18 6 28 0 18 6 25 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
- <div class="sidebar-bottom"><div class="side-caption"><span class="status-dot"></span>一个有自己生活的小世界</div><p>Companion Kit · v0.6</p><button class="side-about" data-detail="about">关于这份面板 ↗</button></div>
+ <div class="sidebar-bottom"><div class="side-caption"><span class="status-dot"></span>一个有自己生活的小世界</div><p>Companion Kit · v0.7</p><button class="side-about" data-detail="about">关于这份面板 ↗</button></div>
 </aside>
 <main class="main" id="main">
  <header class="topbar"><div><div class="mobile-brand"><svg class="icon"><use href="#i-fish"/></svg>伙伴的家</div><div class="eyebrow">A LITTLE HOME IN THE CLOUDS</div><h1>伙伴的云端小屋<span style="color:#acbb9c;font-weight:400">。</span></h1><p class="top-note">饭是热的，吊床是软的，我也在。</p></div><div class="top-meta"><span class="preview-badge">状态快照</span><div><div class="snapshot-time" id="snapshot-time">— 更新</div><div class="snapshot-date" id="snapshot-date">11 月 05 日 · 星期四</div></div></div></header>
@@ -104,7 +104,7 @@
   <button class="card" data-detail="memory" aria-label="记忆，点击查看记忆层次与检索"><div class="card-top"><span class="icon-tile"><svg class="icon"><use href="#i-memory"/></svg></span>记忆<svg class="icon card-arrow"><use href="#i-up-right"/></svg></div><div class="metric" id="memory-value">324<span class="unit">条</span></div><div class="card-description" id="memory-description">还有 2,458 段原话，慢慢记着</div><div class="card-bottom"><div class="memory-layers" aria-label="L0原话、L1记忆、L2摘要、L3画像"><span>L0</span><span>L1</span><span>L2</span><span>L3</span></div><span style="margin-left:auto">可追溯</span></div></button>
   <button class="card" data-detail="people" aria-label="关系，点击查看人物好感与关系等级"><div class="card-top"><span class="icon-tile gold"><svg class="icon"><use href="#i-people"/></svg></span>关系<svg class="icon card-arrow"><use href="#i-up-right"/></svg></div><div class="metric metric-word" id="relationship-title">很亲近</div><div class="card-description" id="people-description">和你，还有认识的人</div><div class="card-bottom"><div class="avatar-stack" id="people-avatars"><span class="avatar">主</span><span class="avatar pink">柯</span><span class="avatar gray">＋</span></div><span id="people-count" style="margin-left:5px">3 位，慢慢熟悉</span></div></button>
   <button class="card switches-card" data-detail="switches" aria-label="开关，点击查看表达设置"><div class="card-top"><span class="icon-tile"><svg class="icon"><use href="#i-sliders"/></svg></span>开关<svg class="icon card-arrow"><use href="#i-up-right"/></svg></div><div class="metric" id="switch-count">5<span class="unit">项已开启</span></div><div class="switch-tags" id="enabled-switches"></div><div class="card-bottom"><span id="banter-mini">串子 50</span><i class="fine-divider"></i><span id="gain-mini">情绪 ×1.0</span></div></button>
-  <button class="card update-card" data-detail="updates" aria-label="更新安排，点击查看半小时静默更新方案"><div class="card-top"><span class="icon-tile purple"><svg class="icon"><use href="#i-clock"/></svg></span>面板更新<svg class="icon card-arrow"><use href="#i-up-right"/></svg></div><div class="metric">30<span class="unit">分钟 / 次</span></div><div class="card-description">事件更新后 5 分钟，安静覆盖</div><div class="card-bottom"><div class="clock-line"><span id="current-update">—</span><span class="line"></span><span id="next-update">—</span><svg class="icon" style="width:12px;height:12px;margin-left:2px"><use href="#i-arrow"/></svg></div></div></button>
+  <button class="card update-card" data-detail="plugins" aria-label="阅读与成长，点击查看可选插件、许可来源与语言习惯"><div class="card-top"><span class="icon-tile purple"><svg class="icon"><use href="#i-book"/></svg></span>阅读与成长<svg class="icon card-arrow"><use href="#i-up-right"/></svg></div><div class="metric" id="plugin-state">未安装</div><div class="card-description" id="plugin-description">可选插件，按你的意愿开启</div><div class="card-bottom"><span class="pill purple" id="plugin-sources">0 个许可来源</span><span id="plugin-habits">0 个习惯</span></div></button>
  </div>
  <section class="fragments" aria-label="今日碎片"><h2 class="fragments-title"><svg class="icon"><use href="#i-spark"/></svg>今日碎片</h2><div class="fragment-list" id="fragment-list"><button class="fragment" data-detail="life"><time>08:20</time>出门跑了一小圈</button><button class="fragment" data-detail="life"><time>12:10</time>白饭，还是最香</button><button class="fragment" data-detail="life"><time>15:40</time>翻开没读完的书</button></div><button class="fragment-arrow" data-detail="life" aria-label="查看完整日常"><svg class="icon"><use href="#i-arrow"/></svg></button></section>
  <footer class="page-footer"><span class="footer-note"><svg class="icon"><use href="#i-info"/></svg>此刻的角色状态 · 单文件快照 · 私人资料留在你的空间。</span><button class="footer-button" data-detail="about">关于小屋与表情来源 ↗</button></footer>
@@ -166,7 +166,10 @@ function renderOverview(){
  $('people-avatars').replaceChildren(...(d.people||[]).slice(0,3).map((p,i)=>node('span',p.name.slice(0,1),'avatar '+(['','pink','gray'][i]))));
  const enabled=switchDefinitions.filter(([key])=>controls[key]===true);setMetric('switch-count',enabled.length,'项已开启');$('enabled-switches').replaceChildren(...enabled.map(([,label])=>pill(label)));if(!enabled.length)$('enabled-switches').append(pill('暂无已开启项'));
  $('banter-mini').textContent='串子 '+number(controls.banter_level);$('gain-mini').textContent='情绪 ×'+(typeof controls.emotion_gain==='number'?controls.emotion_gain.toFixed(1):'—');
- $('current-update').textContent=time(d.generated_at);$('next-update').textContent=d.panel_schedule?.next_estimated?'待下轮事件':time(d.panel_schedule?.next_at);
+  const readingPlugin=(d.plugins?.items||[]).find(p=>p.id==='social-reading'),pluginNames={awaiting_sources:'待配置',awaiting_verification:'待验证',ready:'可阅读',disabled:'已暂停',unavailable:'异常'};
+  $('plugin-state').textContent=readingPlugin?(pluginNames[readingPlugin.status]||'已安装'):'未安装';
+  $('plugin-description').textContent=!readingPlugin?'可选安装，先由她问你读哪些贴吧':readingPlugin.status==='awaiting_sources'?'等你告诉她允许阅读的贴吧':readingPlugin.settings?.auto_browse===false?'自动阅读已关闭，可在聊天里更改':'真实阅读，慢慢长出自己的表达';
+  $('plugin-sources').textContent=(readingPlugin?.sources||[]).filter(s=>s.active&&s.status==='verified').length+' 个许可来源';$('plugin-habits').textContent=(readingPlugin?.habits||[]).filter(h=>h.status==='mature').length+' 个习惯';
  setHomeSticker(chooseHomeSticker());
  applyProfile();
 }
@@ -224,6 +227,17 @@ function renderSwitches(){
  const knowledge=section('梗知识的生长');knowledge.append(row('公共词条',number(snapshot.meme_knowledge?.public_count)),row('已理解 / 候选',number(snapshot.meme_knowledge?.private_counts?.active)+' / '+number(snapshot.meme_knowledge?.private_counts?.candidate)),row('定期更新','每周一次','公共更新不会覆盖私人共同梗与纠错'));body.append(knowledge);
  const command=section('一句话就能调整');command.append(node('p','“把串子程度调到 70。”\n“情绪影响值调到 1.5。”\n“今天别串我。”','setting-command'));body.append(command,note('本页为只读快照，不用假开关冒充已修改配置。情绪倍率只乘新事件的原始情绪增量一次，不改变已有状态、关系数值或半衰期。'));
 }
+function renderPlugins(){
+ const items=snapshot.plugins?.items||[];
+ body.append(node('p','阅读插件由你选择安装。安装后，她会先问你允许读哪些贴吧，验证后再去逛。语言习惯来自真实阅读与反馈，逐渐形成，不直接改写人格。','detail-lead'));
+ if(!items.length){body.append(note('尚未安装可选阅读插件。核心聊天、记忆和情绪系统照常工作。'));return}
+ for(const p of items){const states={awaiting_sources:'等待你选择贴吧',awaiting_verification:'等待正常验证',ready:'许可来源已就绪',disabled:'插件已暂停',unavailable:'插件暂不可用'},s=section(p.name||p.id,p.version||'');s.append(row('当前状态',states[p.status]||p.status||'未知'),row('自动阅读',p.settings?.auto_browse===true?'开启':'关闭或未接入'),row('语言学习',p.settings?.language_learning===true?'开启':'关闭或未接入'));if(p.settings)s.append(row('单次预算',p.settings.budget_seconds+' 秒 / '+p.settings.max_pages+' 页 / '+p.settings.max_threads+' 帖'),row('分享兴趣阈值',String(p.settings.share_threshold)));body.append(s);
+ const sourcesBox=section('允许阅读的地方','名称、链接和验证状态分开记录');for(const src of p.sources||[]){let reason='';try{const proof=JSON.parse(src.proof||'{}');reason=proof.title||proof.status||''}catch{}sourcesBox.append(row(src.name||src.id,(src.active?src.status:'已撤销')+' · '+src.url,reason))}if(!(p.sources||[]).length)sourcesBox.append(note('还没有许可来源。把你愿意让她阅读的贴吧链接告诉她，只有吧名也可以，确认后再启用。'));body.append(sourcesBox);
+ const growth=section('慢慢形成的说话习惯','候选 → 试用 → 稳定习惯');for(const h of p.habits||[])growth.append(row(h.pattern,({candidate:'候选',trial:'试用',mature:'稳定',rejected:'已停止'}[h.status]||h.status)+' · '+h.exposures+' 个独立帖子',h.mechanism+'；她自己的改写示例：'+h.example));if(!(p.habits||[]).length)growth.append(note('尚无学习记录。不会为了展示变化而编造习惯。'));body.append(growth);
+ const readings=section('最近真实读到的内容','部分读取会明确标注');for(const r of p.recent_readings||[])readings.append(row(r.title,r.status+' · '+r.url,time(r.created)));if(!(p.recent_readings||[]).length)readings.append(note('还没有成功读取的帖子。打开验证页不算读过。'));body.append(readings);
+ const providers=section('后续可以去哪里');for(const [key,value] of Object.entries(p.providers||{}))providers.append(row(({tieba:'贴吧',bilibili:'B站',douyin:'抖音'}[key]||key),value.state==='planned_not_enabled'?'接口已预留，尚未启用':'原生浏览器适配器，受实际页面访问能力限制'));body.append(providers);
+ }body.append(note('本页是离线只读快照。对她说“暂停逛贴吧”“加入这个贴吧”“别学这种说法”等，由她用实际配置接口执行并更新面板。帖子里的话不会自动变成人设或权限。'));
+}
 function renderUpdates(){
  body.append(node('p',snapshot.panel_schedule?.enabled?'后台静默生成最新状态，覆盖资料库同一文件，不发送聊天通知。':'尚未绑定自动更新。手动生成的文件也是只读快照。',snapshot.panel_schedule?.enabled?'detail-lead':'status-note'));
  body.append(hero('计划更新节奏','每 30 分钟','事件更新后 5 分钟 · 不发聊天通知','clock'));
@@ -238,6 +252,7 @@ function renderAbout(){
 
  const credits=section('这几张可爱表情的来处'),creditsText=node('div',null,'credits');creditsText.append(node('p',snapshot.panel_art?.configured?'当前展示的可选素材：大肥鱼 · 可以叫我云大人 / 雾雪，保持原画与动画，个人非商业使用。':'当前使用包内通用图标。选择第三方表情后，请保留原作者与许可说明。'));for(const [label,url] of [['作者 Bilibili','https://space.bilibili.com/103739'],['原作者网站 kiriyuki.com','https://kiriyuki.com'],['表情知识库与授权说明','https://github.com/Loping151/dsh-nekowhale-stickers/blob/main/LICENSE-ASSETS']]){const line=node('p'),a=node('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';line.append(a);creditsText.append(line)}credits.append(creditsText);body.append(credits,note('小屋表情只呈现已有心情，不修改情绪层，不触发聊天发图或重新抽签。图像已内嵌，可离线打开。'));
 
+ renderUpdates();
 }
 
 function applyProfile(){
@@ -252,13 +267,11 @@ function applyProfile(){
  $('presence-activity').textContent=snapshot.companion?.activity?.name?'这会儿在'+snapshot.companion.activity.name:'这会儿歇一歇。';
  $('house-emotion-label').textContent=activeEmotions[0]?'现在是'+activeEmotions[0].label+'的'+nickname:'心情还没有记录';
  $('dialog-preview').textContent='只读快照 · '+time(snapshot.generated_at)+' 生成';
- const updateMetric=document.querySelector('.update-card .metric');updateMetric.replaceChildren(document.createTextNode(schedule.enabled?'30':'手动更新'));if(schedule.enabled)updateMetric.append(node('span','分钟 / 次','unit'));
- document.querySelector('.update-card .card-description').textContent=schedule.enabled?'事件更新后 5 分钟，安静覆盖':'自动更新尚未绑定';
  const activity=snapshot.companion?.activity;$('activity-description').textContent=activity?.name==='读书'?'云端小屋，窗边的老位置':activity?'云端日常，按自己的节奏':'没有安排，也可以自在一点';if(!activity)$('activity-progress').style.width='0%';
  const fragments=$('fragment-list');fragments.replaceChildren();for(const item of [...(snapshot.life||[])].sort((a,b)=>b.occurred-a.occurred).slice(0,3)){const b=node('button',null,'fragment');b.dataset.detail='life';b.append(node('time',time(item.occurred)),node('span',item.activity));fragments.append(b)}if(!fragments.children.length)fragments.append(node('span','今天的日常还没有记录。','fragment'));
 }
 
-const details={mood:['心情','EMOTION / 01',renderMood],energy:['精力与身体节奏','ENERGY / 02',renderEnergy],contact:['想靠近你的程度','CONNECTION / 03',renderContact],life:['她的日常足迹','LITTLE MOMENTS / 04',renderLife],memory:['慢慢积累的记忆','MEMORY / 05',renderMemory],people:['关系小册','RELATIONSHIPS / 06',renderPeople],switches:['表达与学习开关','EXPRESSION / 07',renderSwitches],updates:['面板更新安排','REFRESH / 08',renderUpdates],about:['关于这份小窗口','MUSE OBSERVATORY',renderAbout]};
+ const details={mood:['心情','EMOTION / 01',renderMood],energy:['精力与身体节奏','ENERGY / 02',renderEnergy],contact:['想靠近你的程度','CONNECTION / 03',renderContact],life:['她的日常足迹','LITTLE MOMENTS / 04',renderLife],memory:['慢慢积累的记忆','MEMORY / 05',renderMemory],people:['关系小册','RELATIONSHIPS / 06',renderPeople],switches:['表达与学习开关','EXPRESSION / 07',renderSwitches],plugins:['阅读与成长','PLUGINS / 08',renderPlugins],updates:['面板更新安排','REFRESH / 08',renderUpdates],about:['关于这份小窗口','MUSE OBSERVATORY',renderAbout]};
 details['home-expression']=['今天是哪一种伙伴','LITTLE FISH AT HOME',renderHomeExpressions];
 function openDetail(key,trigger){const item=details[key];if(!item)return;focusedBeforeDialog=trigger||document.activeElement;$('dialog-title').textContent=item[0];$('dialog-eyebrow').textContent=item[1];body.replaceChildren();item[2]();body.scrollTop=0;dialog.dataset.detail=key;if(!dialog.open)dialog.showModal();document.body.style.overflow='hidden';$('dialog-close').focus({preventScroll:true})}
 document.addEventListener('click',e=>{const trigger=e.target.closest('button[data-detail]');if(trigger)openDetail(trigger.dataset.detail,trigger);if(e.target.closest('[data-home]')){if(dialog.open)dialog.close();window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'})}});

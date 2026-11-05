@@ -120,7 +120,7 @@ def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,i
         for p in sorted(folder.rglob('*')):
             if p.is_file() and p.suffix.lower() in ('.md','.json','.jsonl','.txt'):
                 selected[safe_name(tree['name']+'/'+p.relative_to(folder).as_posix())]=safe_source(p)
-    for name in ('config.json','proactive-policy.json','interests.json','reading-sources.json','expression-policy.json'):
+    for name in ('config.json','proactive-policy.json','interests.json','reading-sources.json','expression-policy.json','plugins.json'):
         if (root/name).is_file(): selected['configuration/'+name]=safe_source(root/name)
     for name in ('native-schedules.json','host-bindings.json'):
         if (root/'state'/name).is_file(): selected['operations/'+name]=safe_source(root/'state'/name)
@@ -163,7 +163,7 @@ def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,i
                 if p.is_symlink() or not p.resolve().is_relative_to(dest): raise ValueError('unsafe_stale_file')
                 p.unlink()
     manifest={'schema':SCHEMA,'created_at':time.time(),'summary_proof':proof,'files':files,'aliases':aliases,
-              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.6.4'},
+              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.7.0'},
               'inheritance':{'default':['native_memory_or_persona','cognitive_database'],'never_auto_activate':['operational_reference'],
                              'excluded':['credentials','SSH keys','channel login state','runtime code','models','generated panels','completed learning queue files']}}
     write_json(marker,manifest)

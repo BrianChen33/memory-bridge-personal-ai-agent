@@ -108,6 +108,10 @@ def blueprint(root):
             'Actual mood updates require model assessment on registered sources; never use keyword rules or the task clock to add emotion. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
             'Recovery may enqueue once with the same real active sources and stable recovery topic. No real change means silence.'),
            ('reading',{'kind':'interval','minutes':120},['reading'],
+            'If the explicitly installed social-reading plugin is enabled, read its PROTOCOL.md. '
+            'Optionally choose permitted native-browser browsing based on energy/interest; empty or unverified sources never browse. '
+            'The host bot asks the owner for source links after installation; do not ask repeatedly from background jobs. '
+            'Actual plugin observations use reflect/appraise and feed learned_voice into normal prepare. '
             'reading claim from the allowlisted library; read actual chunk, summarize as inference, reading commit with chunk_id/lease. '
             'Advance cursor only on successful commit. Useful note: life sources=[quote_id], stable reading:document:hash:chunk topic. '
             'After actual articles: capture actor=article with true source, companion_observe source_event=<captured id>; do not appraise your own output. '

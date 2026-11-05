@@ -27,7 +27,8 @@ function bounded(p){
     reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
     expression_context:p.expression_context||null,emotion_effect:p.emotion_effect||null,
     current_persona:p.current_persona||null,camera_context:p.camera_context||null,
-    emotion_template:p.emotion_template||null,emotion_frame:p.emotion_frame||null};
+    emotion_template:p.emotion_template||null,emotion_frame:p.emotion_frame||null,
+    plugin_context:p.plugin_context||null};
 }
 function main(){
   let q;try{q=JSON.parse(readFileSync(0,'utf8'));}catch{return {ok:false,error:'JSON_stdin_required'};}

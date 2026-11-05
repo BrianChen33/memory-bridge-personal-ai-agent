@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.6；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.7；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -59,6 +59,9 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 3. 一次询问可选项：QQ、微信或其他渠道是否需要启用；表情包与素材来源；是否需要私有
    GitHub记忆备份；是否继承旧记忆。默认不连接外部渠道。只问我尚未回答的选项。
    如果我给了私有记忆库，先读它的README/清单，按docs/INHERITANCE.md选择继承模式与范围。
+   另询问是否安装“阅读与成长”可选插件，默认不安装。若选择安装，读plugins/social-reading/README.md
+   和PROTOCOL.md；安装后由你本人再向我询问允许读哪些贴吧，链接优先、吧名须实测验证。
+   空许可库/验证失败不能自动逛。当前B站/抖音只是预留接口，不能声称已经会刷视频。
 
 4. 安装：克隆公开仓库，建立独立虚拟环境，python -m pip install .；在代码目录外选择
    私有 STATE，运行 python -m personal_bot --root STATE init。
@@ -142,6 +145,13 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 ```
 
 ## 手动入口与已有版本升级
+
+v0.7.0新增独立可选的[阅读与成长插件](plugins/social-reading/README.md)：原生浏览器、主人许可
+来源库、逐楼/楼中楼/图片引用/抽样缓存、同模型反思与长期语言习惯；安装不会获得浏览器权限。
+核心只附带插件管理接口，插件代码另行明确安装。安装后由机器人自己问主人许可贴吧，验证成功
+才读；目前Muse环境仍受百度安全验证限制。面板第8卡改为插件，刷新信息移到“关于”。
+先候选、试用、再稳定的说话机制实际注入prepare，不直接改SOUL。抖音/B站接口和能力验证计划
+见[视频适配路线](plugins/social-reading/FUTURE_VIDEO.md)。
 
 v0.6.1增加响应式“小屋”面板：精简首页、按需详情、48项情绪排序、私有人格与可选表情素材、事件成功后5分钟静默覆盖。实际原生任务仍需宿主接线；不附带作者的人格或GIF。见[面板部署与继承](docs/HOME_PANEL.md)。
 

@@ -57,3 +57,10 @@ Muse资料库适配示例：覆盖宿主已经使用的 `workspace/your_files/Mu
 安装新模板、`panel_home.py`、`panel_refresh.py`，在原 `panel()` 生成snapshot后调用 `panel_home.enrich(b,snapshot)`。保留宿主的备份/路径定制，不整文件覆盖定制版companion_io。包和wheel应包括同一模板。
 
 私库原格式备份登记小型 `panel-profile.json`、素材manifest、面板任务状态与只读策略投影；可从公开源重建的GIF无需每日复制。真实素材和私人文案只留私人环境。新Agent继承后先核对原生任务，再启用，不复活历史runonce。架构commit、版本与公开维护说明照常同步。
+# v0.7 optional-plugin card
+
+The eighth overview card is now 阅读与成长, replacing the panel-update card.
+It shows explicit plugin installation, source verification, actual partial reading
+and evolving speech habits. Core-only installs show 未安装; empty allowlists show
+待配置. Future Bilibili/Douyin are planned, not active. Refresh timing and binding
+details remain accessible through About; the existing silent refresh job is retained.

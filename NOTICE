@@ -1,6 +1,12 @@
 Memory Bridge: Muse ↔ dot
 SPDX-License-Identifier: AGPL-3.0-or-later
 
+Optional social-reading v0.1 adapts sampling/structured-floor design from:
+  https://github.com/referiw/dsh-plugin-tieba
+  commit 568cc4d75dc92984ec3cf625241e47a7f9c244d4 (MIT).
+Its MIT notice is retained in plugins/social-reading/THIRD_PARTY_LICENSE.txt.
+No original browser driver, cookie store, DSH UI or third-party media is bundled.
+
 This project is inspired by:
   https://github.com/peterpoal134/memory-brain
 Pinned reference:

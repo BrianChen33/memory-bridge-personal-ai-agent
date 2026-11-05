@@ -67,6 +67,8 @@ def artwork(root):
 
 def enrich(b, snapshot):
     """Project existing state only; never capture events, draw stickers, or appraise."""
+    from muse_ext.plugins import panel
+    snapshot['plugins'] = panel(b)
     profile = read_json(b.root / 'panel-profile.json')
     snapshot['panel_profile'] = {k: profile[k][:200] for k in PROFILE_KEYS if isinstance(profile.get(k), str)}
     voice = profile.get('voice', {})

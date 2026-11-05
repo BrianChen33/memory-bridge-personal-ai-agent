@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.3.0'
+VERSION = '2.4.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -333,8 +333,9 @@ def assess(b,event_id,raw,legacy_submit):
                 energy['social']=clamp(energy['social']-.4)
                 _set(b,'vitals',energy)
         if life:
+            from muse_ext.plugins import share_allowed
             b.db.execute('UPDATE ct_life SET appraised=1,lease_until=0,share=? WHERE id=?',
-                         ('pending' if raw.get('share') else 'none',life['id']))
+                         ('pending' if raw.get('share') and share_allowed(b,event_id) else 'none',life['id']))
     return dict(status=status,source_event=event_id,version=2,evidence='inference',effect=emotion_effect(b,event_id))
 
 
@@ -485,9 +486,15 @@ def share(b,q):
         if action=='claim':
             lease=uuid.uuid4().hex
             rows=b.db.execute("SELECT * FROM ct_life WHERE appraised=1 AND share='pending' ORDER BY occurred LIMIT 3").fetchall()
+            allowed_rows=[]
             for r in rows:
+                from muse_ext.plugins import share_allowed
+                if not share_allowed(b,r['source_event']):
+                    b.db.execute("UPDATE ct_life SET share='none' WHERE id=?",(r['id'],))
+                    continue
                 b.db.execute("UPDATE ct_life SET share='sharing',share_lease=? WHERE id=?",(lease,r['id']))
-            return dict(ok=True,lease=lease,events=[dict(r) for r in rows],meaning='claim_only_not_sent')
+                allowed_rows.append(dict(r))
+            return dict(ok=True,lease=lease,events=allowed_rows,meaning='claim_only_not_sent')
         outcome=q.get('outcome')
         if outcome not in ('accepted','unknown','failed'):
             raise ValueError('invalid_delivery_outcome')
@@ -555,6 +562,9 @@ def install(Brain):
         if self.config().get('companion_v2') is not True:
             return old_dispatch(self,q)
         op=q.get('op','')
+        if op in ('plugin_manage','plugin_call'):
+            from muse_ext.plugins import dispatch as plugin_dispatch
+            return plugin_dispatch(self,q)
         if op=='companion_photo':
             from muse_ext.presentation import photo
             if not self.available('life'): return dict(ok=True,disabled=True)
@@ -640,6 +650,10 @@ def install(Brain):
             if self.available('style') and eid and (q.get('humor_assessment') is not None or q.get('meme_updates')):
                 result['humor_updates']=humor.apply_updates(self,q,eid)
             result['expression_context']=humor.context(self,q,eid) if self.available('style') else dict(disabled=True)
+            from muse_ext.plugins import context as plugin_context
+            result['plugin_context']=plugin_context(self,q) if self.available('style') else {}
+            result['expression_context']['learned_voice']={k:v['voice_overlay'] for k,v in result['plugin_context'].items()
+                                                         if isinstance(v,dict) and v.get('voice_overlay')}
             if not self.available('style') and (q.get('humor_assessment') is not None or q.get('meme_updates')):
                 result['humor_updates']=dict(disabled=True,status='disabled_by_config')
         return result
