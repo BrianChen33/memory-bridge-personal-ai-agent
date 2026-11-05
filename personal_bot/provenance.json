@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "1883eb6cd814a17368ca71f95c8155906ea823e7fdd8c017e49f66f0004347b6",
+    "__init__.py": "7038836dd211d47d9c3d40afa080fb77150bed5f665378a529379e1c139a4fee",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
     "deploy.py": "75d26c439075efd11350a45e3344d3494337a67fd08ca41458c13898dab3ef36",
@@ -134,8 +134,8 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "43c61ff87056223f65a82b4f4802ab2eddbe64fb238601758ce3874d3310a038",
-    "vault.py": "3c2c4c2fbc5ce201719bba210aacfea92c944ecda38e21b9c6cb734e68ed64db",
-    "runtime/muse_ext/panel_home.py": "7925a1c2e015e2da244bfe1fb44e8749f02f1d05c5b4bb264d956f272f6d0caf",
+    "vault.py": "9dd9c198eb61eba21fb771183cd7502f2f96bbf4e341fd272c25169e2a6b35b9",
+    "runtime/muse_ext/panel_home.py": "77745ec3361cc457e0a88a7671158007071d82d0511875220195fe6614e58c2a",
     "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b"
   },
   "emotion48_update": {
@@ -184,5 +184,17 @@
       "atomic silent publication and cycle replay guards",
       "no bundled persona memory or third-party GIFs"
     ]
+  },
+  "home_panel_compaction_update": {
+    "date": "2026-11-05",
+    "release": "0.6.2",
+    "runtime": "2.2.0",
+    "changes": [
+      "optional one-time panel-only animated WebP conversion",
+      "all8expressions remain animated and offline",
+      "no image conversion on periodic refresh",
+      "original chat assets unchanged"
+    ],
+    "converter_sha256": "1aea74ac5c591330ab60c9ca233683af118b5a2737aedc4e871ade7bdfaba625"
   }
 }

@@ -50,7 +50,8 @@ def artwork(root):
         if total > 12_000_000:
             raise ValueError('panel_art_budget_exceeded')
         mime = ('image/gif' if blob[:6] in (b'GIF89a', b'GIF87a') else
-                'image/png' if blob.startswith(b'\x89PNG\r\n\x1a\n') else None)
+                'image/png' if blob.startswith(b'\x89PNG\r\n\x1a\n') else
+                'image/webp' if blob[:4] == b'RIFF' and blob[8:12] == b'WEBP' else None)
         if not mime:
             raise ValueError('unsupported_panel_art_type')
         if entry.get('sha256') and hashlib.sha256(blob).hexdigest() != entry['sha256']:

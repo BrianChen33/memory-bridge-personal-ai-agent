@@ -12,7 +12,19 @@
 {"attribution":{"author":"实际作者","site":"实际来源"},"items":{"happy":{"file":"happy.gif","sha256":"完整SHA256","caption":"简短说明","source":"原始公开来源"}}}
 ```
 
-固定8个可选键与voice一致。只读目录内GIF/PNG，单张最多3MB、合计12MB；检查路径和可选SHA，内嵌data URI。无素材时使用通用图标，配置损坏则生成失败，保留原有效资料库文件。使用大肥鱼等第三方素材应遵守其许可并保留作者链接；公共代码仓库不再分发素材。
+固定8个可选键与voice一致。只读目录内GIF/PNG/WebP，单张最多3MB、合计12MB；检查路径和可选SHA，内嵌data URI。无素材时使用通用图标，配置损坏则生成失败，保留原有效资料库文件。使用大肥鱼等第三方素材应遵守其许可并保留作者链接；公共代码仓库不再分发素材。
+
+### 避免把原始动图全部塞进大文件（v0.6.2）
+
+Base64比原图约大三分之一，8张原GIF可能让HTML超过10MB。可在部署时对**独立面板目录**转换一次：
+
+```sh
+python tools/compact_panel_art.py --root STATE
+```
+
+该工具需已有ffmpeg，默认160px、8fps、质量55的循环动画WebP；保留8类表情、来源、署名和单文件离线功能，原聊天图库不变。转换后原子更新私人manifest的文件名、SHA及编码参数；同参数重跑不再次有损编码。按面板实际显示尺寸调整参数，发布后读回真实HTML字节数，建议控制在1MB左右。运行时只读成品，半小时刷新不重复转码，也不需要ffmpeg。确认新manifest与页面可用后，可清理面板目录内不再引用的旧副本，不能清理聊天原图库。
+
+私库保存更新后的manifest及原始source/source_hash/source_sha256；在新环境从原始公开素材重建，再执行同一转换即可。压缩素材仍留私人环境，不上传公共代码仓库。
 
 表情概率从实际 `expression-policy.json` 读；采用宿主自己的表情配置时，每次刷新可把该配置的 `enabled/base_probability/maximum_probability` 只读投影到 `state/panel-sticker-policy.json`。它是展示快照，绝不回写或代替原策略。
 

@@ -139,6 +139,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 
 v0.6.1增加响应式“小屋”面板：精简首页、按需详情、48项情绪排序、私有人格与可选表情素材、事件成功后5分钟静默覆盖。实际原生任务仍需宿主接线；不附带作者的人格或GIF。见[面板部署与继承](docs/HOME_PANEL.md)。
 
+v0.6.2增加面板动图WebP与一次性压缩工具，避免内嵌原GIF导致10MB级HTML；保留动画、离线查看与全部卡片，定时刷新只读取压缩成品。
+
 ```sh
 python -m pip install .
 python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" init
