@@ -108,7 +108,7 @@
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
     "runtime/muse_ext/companion.py": "91c980c35542e6ac89473914de6ce435f52937eafb36fd6a1e62f85b01401da1",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "d0eb9cf06a81c71c6e78a782873702f37df49864055501cc953c1c4eeb5a842a",
+    "runtime/muse_ext/companion_panel.html": "a5a8b4e8291f705e22aa4c9e98f4d465bd320f8675348eca739de5eb6eb5628d",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",

@@ -166,7 +166,7 @@ function renderOverview(){
  $('people-avatars').replaceChildren(...(d.people||[]).slice(0,3).map((p,i)=>node('span',p.name.slice(0,1),'avatar '+(['','pink','gray'][i]))));
  const enabled=switchDefinitions.filter(([key])=>controls[key]===true);setMetric('switch-count',enabled.length,'项已开启');$('enabled-switches').replaceChildren(...enabled.map(([,label])=>pill(label)));if(!enabled.length)$('enabled-switches').append(pill('暂无已开启项'));
  $('banter-mini').textContent='串子 '+number(controls.banter_level);$('gain-mini').textContent='情绪 ×'+(typeof controls.emotion_gain==='number'?controls.emotion_gain.toFixed(1):'—');
- $('current-update').textContent=time(d.generated_at);$('next-update').textContent=time(d.panel_schedule?.next_at);
+ $('current-update').textContent=time(d.generated_at);$('next-update').textContent=d.panel_schedule?.next_estimated?'待下轮事件':time(d.panel_schedule?.next_at);
  setHomeSticker(chooseHomeSticker());
  applyProfile();
 }
