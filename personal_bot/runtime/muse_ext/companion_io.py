@@ -298,6 +298,8 @@ def panel(b,q):
                   latency=[dict(r) for r in b.db.execute('SELECT kind,count(*) samples,round(avg(ms),2) avg_ms,round(max(ms),2) max_ms FROM ct_metric GROUP BY kind')],
                   tasks=_get(b,'task_bindings',{}),
                   disclaimer='本地管理快照；数值为虚拟角色状态/模型推断，不代表真实心理测量；关系等级不授予权限。')
+    from muse_ext.panel_home import enrich
+    enrich(b,snapshot)
     template=(Path(__file__).parent/'companion_panel.html').read_text(encoding='utf-8')
     # </script>, markup and Unicode separators cannot escape the JSON script block.
     payload=dump(snapshot).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026').replace('\u2028','\\u2028').replace('\u2029','\\u2029')

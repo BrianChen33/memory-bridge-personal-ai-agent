@@ -137,6 +137,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 
 ## 手动入口与已有版本升级
 
+v0.6.1增加响应式“小屋”面板：精简首页、按需详情、48项情绪排序、私有人格与可选表情素材、事件成功后5分钟静默覆盖。实际原生任务仍需宿主接线；不附带作者的人格或GIF。见[面板部署与继承](docs/HOME_PANEL.md)。
+
 ```sh
 python -m pip install .
 python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" init
@@ -156,6 +158,7 @@ python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" doctor
 - [宿主任务与可选渠道](docs/HOST_TASKS.md) · [API](docs/API.md)
 - [私有GitHub记忆备份](docs/GITHUB_VAULT.md) · [可继承记忆与步骤](docs/INHERITANCE.md)
 - [架构维护与GitHub同步](docs/MAINTENANCE.md)
+- [小屋面板与事件后静默更新](docs/HOME_PANEL.md)
 - [能力边界](docs/CAPABILITIES.md) · [安全](SECURITY.md)
 
 只有用户授权的私库才存真实数据。`memory_bridge` 是可选的逐项授权交换层，不是默认整库备份通道。

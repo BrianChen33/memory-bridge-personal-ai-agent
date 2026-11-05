@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "6ce94d846a346cccdc9de189cc9008a4154d34e493e51e8b3b6b1ea26e4916c8",
+    "__init__.py": "1883eb6cd814a17368ca71f95c8155906ea823e7fdd8c017e49f66f0004347b6",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7aea7254d6029a1261ec71d632b25eecf2cb4f954a7e1d78fc3f4130edcc0fac",
     "deploy.py": "75d26c439075efd11350a45e3344d3494337a67fd08ca41458c13898dab3ef36",
@@ -107,8 +107,8 @@
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
     "runtime/muse_ext/companion.py": "91c980c35542e6ac89473914de6ce435f52937eafb36fd6a1e62f85b01401da1",
-    "runtime/muse_ext/companion_io.py": "0da1473880adba4e8ba90663badd1b1fa8ae740628adc85b722e08d74487e548",
-    "runtime/muse_ext/companion_panel.html": "b48a38ed7119fd9162b0f6bc8b99bcdcd966417d1e5deeefb10f7e9bbb691033",
+    "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
+    "runtime/muse_ext/companion_panel.html": "d0eb9cf06a81c71c6e78a782873702f37df49864055501cc953c1c4eeb5a842a",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -134,7 +134,9 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "43c61ff87056223f65a82b4f4802ab2eddbe64fb238601758ce3874d3310a038",
-    "vault.py": "191cf0800a01903c02a7dce36399a239776dd4fecedfd5cc5a87919a670ba73a"
+    "vault.py": "3c2c4c2fbc5ce201719bba210aacfea92c944ecda38e21b9c6cb734e68ed64db",
+    "runtime/muse_ext/panel_home.py": "7925a1c2e015e2da244bfe1fb44e8749f02f1d05c5b4bb264d956f272f6d0caf",
+    "runtime/muse_ext/panel_refresh.py": "d6d0128ed8568066982ddc52c4a717346bea1746250211227ebc21cbcc6c927b"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -169,5 +171,18 @@
       "generic bindings only; no private channel code/persona/IDs"
     ],
     "public_sync_cadence": "weekly only; Sunday07:40 Asia/Shanghai; no daily public sync"
+  },
+  "home_panel_update": {
+    "date": "2026-11-05",
+    "release": "0.6.1",
+    "runtime": "2.2.0",
+    "changes": [
+      "responsive compact home with on-demand details",
+      "complete48emotion projections without fabricated zero values",
+      "private persona and optional local licensed artwork",
+      "source-completion plus300seconds native task handoff",
+      "atomic silent publication and cycle replay guards",
+      "no bundled persona memory or third-party GIFs"
+    ]
   }
 }

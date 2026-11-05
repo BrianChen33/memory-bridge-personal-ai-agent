@@ -3,6 +3,7 @@
 Uses temporary root + monkeypatched clock. No production fake now param.
 """
 import json
+from functools import wraps
 import sys
 import tempfile
 from datetime import datetime, timezone, timedelta
@@ -32,6 +33,16 @@ BJ = timezone(timedelta(hours=8))
 
 def dt(h, m):
     return datetime(2026, 11, 3, h, m, tzinfo=BJ)
+
+def _fixture_clock(fn):
+    # News dates are fixed below. Keep expiry checks on the same fixture day;
+    # per-test beijing_now patches still control quiet-hour scenarios.
+    @wraps(fn)
+    def run(*args, **kwargs):
+        with mock.patch('time.time', return_value=dt(12, 0).timestamp()):
+            return fn(*args, **kwargs)
+    return run
+
 
 def make_brain():
     root = tempfile.mkdtemp()
@@ -67,6 +78,7 @@ def base_news(**kw):
     d.update(kw)
     return d
 
+@_fixture_clock
 def test_news_low_score_no_candidate():
     b, root = make_brain()
     try:
@@ -79,6 +91,7 @@ def test_news_low_score_no_candidate():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_70_rejected_7001_passes():
     b, root = make_brain()
     try:
@@ -94,6 +107,7 @@ def test_news_70_rejected_7001_passes():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_same_story_different_media_one_candidate():
     b, root = make_brain()
     try:
@@ -117,6 +131,7 @@ def test_news_same_story_different_media_one_candidate():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_bad_policy_rejects_but_recall_works():
     # Missing policy file -> fail closed for proactive, recall still works
     root = tempfile.mkdtemp()
@@ -133,6 +148,7 @@ def test_news_bad_policy_rejects_but_recall_works():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_inferred_max_79_passes():
     b, root = make_brain()
     try:
@@ -146,6 +162,7 @@ def test_news_inferred_max_79_passes():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_invalid_scores_rejected():
     b, root = make_brain()
     try:
@@ -159,6 +176,7 @@ def test_news_invalid_scores_rejected():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_quiet_hours_in_lock_rejects():
     b, root = make_brain()
     try:
@@ -184,6 +202,7 @@ def test_news_quiet_hours_in_lock_rejects():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_concurrent_same_story_dedup():
     """Sequential inserts of same story -> only one candidate (SQLite is single-thread)."""
     b, root = make_brain()
@@ -201,6 +220,7 @@ def test_news_concurrent_same_story_dedup():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_life_false_rejects():
     b, root = make_brain()
     try:
@@ -211,6 +231,7 @@ def test_news_life_false_rejects():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_unknown_interest_rejected():
     b, root = make_brain()
     try:
@@ -223,6 +244,7 @@ def test_news_unknown_interest_rejected():
     finally:
         b.close()
 
+@_fixture_clock
 def test_news_forged_basis_ignored():
     """q.interest_basis='confirmed' is IGNORED; basis comes from interests.json."""
     b, root = make_brain()
