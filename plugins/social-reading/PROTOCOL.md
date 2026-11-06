@@ -1,4 +1,4 @@
-# 唯一宿主协议 · social-reading0.2.1
+# 唯一宿主协议 · social-reading0.3.0
 
 先读实际宿主工具schema。下列是本地brain.py请求，不表示Muse自动注册了新工具：
 
@@ -38,8 +38,11 @@
 5. 同一租约同内容重试replayed；成功后换正文conflict，不换ID重抽/重复感受。
    blocked/login_required等不生成阅读事件。成功返回document_id、source_event、quote_id。
 6. read(document_id)读有界抽样；source_event真实actor=article，来源plugin:social-reading:URL。
-7. 同一模型reflect(document_id,summary,style_candidates,growth_candidates)。每项pattern/mechanism/example/
-   evidence_quote，最多3项，短引文必须在实际记录内。已有同一机制用existing_id，别反复建同义项。
+7. 同一模型reflect(document_id,summary,lexical_candidates,style_candidates,growth_candidates)。优先提取
+   最多8个具体词/短句，另最多3个表达机制；字段及旧候选迁移见docs/VOICE_TRIALS.md。
+   lexical项含kind/form/meaning/understood/reason/example/evidence_quote，词或变体及短引文必须
+   在真实记录中。已理解即trial，不等3篇帖子；不明确的含义保持candidate并说明原因。
+   usage_mode=reference_only只保存释义，不投影为口头禅。已有同一表达用existing_id，别反复建同义项。
    personality_growth开启时，再问自己这段经历是否让我认同/反思某种偏好或性情；可无变化。
    growth_candidates最多2项：domain=preference|temperament、trait、interpretation、example、
    evidence_quote、resonance(0<值<=1)、direction=adopt|reconsider、已有项existing_id。先读status
@@ -59,7 +62,7 @@
     不另一次抽签，不再由2h任务独立选刷帖。手机意图不等于已读；observe真实成功才标read。
     手动明确要求可用原manual入口，不计自主生活比例。参阅docs/LIFE_ROUTINE.md。
 
-v0.2.1优先用finalize_reading(document_id,summary,style_candidates,growth_candidates,
+v0.3.0优先用finalize_reading(document_id,summary,lexical_candidates,style_candidates,growth_candidates,
 interest_score,emotion_assessment)一次完成上述reflect+appraise，然后检查complete。
 growth开启但无变化也填growth_candidates=[]。completion(document_id或lease_id)只读核对
 真实观察/反思/full48/兴趣/成长审视，缺项修同一document，不能强制增加文档计数。
@@ -67,9 +70,19 @@ growth开启但无变化也填growth_candidates=[]。completion(document_id或le
 
 ## 反馈和继承
 
-主人喜欢/不喜欢新说法时，由模型按语境关联habit_id，调用habit_feedback(habit_id,
-owner_event,authorized=true,polarity=positive|negative|stop)。同事件不重复计分；negative/stop
-立即停止，后续曝光不复活。不要用夸骂关键字更新情绪或学习权重。
+主人纠正新说法时按语境关联habit_id，调用habit_feedback(habit_id,owner_event,authorized=true,
+kind=meaning|context|tone|stop,correction=按类型字段)。词义/场景/语气纠正不一概封禁；明确stop
+及旧接口negative/stop保持停用，后来的帖子和别名不自动复活。主人纠正优先于后续曝光。
+旧candidate先habit_review读取真实档案，再由同一模型逐项判断；可用learn_expressions补提具体词，
+不能批量SQL晋升。teach_expressions只接真实主人教学事件，不伪造帖子来源。
+
+普通context只取最多6条有界voice_overlay，给新trial留位置。现有15m反馈任务的原生feedback阶段
+保留必要真实assistant项，交observe_outputs；再usage_work取最多3条，由同一模型判断实际采用
+是否合适，以record_use(habit_id,output_id,evidence_quote,appropriate,reason)记账。
+解释词义、引用、调试不算采用。真实合适使用3次、跨2轮即mature；不要求主人表扬，不增加来源可信度。
+personality_growth开启后，同一任务habit_growth_work→模型反思→habit_growth_integrate，稳定习惯
+可进入长期偏好/性情，与原成长共享预算；不能按词频推导信念。无需新模型、新定时任务或前置回复流程。
+见docs/VOICE_TRIALS.md及docs/PERSONALITY_GROWTH.md。
 SQLite含sr_表和来源/反馈；plugins.json含启用信息。先重建锁定版本插件，再选择性继承；
 旧任务/登录状态不自动激活，撤销来源不删除已学历史，停止某习惯用反馈接口。
 

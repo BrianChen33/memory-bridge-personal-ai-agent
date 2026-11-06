@@ -1,0 +1,116 @@
+{
+  "release": "0.8.3",
+  "runtime": "2.6.1",
+  "plugin_version": "0.3.0",
+  "base_architecture": "a56724f43daec25a71358e060057462616e08fc1",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "cc5b25c0c69d9be95db28273887512f924afedc0c4c9079023f266be96321a04"
+    },
+    {
+      "path": "DEPLOY_FOR_BOT.md",
+      "sha256": "17f737fd9eab338275d0de3c332477c66c5fd3ac2b805d0321ad353a50e44b9a"
+    },
+    {
+      "path": "README.md",
+      "sha256": "bde9683eda50833b4f1f19df601dc1e9d2095673571f15e9cfc9e4fea818d246"
+    },
+    {
+      "path": "docs/FEEDBACK_HEARTBEAT.md",
+      "sha256": "ce01150880302e094a4d5af579a598cb74228bb802452c045374120c857e58ac"
+    },
+    {
+      "path": "docs/INHERITANCE.md",
+      "sha256": "83d9c10c61d3c9d3b766e7883b1ef3247ac2c2814cb7a9085e414878d5197258"
+    },
+    {
+      "path": "docs/MAIN_ENTRY.md",
+      "sha256": "2db3d55c43005a371de6db28d3bcc1fbba5f0ab91c86a5c69ea9dc6a0c777b4e"
+    },
+    {
+      "path": "docs/PERSONALITY_GROWTH.md",
+      "sha256": "66d57e36096bb5b2128d6ee83dfa02ae0b5028c53b23881dba6ca160b17bf62c"
+    },
+    {
+      "path": "docs/VOICE_TRIALS.md",
+      "sha256": "0fedc66468214d861130bf5a756f12e33bac35f80228fab9ff31df92246445c0"
+    },
+    {
+      "path": "personal_bot/__init__.py",
+      "sha256": "2bac936cbe51eccba91e15f8456d7005b8f5c97078fd4e7f8dc5ca6f95768fd9"
+    },
+    {
+      "path": "personal_bot/provenance.json",
+      "sha256": "b3f9d57846a516962e1426c4aa31f76f946ed9339708a15b2da29f2bf6a85e2c"
+    },
+    {
+      "path": "personal_bot/runtime/main_native_entry.mjs",
+      "sha256": "ccf969444db0a867c4e1294e10e5d0f1d8516c4369d35a270f15cf660c16dc0a"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/companion.py",
+      "sha256": "517b1bf97aacae8d1cce3b16db6731495063455f687ccdc4b7e016f8eaa3c539"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/companion_panel.html",
+      "sha256": "25264de838c21f7fba4b2e3a3c4fd18e1798f368d4b9c987610a72c9c86a6acf"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/feedback.py",
+      "sha256": "ac42bbba829b8307f151a9432dab4f0acf6c2f6559e5704ddffdd70eeeb4dd5f"
+    },
+    {
+      "path": "personal_bot/vault.py",
+      "sha256": "4b6e6696f4e2b87257ab587ba4b6b8ae494f22b88ccc736c81dc04edce84fc19"
+    },
+    {
+      "path": "plugins/social-reading/PROTOCOL.md",
+      "sha256": "8b393de4e9482da03477c7d61fb0d13c0df335be7b29a15d1b07ce8ebf791d4a"
+    },
+    {
+      "path": "plugins/social-reading/README.md",
+      "sha256": "ab7a3d3b5d4a132992887860f6f454a81e9bc23c76c1be7194429c47015709ba"
+    },
+    {
+      "path": "plugins/social-reading/__init__.py",
+      "sha256": "a7d4819979af0cf09f829cde32ac4b08d1453ebfe3d198f223cf6fb2faa5bcc2"
+    },
+    {
+      "path": "plugins/social-reading/growth.py",
+      "sha256": "676726728607f41de39d56bc5271572caca09256d31f26705bdec3345ee05ffd"
+    },
+    {
+      "path": "plugins/social-reading/habit_growth.py",
+      "sha256": "f8337bf3328ccf3b7c978afacba34231cd8618a79415be7dd1bd1c2cd210bad2"
+    },
+    {
+      "path": "plugins/social-reading/manifest.json",
+      "sha256": "f346aa2bf36fa513e5c8e6ccd2b631b2fe3c59db75b34f3c36dc8a4b9ac59e1a"
+    },
+    {
+      "path": "plugins/social-reading/store.py",
+      "sha256": "4bcb072b06d7281e4c944a310d7487822f3955c9e53f622bf73d716c509690ca"
+    },
+    {
+      "path": "plugins/social-reading/voice.py",
+      "sha256": "1f15e95c1641772492b7bb61f9aa4049c2a3e16315c06b32396348253608cfc8"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "70daf9c8299762c21a9022632032da217a1fc4ccc4ac95d097eb6d10f572d48e"
+    },
+    {
+      "path": "tools/build_plugin_manifest.py",
+      "sha256": "bceace8d0e070cf5daac8a53e60edd387d9bfdaea79af6b44039849ee448a2a9"
+    }
+  ],
+  "host_notes": [
+    "preserve private companion_io.py, SOUL and channel senders",
+    "install all files from the exact optional plugin manifest, then re-enable; retain settings sources and evidence",
+    "review legacy candidates against actual archived quotes, never fabricate usage",
+    "update existing reading and15m emotion-feedback tasks; no new schedules or pre-reply model",
+    "feedback assistant outputs are usage evidence only; definitions and debug reports are not adoption",
+    "refresh the same offline panel silently; lock private native-format snapshot to the verified public commit"
+  ]
+}

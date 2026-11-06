@@ -45,7 +45,8 @@ direction=reconsider会减弱原倾向，不创建反方向的新同义项。帖
 
 ## 积累与纠正
 
-表达习惯沿用3帖试用、8帖稳定（或3帖+2次正反馈）。人格更慢：每独立帖子偏好最大.03、
+v0.8.3表达习惯按docs/VOICE_TRIALS.md：理解即试用，真实合适采用3次、跨2轮后稳定；
+旧的3帖试用/8帖稳定仅兼容未整理的legacy记录，不再用于新词。直接阅读人格更慢：每独立帖子偏好最大.03、
 性情最大.02，再乘共鸣强度；每天两类总变化上限分别.09/.06。一个帖子更新、反复重读
 不重复增长。2个独立帖且强度>=.025开始试用；8帖、至少2天、强度>=.12融入性格。
 这些是倾向权重，不是“人格已经变化百分之几”的心理测量。无须每次取得主人逐项批准。
@@ -53,5 +54,17 @@ direction=reconsider会减弱原倾向，不创建反方向的新同义项。帖
 
 主人说不喜欢/停止该倾向，用growth_feedback(growth_id,owner_event,authorized=true,
 polarity=negative|stop)立即停止，曝光不自动复活。positive记录反馈，不伪造阅读次数。
-暂停成长写personality_growth=false，停止注入，但保留可查历史。没有真实阅读则没有成长。
+暂停成长写personality_growth=false，停止注入，但保留可查历史。没有真实来源则没有成长。
 面板显示候选/逐渐形成/融入性格/已停止及依据数量；日常回复不展示内部评分。
+
+## 从稳定习惯反思长期性情 · v0.8.3
+
+现有15m反馈任务先对真实native输出进行usage_work/record_use，再habit_growth_work取成熟习惯、
+真实来源、3次未消费的合适使用和至少2轮凭据。由同一模型判断是否反映自己认同的偏好或性情，
+habit_growth_integrate保存trait/interpretation/example/resonance及proposal_id。允许resonance=0
+记录不吸收；常用某个词不等于认同原帖立场，也不能由词频自动制造性格。
+
+同一批使用只消费一次，与直接阅读共享每日预算；跨日和更多真实采用可进入integrated。
+投影真实并入persona_growth.traits/current_persona.growth_overlay，不重写整份SOUL。
+新经历可reconsider；停止词条、来源忘记、关闭成长会暂停相关投影。撤销浏览许可只停止新访问，
+已学历史保留。原格式SQLite保存全部证据和成长，不新增成堆人物/规则文件。

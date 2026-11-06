@@ -1,6 +1,6 @@
 # 阅读与成长 · 可选插件
 
-需要 Kit0.8.0 / runtime2.5.0。插件单独安装，不随核心wheel启用，无额外依赖。
+本版插件0.3.0需要 Kit0.8.3 / runtime2.6.1。插件单独安装，不随核心wheel启用，无额外依赖。
 使用宿主原生浏览器，不自行启动Chromium，不抓内部接口，不导出Cookie。
 
 ## 安装
@@ -49,14 +49,19 @@ observe成功才创建actor=article真实观察；不直接改情绪。appraise�
 
 ## 语言会逐渐成长
 
-reflect由同一阅读模型抽取最多3个表达机制，必须附实际短原句。独立帖子才增加曝光：
-3个帖子后试用；8个帖子，或3个帖子+2次主人正反馈后稳定。负反馈/停止立即排除，曝光不复活。
-prepare实际注入最多4条语言提示。若主人明确允许personality_growth，同一阅读模型还可提交
+reflect由同一阅读模型优先抽取最多8个具体词/短句，另最多3个表达机制，必须附真实短引文。
+含义理解后首次来源即可试用；不明确才留候选。实际合适使用3次、跨2轮对话后稳定，不必等主人表扬。
+解释词义和引用不算采用；自用不提高来源可信度。meaning/context/tone纠正与明确stop分开。
+prepare实际注入最多6条语言提示，给新词试用机会；语境相关性是排序，不是必须命中字面关键词。
+若主人明确允许personality_growth，同一阅读模型还可提交
 growth_candidates，逐渐改变偏好与性情，进入current_persona.growth_overlay。底稿SOUL与成长
 共同构成人格；成长可修正旧的可变性格，外观、身份、真实历史与权限保持各自依据。
 不自动重写整个SOUL文件；基底SHA与成长revision分开。不增加额外模型，最多3条成长提示。
-候选、证据、反馈与成长均在SQLite持久化。目前只向主人私聊投影私人学习，不自动转交群聊。
-详细字段与同模型接线见../../docs/PERSONALITY_GROWTH.md。
+现有15m反馈任务取真实输出、usage_work→同模型审视→record_use；成熟习惯再经habit_growth_work/
+habit_growth_integrate形成长期偏好或性情，不按词频机械改人格，也不另建任务或增加回复前置调用。
+候选、证据、反馈与成长均在原格式SQLite持久化。目前只向主人私聊投影私人学习，不自动转交群聊。
+旧候选须基于真实档案review/拆词，不批量晋升；升级保留来源、预算、阈值与许可。
+详细字段与同模型接线见../../docs/VOICE_TRIALS.md和../../docs/PERSONALITY_GROWTH.md。
 
 生活选择默认40%琐事、60%刷手机，参阅../../docs/LIFE_ROUTINE.md。原生任务从companion_tick
 或companion_phone取得pending手机意图，plan传life_intent；原2h阅读入口不另抽自动逛帖。

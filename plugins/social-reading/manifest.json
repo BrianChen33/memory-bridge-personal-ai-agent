@@ -1,20 +1,22 @@
 {
   "id": "social-reading",
   "name": "阅读与成长",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "api": 1,
   "source": "https://github.com/referiw/dsh-plugin-tieba",
   "reference_commit": "568cc4d75dc92984ec3cf625241e47a7f9c244d4",
   "files": {
-    "__init__.py": "f88cdfb225470b4131098995a290794b80dee581b3cb2a8d7b09a84c47e99a2d",
+    "__init__.py": "a7d4819979af0cf09f829cde32ac4b08d1453ebfe3d198f223cf6fb2faa5bcc2",
     "CONTRACT.json": "e6e95760e3642c5321a1ab190e34e25cdd5006eee8d861ee5f80c34834a8c798",
     "FUTURE_VIDEO.md": "1df1c49c77cdb71488203c5b2de2cdceab67b3d137ccec8421b25f014b327131",
-    "growth.py": "b1c37911a61bd30057c65b67a149bc64fea86ac41c39d6ccba69e29235d03674",
-    "PROTOCOL.md": "3960c199697ae5b60c17bb12abed7c2edbf9f4da9771872a6d99fdfb3e14597f",
+    "growth.py": "676726728607f41de39d56bc5271572caca09256d31f26705bdec3345ee05ffd",
+    "habit_growth.py": "f8337bf3328ccf3b7c978afacba34231cd8618a79415be7dd1bd1c2cd210bad2",
+    "PROTOCOL.md": "8b393de4e9482da03477c7d61fb0d13c0df335be7b29a15d1b07ce8ebf791d4a",
     "reader.py": "7448e04646496a1559aee2ed940ecb3f543b95721d8db004d71366314c652142",
-    "README.md": "22b8623eb96625c9608df5c76a75e98747a3d3959d7fb0b4ca6a28afe3c3c5ae",
+    "README.md": "ab7a3d3b5d4a132992887860f6f454a81e9bc23c76c1be7194429c47015709ba",
     "sources.py": "3568b3cb574d180c13eb89dbb734ac825e6544edf40923aed7d001d915e57542",
-    "store.py": "aebe29f42b0ad741f3e335ded54aaaef3409201812e6e49585fa60259cd490b2",
-    "THIRD_PARTY_LICENSE.txt": "83f6753ca30d2d34c777bc7c69ddee6c051e9f80181d73e74bd2b670ee99899b"
+    "store.py": "4bcb072b06d7281e4c944a310d7487822f3955c9e53f622bf73d716c509690ca",
+    "THIRD_PARTY_LICENSE.txt": "83f6753ca30d2d34c777bc7c69ddee6c051e9f80181d73e74bd2b670ee99899b",
+    "voice.py": "1f15e95c1641772492b7bb61f9aa4049c2a3e16315c06b32396348253608cfc8"
   }
 }

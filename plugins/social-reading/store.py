@@ -30,6 +30,9 @@ def initialize(b):
     ''')
     from . import growth
     growth.initialize(b)
+    from . import voice,habit_growth
+    voice.initialize(b)
+    habit_growth.initialize(b)
 
 
 def get(b, key, default=None):
@@ -74,8 +77,8 @@ def configure(b, q):
 
 
 def habit_rows(b):
-    return [dict(r) for r in b.db.execute('''SELECT h.*,count(e.url) exposures FROM sr_habit h
-      LEFT JOIN sr_evidence e ON e.habit=h.id GROUP BY h.id ORDER BY h.updated DESC LIMIT 40''')]
+    from . import voice
+    return voice.rows(b)
 
 
 def reflect(b, q):
@@ -92,25 +95,8 @@ def reflect(b, q):
         return dict(ok=True, replayed=True, reflection=dict(old),
                     growth=growth.reflect(b, doc, q.get('growth_candidates')))
     summary = text(q.get('summary'), 1200, True)
-    candidates = q.get('style_candidates', [])
-    if not isinstance(candidates, list) or len(candidates) > 3:
-        raise ValueError('at_most_three_style_candidates')
-    if not settings(b)['language_learning']:
-        candidates = []
-    checked = []
-    for item in candidates:
-        if not isinstance(item, dict):
-            raise ValueError('style_candidate_object_required')
-        pattern = text(item.get('pattern'), 140, True)
-        mechanism = text(item.get('mechanism'), 200, True)
-        example = text(item.get('example'), 100, True)
-        evidence = text(item.get('evidence_quote'), 240, True)
-        if evidence not in doc['quote']:
-            raise ValueError('style_evidence_not_in_observed_text')
-        hid = item.get('existing_id') or hashlib.sha256(pattern.casefold().encode()).hexdigest()[:24]
-        if item.get('existing_id') and not b.db.execute('SELECT 1 FROM sr_habit WHERE id=?', (hid,)).fetchone():
-            raise ValueError('existing_habit_not_found')
-        checked.append((hid, pattern, mechanism, example, evidence))
+    from . import voice
+    learned=voice.learn(b,doc,q.get('lexical_candidates',[]),q.get('style_candidates',[]))
     note = b._remember(dict(scope='owner-private', kind='reflection', evidence='inference',
                             source='assistant:social-reading:' + doc['id'], event_id='social-reflect:' + doc['id'],
                             occurred_at=time.time(), text=summary, importance=.45))
@@ -118,24 +104,16 @@ def reflect(b, q):
     init_insights(b.db)
     with b.db:
         link(b, note, 'owner-private', [doc['quote_id']], 'social-reading:' + doc['id'])
-        for hid, pattern, mechanism, example, evidence in checked:
-            row = b.db.execute('SELECT * FROM sr_habit WHERE id=?', (hid,)).fetchone()
-            if not row:
-                b.db.execute("INSERT INTO sr_habit VALUES(?,?,?,?,'candidate',0,0,?)",
-                             (hid, pattern, mechanism, example, time.time()))
-            b.db.execute('INSERT OR IGNORE INTO sr_evidence VALUES(?,?,?,?)', (hid, doc['url'], doc['id'], evidence))
-            count = b.db.execute('SELECT count(*) FROM sr_evidence WHERE habit=?', (hid,)).fetchone()[0]
-            if not row or row['status'] != 'rejected':
-                positive = row['positive'] if row else 0
-                status = 'mature' if count >= 8 or (count >= 3 and positive >= 2) else 'trial' if count >= 3 else 'candidate'
-                b.db.execute('UPDATE sr_habit SET status=?,updated=? WHERE id=?', (status, time.time(), hid))
         b.db.execute('INSERT INTO sr_reflection VALUES(?,?,?,?)', (doc['id'], summary, note, time.time()))
-    return dict(ok=True, note_id=note, learned=len(checked), habits=habit_rows(b),
+    return dict(ok=True, note_id=note, learned=learned.get('learned',0), habits=habit_rows(b),
                 growth=growth.reflect(b, doc, q.get('growth_candidates')),
                 authority='self-adopted expression and optional evolving personality; retain core identity and appearance')
 
 
 def feedback(b, q):
+    if q.get('kind') is not None:
+        from . import voice
+        return voice.feedback(b,q)
     event = owner_event(b, q)
     hid, polarity = q.get('habit_id'), q.get('polarity')
     row = b.db.execute('SELECT * FROM sr_habit WHERE id=?', (hid,)).fetchone()
@@ -150,15 +128,13 @@ def feedback(b, q):
         else:
             b.db.execute('UPDATE sr_habit SET positive=positive+1,updated=? WHERE id=?', (time.time(), hid))
             count = b.db.execute('SELECT count(*) FROM sr_evidence WHERE habit=?', (hid,)).fetchone()[0]
-            if count >= 3 and row['positive'] + 1 >= 2 and row['status'] != 'rejected':
+            profile=b.db.execute('SELECT payload FROM sr_habit_profile WHERE habit=?',(hid,)).fetchone()
+            legacy=not profile or json.loads(profile[0]).get('kind')=='legacy'
+            if legacy and count >= 3 and row['positive'] + 1 >= 2 and row['status'] != 'rejected':
                 b.db.execute("UPDATE sr_habit SET status='mature' WHERE id=?", (hid,))
     return dict(ok=True, habit=dict(b.db.execute('SELECT * FROM sr_habit WHERE id=?', (hid,)).fetchone()))
 
 
-def voice(b):
-    if not settings(b)['language_learning']:
-        return []
-    rows = [r for r in habit_rows(b) if r['status'] in ('trial', 'mature')]
-    rows.sort(key=lambda r: (r['status'] == 'mature', r['positive'], r['exposures']), reverse=True)
-    return [dict(id=r['id'], hint=r['pattern'], example=r['example'], status=r['status'],
-                 strength=round(min(.7, .08 * r['exposures'] + .05 * r['positive']), 2)) for r in rows[:4]]
+def voice(b,q=None):
+    from .voice import voice as project_voice
+    return project_voice(b,q)

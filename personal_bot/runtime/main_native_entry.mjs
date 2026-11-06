@@ -17,9 +17,16 @@ function main(){
  const native=q.native_response;
  if(!native||native.chat_id!==chat||!Array.isArray(native.turns)||native.turns.length>100)
   return {ok:false,error:'bound_native_chat_response_required'};
- const rows=[],ignored=[];
+ const rows=[],ignored=[],outputs=[];
  for(const turn of native.turns){
   if(typeof turn.id!=='string'||!turn.id||turn.id.length>200||!Array.isArray(turn.items))return {ok:false,error:'unsupported_native_turn_shape'};
+  // Only the scheduled feedback phase consumes actual assistant output. It is
+  // usage evidence, never an emotional stimulus or a new user input.
+  for(const item of turn.items.filter(x=>x?.role==='assistant')){
+   if(typeof item.content==='string'&&item.content.trim()&&item.content.length<=12000&&
+      Number.isSafeInteger(item.seq)&&item.seq>=0&&Number.isFinite(item.occurred_at_ms)&&item.occurred_at_ms>0)
+    outputs.push({chat_id:chat,turn_id:turn.id,seq:item.seq,occurred_at_ms:item.occurred_at_ms,text:item.content});
+  }
   const users=turn.items.filter(x=>x?.role==='user');
   const meaningful=[];
   for(const item of users){
@@ -46,15 +53,23 @@ function main(){
   // This is the existing scheduled model's bounded historical scan. It never
   // goes through sticker decisions or changes the current native-source head.
   const brainRoot=process.env.STICKER_BRAIN_ROOT||join(root,'muse-brain');
-  const request={op:'companion_feedback',action:'scan',scope:'owner-private',native_events:rows.slice(0,20).map(r=>({
-    source:'main:sticker',event_id:r.turnId,actor:'user',text:r.text,occurred_at:r.timestamp})),
-    coverage:{chat_id:chat,page:native.page||null,sample_size:rows.length}};
+  const users=rows.slice(0,20).map(r=>({source:'main:sticker',event_id:r.turnId,actor:'user',text:r.text,occurred_at:r.timestamp}));
+  const delivered=outputs.sort((a,b)=>b.seq-a.seq).slice(0,20);
+  const request={op:'companion_feedback',action:'scan',scope:'owner-private',native_events:[],native_outputs:[],
+    coverage:{chat_id:chat,page:native.page||null,sample_size:rows.length,partial:rows.length>20||outputs.length>20}};
+  // The real brain stdin limit is64KiB. Select complete records, never truncate
+  // originals, and give both user and assistant evidence room in this batch.
+  for(let i=0;i<Math.max(users.length,delivered.length);i++)for(const [field,item] of
+    [['native_events',users[i]],['native_outputs',delivered[i]]]){
+    if(!item)continue;request[field].push(item);
+    if(Buffer.byteLength(JSON.stringify(request),'utf8')>60000){request[field].pop();request.coverage.partial=true;}
+  }
   const result=spawnSync(process.env.STICKER_PYTHON||'python3',[join(brainRoot,'brain.py'),'--root',brainRoot],
     {input:JSON.stringify(request),encoding:'utf8',timeout:8000,maxBuffer:262144});
   if(result.error||!result.stdout)return {ok:false,error:'feedback_scan_process_failed'};
   let output;try{output=JSON.parse(result.stdout);}catch{return {ok:false,error:'feedback_scan_output_invalid'};}
   if(result.status!==0&&output.ok!==false)return {ok:false,error:'feedback_scan_process_failed'};
-  return {...output,native_sample:{chat_id:chat,page:native.page||null,coverage:'recent verified user-item sample only'}};
+  return {...output,native_sample:{chat_id:chat,page:native.page||null,coverage:'recent verified sample; assistant output for usage evidence only'}};
  }
  let selected;
  if(phase!=='audit'){

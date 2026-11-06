@@ -76,7 +76,8 @@ completion(document_id或lease_id)可只读核对。文档总数不必增加—�
 checked=0表示尚未覆盖启用后的自然消息，不能报告100%执行。state/formal-entry-health.json
 保存抽样范围/缺项/时间，不保存聊天原文；面板可读取。抽样结果不代表全历史合规率。
 主人授权近期修正后，在同一个15m任务内另调用phase=feedback，使用真实最近3–5turn的
-无损user投影。它以相同原生身份捕获实际遗漏原文，保留原始时间；扫描最近24h已捕获原事件，
+无损user投影，并按v0.8.3保留必要真实assistant项供可选插件核验表达使用。UTF-8请求最多60KB，
+只取完整记录，超预算标partial并用真实cursor续扫。助手项不进入情绪来源。它以相同原生身份捕获实际遗漏原文，保留原始时间；扫描最近24h已捕获原事件，
 跳过最近120秒仍在处理的输入、成功评估和助手自己的输出。不能把摘要代替原话。
 然后companion_feedback action=claim（默认limit2，最多3）→同一宿主模型填返回full48→
 action=repair {source_event,lease,assessment}。晚到影响先按原时间衰减，再并入当前状态；
@@ -89,3 +90,6 @@ action=repair {source_event,lease,assessment}。晚到影响先按原时间衰�
 宿主将唯一短指针放入真正会读取的全局AGENTS/入口记忆，并实际更新MAIN适配器。不能靠
 SOUL堆满操作流程；外观、人格成长、40/60生活配置与QQ/微信发送器均不因本改动重置。
 公开库只收通用程序，主聊ID、原文、回执及私人人格均留私有环境。私库同步锁定代码版本。
+
+表达采用验证、稳定习惯的人格反思接入同一个反馈任务，见VOICE_TRIALS.md；普通context/commit
+仍只传user，不增加额外前置模型、检索或浏览。不能把解释词义和自己的调试说明算成真实采用。

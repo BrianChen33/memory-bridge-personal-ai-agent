@@ -67,3 +67,12 @@ ct_kv.life_routine保存phone_probability（默认.6，琐事为其补数）。p
 main-entry回执、formal-entry-policy/health仅是原宿主操作参考，不授权重发旧消息或沿用旧
 chat_id。新宿主重新绑定真实主聊，enabled_at以重新启用时间为准；旧SQLite原话与情绪仍
 按来源和真实时间继承，不为填补回执重放。没有原生发送拦截的宿主必须说明这一边界。
+
+## v0.8.3 具体词、实际使用与习惯性情
+
+sr_habit_profile/sr_owner_evidence/sr_voice_feedback记录含义、场景、强度、释义专用与主人纠正；
+sr_output/sr_usage记录真实原生输出和合适采用；sr_habit_growth*记录由同一模型反思的长期倾向。
+它们全部在原格式SQLite内。选择继承后先装架构锁定的social-reading0.3.0，保留来源、停用和
+使用凭据，不伪造新曝光或新对话。旧candidate基于真实归档重新理解，不批量晋升。
+历史输出不是待发送队列；人格倾向与SOUL合成当前人格，不直接覆盖新主人的身份/授权。
+新宿主反馈任务实际接入后才继续积累使用，不能声称导入文件等于新入口已经运行。

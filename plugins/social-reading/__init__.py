@@ -1,11 +1,12 @@
 """Optional native-browser social reading plugin. Install does not grant sources."""
 import json
+import hashlib
 import math
 import time
-from . import reader, sources, store, growth
+from . import reader, sources, store, growth, voice, habit_growth
 
 API = 1
-VERSION = '0.2.1'
+VERSION = '0.3.0'
 
 
 def initialize(b):
@@ -19,12 +20,20 @@ def panel(b):
     state = 'awaiting_sources' if not active else 'ready' if any(r['status'] == 'verified' for r in active) else 'awaiting_verification'
     return dict(status=state, settings=store.settings(b), sources=rows, recent_readings=recent,
                 habits=store.habit_rows(b), personality_growth=growth.rows(b), providers=sources.PROVIDERS,
+                habit_personality=habit_growth.rows(b),
                 onboarding=store.get(b, 'onboarding', {}),
                 boundary='offline projection; the host must perform native browsing and owner-authorized configuration')
 
 
 def context(b, q):
-    return dict(voice_overlay=store.voice(b), persona_growth=growth.context(b),
+    current=growth.context(b)
+    habits=habit_growth.context(b)
+    habit_traits=habits.get('traits',[])[:2]
+    current['traits']=(current['traits'][:3-len(habit_traits)]+habit_traits)
+    current['habit_traits']=habit_traits
+    current['revision']=hashlib.sha256(json.dumps([current['revision'],habits.get('revision'),current['traits']],
+                                                   ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+    return dict(voice_overlay=store.voice(b,q), persona_growth=current,
                 authority='Adopt speech patterns naturally. When personality growth is enabled, your own reflections '
                           'may gradually change preferences and temperament, including flexible old SOUL tendencies. '
                           'Combine the growth overlay, base identity and present emotion; preserve established appearance '
@@ -42,6 +51,12 @@ def schema():
                 floor_fields=['pid|null', 'floor|null', 'author', 'is_op', 'text', 'posted_at', 'replies', 'replies_complete', 'images'],
                 image_fields=['url', 'quality:thumb|original|unknown', 'observation:viewed|url_only', 'caption'],
                 style_candidate_fields=['pattern', 'mechanism', 'example', 'evidence_quote', 'existing_id:optional'],
+                lexical_candidate_fields=['kind:lexical|phrase','form','meaning','example','evidence_quote',
+                    'understood:boolean','reason','variants:list','triggers:list','scenes:list','targets:list','intensity:0..100',
+                    'usage_mode:expressive|reference_only'],
+                voice_policy=dict(lexical_per_reading=8,mechanisms_per_reading=3,
+                    trial='first source with same-model understood judgment; unknown meanings stay candidate',
+                    mature='3 appropriate real output uses across2 turns; no praise requirement; no source confidence inflation'),
                 growth_candidate_fields=['domain:preference|temperament', 'trait', 'interpretation', 'example',
                                          'evidence_quote', 'resonance:0<value<=1', 'direction:adopt|reconsider', 'existing_id:optional'],
                 growth_policy=dict(opt_in=True, max_candidates=2, same_model=True, per_post_caps=growth.CAPS,
@@ -159,6 +174,20 @@ def dispatch(b, q):
         return dict(checked, ok=checked['complete'] and appraised['pipeline_ok'], reflection=reflected, appraisal=appraised)
     if action == 'habit_feedback':
         return store.feedback(b, q)
+    if action == 'habit_review': return voice.review(b,q)
+    if action == 'teach_expressions': return voice.teach(b,q)
+    if action == 'learn_expressions':
+        doc=b.db.execute("SELECT d.* FROM sr_document d JOIN source_events e ON e.id=d.event AND e.status='active' WHERE d.id=?",
+                         (q.get('document_id'),)).fetchone()
+        if not doc: raise ValueError('real_observed_document_required')
+        return voice.learn(b,doc,q.get('lexical_candidates',[]),q.get('style_candidates',[]))
+    if action == 'observe_outputs': return voice.observe_outputs(b,q.get('outputs',[]))
+    if action == 'usage_work': return voice.usage_work(b,q)
+    if action == 'record_use': return voice.record_use(b,q)
+    if action == 'habit_growth_work': return dict(habit_growth.work(b,q),ok=True)
+    if action == 'habit_growth_integrate': return dict(habit_growth.integrate(b,q),ok=True)
     if action == 'growth_feedback':
+        if any(r['id']==q.get('growth_id') for r in habit_growth.rows(b)):
+            return habit_growth.feedback(b,q)
         return growth.feedback(b, q)
     raise ValueError('unsupported_social_reading_action_or_provider')

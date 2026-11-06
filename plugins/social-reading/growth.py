@@ -92,6 +92,8 @@ def reflect(b, doc, candidates):
                 continue
             used = b.db.execute('''SELECT coalesce(sum(abs(e.delta)),0) FROM sr_growth_evidence e
               JOIN sr_growth g ON g.id=e.growth WHERE g.domain=? AND e.day=?''', (domain, day)).fetchone()[0]
+            from .habit_growth import spent
+            used += spent(b,domain,day)
             post_used = b.db.execute('''SELECT coalesce(sum(abs(e.delta)),0) FROM sr_growth_evidence e
               JOIN sr_growth g ON g.id=e.growth WHERE g.domain=? AND e.url=?''', (domain, doc['url'])).fetchone()[0]
             delta = min(CAPS[domain] * resonance, max(0, DAILY[domain] - used), max(0, CAPS[domain] - post_used))

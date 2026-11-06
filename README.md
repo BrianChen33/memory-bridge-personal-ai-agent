@@ -2,9 +2,11 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.2；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.3；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
+
+v0.8.3：[具体词汇与口头禅](docs/VOICE_TRIALS.md)理解后即可试用，真实合适使用3次、跨2轮后稳定；词义、场景、语气纠正与明确停用分别处理。现有15分钟反馈任务观察真实输出，由同一模型反思稳定习惯是否融入长期性情。普通回复只读少量提示，不增加模型调用、外网检索或新任务。
 
 v0.8.2：日常升级为有具体主题、过程与作品的[持续活动档案](docs/LIFE_PROJECTS.md)，未来草稿按时间封存；[主聊提交](docs/MAIN_ENTRY.md)复用已准备上下文；[情绪与反馈heartbeat](docs/FEEDBACK_HEARTBEAT.md)每15分钟推进状态、检查近期遗漏，并在末尾静默覆盖面板。旧30分钟后再等5分钟的面板规则退役。主动分享复用原生活事件情绪，不对自己的输出再评估一次。
 
@@ -65,6 +67,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    和PROTOCOL.md；安装后由你本人再向我询问允许读哪些贴吧，链接优先、吧名须实测验证。
    空许可库/验证失败不能自动逛。再询问是否允许阅读影响偏好与性情，默认关闭；主人已明确时不要再问。
    开启后按docs/PERSONALITY_GROWTH.md将current_persona.growth_overlay实际用于回复，不能只学措辞。
+   采用插件0.3.0时同时读docs/VOICE_TRIALS.md：先学具体词/短句，理解即试用；旧候选按真实
+   归档逐项review，不能批量改状态。稳定习惯经同一模型反思可进入长期性情。
    当前B站/抖音只是预留接口，不能声称已经会刷视频。
 
 4. 安装：克隆公开仓库，建立独立虚拟环境，python -m pip install .；在代码目录外选择
@@ -109,6 +113,8 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    按docs/LIFE_PROJECTS.md准备具体活动计划、2–6个阶段和原格式作品，未来草稿不注入聊天或记忆。
    按docs/FEEDBACK_HEARTBEAT.md把近期原文检查/有限情绪修正和面板刷新接入同一个15m任务，
    先停掉旧面板record/bind/runonce步骤及明确属于它的待发任务，不停其他页面任务。
+   可选阅读插件的真实assistant输出观察、usage_work/record_use及habit_growth_work/integrate
+   也放这一个15m任务里。解释词义、引用和调试不计实际采用；不重放情绪、抽签或旧发送。
 
 9. 记忆后台工作：相关scope分别summary_work→基于来源生成L2/L3→commit→ack，更新
    向量/合并候选/来源冲突；不要在每轮聊天做全量总结。人物用明确person_id/渠道映射，
@@ -167,7 +173,7 @@ v0.7.0新增独立可选的[阅读与成长插件](plugins/social-reading/README
 来源库、逐楼/楼中楼/图片引用/抽样缓存、同模型反思与长期语言习惯；安装不会获得浏览器权限。
 核心只附带插件管理接口，插件代码另行明确安装。安装后由机器人自己问主人许可贴吧，验证成功
 才读；目前Muse环境仍受百度安全验证限制。面板第8卡改为插件，刷新信息移到“关于”。
-先候选、试用、再稳定的说话机制实际注入prepare，不直接改SOUL。抖音/B站接口和能力验证计划
+具体词与说话机制实际注入prepare；v0.8.3已理解的新词不受旧3帖门槛限制，不直接重写SOUL。抖音/B站接口和能力验证计划
 见[视频适配路线](plugins/social-reading/FUTURE_VIDEO.md)。
 
 v0.6.1增加响应式“小屋”面板：精简首页、按需详情、48项情绪排序、私有人格与可选表情素材、事件成功后5分钟静默覆盖。实际原生任务仍需宿主接线；不附带作者的人格或GIF。见[面板部署与继承](docs/HOME_PANEL.md)。
@@ -192,6 +198,7 @@ python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" doctor
 - [逐步部署指南](DEPLOY_FOR_BOT.md) · [人格初始化](docs/PERSONA_ONBOARDING.md)
 - [情绪v2协议](docs/MODEL_EMOTION.md) · [六层系统复刻](docs/SYSTEM_REPLICATION.md)
 - [梗知识、自我迭代、串子与情绪倍率](docs/HUMOR.md)
+- [口头禅快速试用、纠正与长期性情](docs/VOICE_TRIALS.md)
 - [宿主任务与可选渠道](docs/HOST_TASKS.md) · [API](docs/API.md)
 - [私有GitHub记忆备份](docs/GITHUB_VAULT.md) · [可继承记忆与步骤](docs/INHERITANCE.md)
 - [架构维护与GitHub同步](docs/MAINTENANCE.md)

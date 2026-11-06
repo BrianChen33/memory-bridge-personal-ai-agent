@@ -68,6 +68,16 @@ v0.8.2接线必须再读LIFE_PROJECTS.md、MAIN_ENTRY.md和FEEDBACK_HEARTBEAT.md
 反馈只对真实近期缺失/无效原事件做按原时间衰减的有限修正，已成功、关系、期待、抽签和旧发送不重放。
 每日原格式SQLite快照已包含ct_activity_*和ct_feedback_*，不拆成大量单独作品文件。
 
+v0.8.3/plugin0.3.0必须再读docs/VOICE_TRIALS.md。每次真实阅读优先lexical_candidates最多8项，
+另style_candidates最多3项；同一模型理解即trial，不再等3帖。旧候选从实际归档逐项review/拆词，
+不批量改trial、不伪造采用次数。主人词义/场景/语气纠正分别更新，明确stop不得自动复活。
+在现有15m反馈任务的phase=feedback保留必要真实assistant项，按60KB总预算只传完整原文；
+usage_work→同一模型判断实际合适采用→record_use；3次跨2轮后稳定，不依赖主人表扬。
+已获人格成长授权时habit_growth_work→同一模型反思→habit_growth_integrate，真正投影到当前
+persona_growth.traits，而非只写面板或按词频改性格。原任务末尾照常静默刷新同一面板。
+普通context/commit仍仅取user，普通回复不新增前置调用。升级保留真实许可、阈值和其他设置。
+原格式SQLite已含sr_habit_profile/sr_output/sr_usage/sr_habit_growth*，私库架构锁更新到实际版本。
+
 `companion_panel`输出`exports/Companion面板.html`。按实际资料库文档发布；没有API/刷新证据就保留离线方式。GitHub只在用户选择后配置，使用专用私库；`vault.py`保留原始SQLite、按SHA去重原生文件、锁定架构commit。
 
 ## 7. 一次最终隔离验收与报告
@@ -85,4 +95,4 @@ v0.8.2接线必须再读LIFE_PROJECTS.md、MAIN_ENTRY.md和FEEDBACK_HEARTBEAT.md
 不把脚本检查说成平台拦截。长浏览返回重读新来信，真实读帖用finalize_reading+completion。
 既有情绪任务做只读抽样audit，不另起定时器，不回放历史情绪或重发旧消息。
 
-原生结果允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。
+正常context/commit允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。phase=feedback按v0.8.3额外保留必要真实assistant项，仅供表达使用证明。

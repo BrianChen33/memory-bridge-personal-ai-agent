@@ -47,7 +47,7 @@ def _eligible(b, row):
 
 
 def scan(b, q):
-    from muse_ext.companion import stamp, dump, _get, _set
+    from muse_ext.companion import stamp, dump, _get, _set, num
     from muse_ext.events import capture_event
     now = stamp()
     incoming = q.get('native_events', [])
@@ -59,7 +59,6 @@ def scan(b, q):
         if not isinstance(item,dict) or item.get('actor') != 'user' or item.get('source') != 'main:sticker':
             raise ValueError('feedback_actual_native_user_required')
         at = item.get('occurred_at')
-        from muse_ext.companion import num
         at = num(at, 1e13)
         if now-WINDOW <= at <= now-120:
             capture_event(b,dict(item,scope='owner-private',person_id='owner'))
@@ -84,7 +83,7 @@ def scan(b, q):
     coverage = q.get('coverage', {'origin':'captured_source_events_only'})
     if not isinstance(coverage,dict) or len(dump(coverage))>2000:
         raise ValueError('feedback_coverage_metadata_required')
-    coverage = {k:v for k,v in coverage.items() if k in ('chat_id','page','sample_size','origin')}
+    coverage = {k:v for k,v in coverage.items() if k in ('chat_id','page','sample_size','origin','partial')}
     with b.db:
         # Do not move past a very recent event still inside the grace period.
         # Keeping that lower barrier makes the next heartbeat see it normally.
@@ -95,7 +94,24 @@ def scan(b, q):
         b.db.execute('INSERT INTO ct_feedback_scan(at,coverage,checked,queued,already_valid) VALUES(?,?,?,?,?)',
                      (now,dump(coverage),checked,queued,valid))
         b.db.execute('DELETE FROM ct_feedback_scan WHERE id < (SELECT max(id)-96 FROM ct_feedback_scan)')
-    return dict(ok=True,checked=checked,queued=queued,already_valid=valid,
+    voice_usage=dict(status='not_requested')
+    outputs=q.get('native_outputs',[])
+    if not isinstance(outputs,list) or len(outputs)>20:
+        raise ValueError('feedback_native_output_sample_max20')
+    if outputs:
+        actual=[]
+        for item in outputs:
+            if not isinstance(item,dict) or item.get('chat_id')!=coverage.get('chat_id'):
+                raise ValueError('feedback_output_bound_chat_required')
+            at=num(item.get('occurred_at_ms'),1e16)
+            if now-WINDOW<=at/1000<=now:
+                actual.append(item)
+        try:
+            voice_usage=b.dispatch(dict(op='plugin_call',scope='owner-private',plugin='social-reading',
+                                        action='observe_outputs',outputs=actual))
+        except Exception as exc:
+            voice_usage=dict(ok=False,status='unavailable',error=type(exc).__name__)
+    return dict(ok=True,checked=checked,queued=queued,already_valid=valid,voice_usage=voice_usage,
                 coverage=coverage,window_hours=24,grace_seconds=120,scan_capped=len(rows)==200)
 
 

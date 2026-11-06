@@ -33,6 +33,11 @@ lock separately. Never publish private data. Follow docs/MAINTENANCE.md.
 
 Optional plugins are explicitly installed from hash-checked manifests; core init
 never installs one. Read plugins/social-reading/PROTOCOL.md before host binding.
+v0.8.3/plugin0.3.0 uses docs/VOICE_TRIALS.md: understood lexical entries trial at
+first real source;3 appropriate actual uses across2 turns may mature. Same-model
+usage/personality reflection joins the existing15m feedback job, with no extra
+pre-reply model. Typed meaning/context/tone corrections differ from explicit stop.
+Feedback-only assistant records are usage evidence, never emotional stimuli.
 The bot asks the owner for permitted sources AFTER install, verifies names/URLs,
 and never treats a blocked page as reading. Learned voice is source-backed and
 identity-preserving. Owner-opted personality growth may revise flexible SOUL

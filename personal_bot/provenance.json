@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "b70cf7545a33e50021152a08a66411c05bf57edbd469eca1243e120d9daa361a",
+    "__init__.py": "2bac936cbe51eccba91e15f8456d7005b8f5c97078fd4e7f8dc5ca6f95768fd9",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7d827b169c9c9cc67f9823c2f494b9c0eb56d7f562ce7968595b62258e4c433b",
     "deploy.py": "1e1d9bf8edd19d45c2bafa5bce49baa0612db74f2bd20793780bd2ac656c66cf",
@@ -104,13 +104,13 @@
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
     "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
     "runtime/main_entry_guard.mjs": "361012a06e73d3849e7e0b947f2098a2b19ca3c2fe68f011154f0b3e807a73de",
-    "runtime/main_native_entry.mjs": "bf4b3e73563e8db6b15f834bb4b026236c2305f2bf7f4bc88ef294b969b6c6c4",
+    "runtime/main_native_entry.mjs": "ccf969444db0a867c4e1294e10e5d0f1d8516c4369d35a270f15cf660c16dc0a",
     "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "7b9fc4934b6f0454564f861a2e5c2cec716aaeb1329c6075417b877d07e357f0",
+    "runtime/muse_ext/companion.py": "517b1bf97aacae8d1cce3b16db6731495063455f687ccdc4b7e016f8eaa3c539",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "9a0829137107aec4e648b8aa7a68874c6866e38cf0a0d351fd0429a93ff2661a",
+    "runtime/muse_ext/companion_panel.html": "25264de838c21f7fba4b2e3a3c4fd18e1798f368d4b9c987610a72c9c86a6acf",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -120,7 +120,7 @@
     "runtime/muse_ext/emotion_full48.py": "b7af33e4db4229057d3a4e74708da2061f2791ec634444e815f72f075d522291",
     "runtime/muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83",
     "runtime/muse_ext/expression.py": "e9222762caf9c67c43d7887e2a6342a82f815f877d2264f363fc1cb08cb8ad91",
-    "runtime/muse_ext/feedback.py": "a0125a329b3ad6d7f542d575a99938da63346ac07c85ef1215fb4a038ebf1407",
+    "runtime/muse_ext/feedback.py": "ac42bbba829b8307f151a9432dab4f0acf6c2f6559e5704ddffdd70eeeb4dd5f",
     "runtime/muse_ext/humor.py": "b429c0ead4def80dad8f32c8efe7da56e81148b085d1b4b87c838c6c3164daa9",
     "runtime/muse_ext/insights.py": "9999fdbd4e931c728431d3983b09ffa54363810b02f7e56741ac438a437a8a0f",
     "runtime/muse_ext/life_projects.py": "3b1185dc5c8822503798aac23391cc0ea27d04b1812ea745edafe022c43969a7",
@@ -145,7 +145,7 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "71f403050b757940d37c6a269aa0175e8e28c05c33abceebc05a02011a67f671",
-    "vault.py": "9a22388ed1a4bfb755b31389d9dc83465b0f53081c409ef7648651597608a468"
+    "vault.py": "4b6e6696f4e2b87257ab587ba4b6b8ae494f22b88ccc736c81dc04edce84fc19"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -297,5 +297,21 @@
       "panel refresh joins existing emotion heartbeat; delayed runonce rule retired"
     ],
     "boundary": "same host model; no native-final interception; no private sources bundled"
+  },
+  "fast_voice_growth_update": {
+    "date": "2026-11-06",
+    "release": "0.8.3",
+    "runtime": "2.6.1",
+    "plugin_version": "0.3.0",
+    "plugin_manifest_sha256": "f346aa2bf36fa513e5c8e6ccd2b631b2fe3c59db75b34f3c36dc8a4b9ac59e1a",
+    "changes": [
+      "source-backed lexical understanding admits first-source trials",
+      "granular meaning/context/tone correction and durable explicit stop",
+      "three appropriate native-output uses across two turns build fluency without source-confidence inflation",
+      "existing feedback heartbeat observes actual output; 60KB lossless request budget",
+      "same-model stable-habit reflection joins current personality with shared daily budgets",
+      "offline panel and native-format private inheritance retain sources corrections usage and traits"
+    ],
+    "boundary": "same host model; no extra pre-reply stage, schedule, external model or native-final interception"
   }
 }

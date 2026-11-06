@@ -91,6 +91,31 @@ finally:
         path = self.root / 'requests.jsonl'
         return [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()] if path.exists() else []
 
+    def test_feedback_captures_actual_assistant_usage_separately_from_emotion(self):
+        sys.path.insert(0,str(deploy.RUNTIME))
+        from brain import Brain
+        b=Brain(self.root)
+        try:
+            b.dispatch(dict(op='plugin_manage',scope='owner-private',plugin='social-reading',action='install',
+                source_dir=str(Path(__file__).resolve().parents[1]/'plugins/social-reading')))
+            b.dispatch(dict(op='plugin_manage',scope='owner-private',plugin='social-reading',action='enable'))
+        finally:
+            b.close()
+        native=copy.deepcopy(self.native)
+        native['turns'][0]['items'][0].update(content='A real-shape isolated assistant expression.',
+                                            occurred_at_ms=int((time.time()-150)*1000))
+        native['turns'][0]['items'][1]['occurred_at_ms']=int((time.time()-180)*1000)
+        code,result=self.run_entry('feedback',native=native)
+        self.assertEqual(code,0,result)
+        self.assertEqual(self.count('sr_output'),1)
+        self.assertEqual(self.count('source_events'),1)
+        self.assertEqual(self.count('ct_appraisal'),0)
+        self.assertEqual(self.requests()[0]['native_outputs'][0]['seq'],10)
+        code,result=self.run_entry('feedback',native=native)
+        self.assertEqual(code,0,result)
+        self.assertEqual(self.count('sr_output'),1)
+        self.assertFalse((self.workspace/'stickers/decisions').exists())
+
     def count(self, table):
         with closing(sqlite3.connect(self.root / 'data' / 'brain.sqlite')) as db:
             return db.execute('SELECT count(*) FROM ' + table).fetchone()[0]
@@ -311,6 +336,24 @@ finally:
         self.assertFalse(invalid['assessment_required'])
         self.assertEqual(self.count('source_events'), 1)
         self.assertEqual(self.count('ct_appraisal'), 1)
+
+
+    def test_feedback_selects_lossless_records_under_the_real_stdin_byte_limit(self):
+        native=copy.deepcopy(self.native)
+        now=int((time.time()-180)*1000)
+        native['turns'][0]['items']=[dict(role='user',content='原样保留的用户输入',seq=1,occurred_at_ms=now)]
+        for i in range(4):
+            native['turns'][0]['items'].append(dict(role='assistant',content='字'*6000,
+                seq=2+i,occurred_at_ms=now+1000+i))
+        code,result=self.run_entry('feedback',native=native)
+        self.assertEqual(code,0,result)
+        sent=self.requests()[0]
+        self.assertLessEqual(len(json.dumps(sent,ensure_ascii=False).encode('utf-8')),65536)
+        self.assertTrue(sent['coverage']['partial'])
+        self.assertEqual(sent['native_events'][0]['text'],'原样保留的用户输入')
+        self.assertTrue(all(x['text']=='字'*6000 for x in sent['native_outputs']))
+        self.assertGreater(len(sent['native_outputs']),0)
+        self.assertLess(len(sent['native_outputs']),4)
 
 
 if __name__ == '__main__':
