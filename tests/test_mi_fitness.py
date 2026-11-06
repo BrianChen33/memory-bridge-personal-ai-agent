@@ -92,6 +92,14 @@ class MiFitnessAcceptance(unittest.TestCase):
         self.assertEqual(value['status'], 'awaiting_summary_privacy_choice')
         self.assertNotIn('recent', value)
 
+    def test_background_worker_pins_china_timezone_on_utc_cloud_hosts(self):
+        brain = Path(self.temp.name) / 'brain'
+        brain.mkdir()
+        (brain / 'mi-fitness.json').write_text(json.dumps({'private_dir': str(self.private), 'worker_python': 'unused'}))
+        with patch.object(shim.subprocess, 'run', return_value=Item(stdout='{"ok":true}')) as run:
+            self.assertTrue(shim.dispatch(Item(root=brain), {'scope':'owner-private','action':'sync'})['ok'])
+        self.assertEqual(run.call_args.kwargs['env']['TZ'], 'Asia/Shanghai')
+
     def test_newest_workouts_remain_in_compact_projection(self):
         workouts = [Item(start_epoch_s=self.now-i*100, end_epoch_s=self.now-i*100+1, sport='walking',
                          duration_s=1, distance_m=1, active_kcal=1, steps=i) for i in range(3)]

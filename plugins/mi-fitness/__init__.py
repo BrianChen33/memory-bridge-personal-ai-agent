@@ -1,5 +1,6 @@
 """Optional owner-private sleep/activity plugin; foreground never contacts Xiaomi."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -89,7 +90,8 @@ def dispatch(b, q):
                  '--receipt', str(q.get('receipt', ''))]
     try:
         done = subprocess.run(args, capture_output=True, text=True, timeout=75,
-                              encoding='utf-8', errors='replace')
+                              encoding='utf-8', errors='replace',
+                              env={**os.environ, 'TZ': 'Asia/Shanghai'})
         if len(done.stdout) > 150000:
             raise ValueError('health_worker_output_too_large')
         result = json.loads(done.stdout)

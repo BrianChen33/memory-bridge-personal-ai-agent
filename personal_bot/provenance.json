@@ -405,7 +405,7 @@
     "plugin_id": "mi-fitness",
     "plugin_version": "0.1.0",
     "dependency": "mifit==0.4.0",
-    "plugin_manifest_sha256": "0d89e03bed88783299e76bb29b236d1c40839b719b4c13ae8be42c8afe3e7e9f",
+    "plugin_manifest_sha256": "8d513a32e9403aa9478ff3d1aa9e59ce2460e1ad99ae9b3881c0f9954f59a9cd",
     "changes": [
       "owner-private fixed sleep/steps/activity/workout summaries only",
       "local QR to recipient-bound encrypted credential delivery",
@@ -417,7 +417,8 @@
       "isolated": "463 Python and13 Node passed; platform-dependent skips retained",
       "wheel": "accepted outside checkout",
       "review": "one read-only review; two focused regressions RED then9 focused cases GREEN",
-      "host": "pending; do not claim cloud handoff or natural proactive delivery"
+      "host": "pending; do not claim cloud handoff or natural proactive delivery",
+      "focused": "10 focused cases passed after review and process-timezone binding"
     }
   }
 }

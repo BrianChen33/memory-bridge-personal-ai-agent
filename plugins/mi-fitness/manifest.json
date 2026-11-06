@@ -6,8 +6,8 @@
   "source": "https://github.com/Jenwein/mifit",
   "dependency": "mifit==0.4.0",
   "files": {
-    "__init__.py": "ad5f71563f0d4168ab9914e154c3d171f83105554c8e5b3e122c29430b1d1098",
-    "bridge.py": "3b39253c7d0f0ffdd33203f57456eeb52ffd088b8285b9aca9337b03ba5df789",
+    "__init__.py": "8cd9e27420d79a6848172bba0ea7a0fa8904634e52e84ff7a2909ac3efc6f028",
+    "bridge.py": "6e42230a919283d262a4c1c69366d933791aeddc97b3b4f7e5e852e9823350c0",
     "handoff.py": "99d8c7b6b812dee0cf5b0acb02c69244e8b7076bb5b2a9482333c759a245fcdd",
     "local_login.py": "a22f88958b94f8b7b47f0cbb05bfd71549b796c5f569cb3a99b0595fbdbe1447",
     "README.md": "cef9ff02a74bf6d450fbdcdf3f4836b551343e78ac83de917c1cdbbea312b301",

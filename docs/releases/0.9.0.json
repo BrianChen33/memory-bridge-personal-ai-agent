@@ -35,7 +35,7 @@
     },
     {
       "path": "personal_bot/provenance.json",
-      "sha256": "996765ebbd213636c69123f894863ab23e8772e40e5985cc1681a02cc529cf5e"
+      "sha256": "67e70824c6a456542cbe0b2b6f6db23b7c32a3c0a0426964b820bd5beca2c9a4"
     },
     {
       "path": "pyproject.toml",
@@ -43,15 +43,15 @@
     },
     {
       "path": "tests/test_mi_fitness.py",
-      "sha256": "a10ba2e0775ca9f63e2d1789c1f259d0d8ff6108b1901130d74e713904c04cfa"
+      "sha256": "5de0ee927179d0ac382c3136246bcec560cd89a7ef0a0bedc7a02701cc5d7eab"
     },
     {
       "path": "plugins/mi-fitness/__init__.py",
-      "sha256": "ad5f71563f0d4168ab9914e154c3d171f83105554c8e5b3e122c29430b1d1098"
+      "sha256": "8cd9e27420d79a6848172bba0ea7a0fa8904634e52e84ff7a2909ac3efc6f028"
     },
     {
       "path": "plugins/mi-fitness/bridge.py",
-      "sha256": "3b39253c7d0f0ffdd33203f57456eeb52ffd088b8285b9aca9337b03ba5df789"
+      "sha256": "6e42230a919283d262a4c1c69366d933791aeddc97b3b4f7e5e852e9823350c0"
     },
     {
       "path": "plugins/mi-fitness/handoff.py",
@@ -63,7 +63,7 @@
     },
     {
       "path": "plugins/mi-fitness/manifest.json",
-      "sha256": "0d89e03bed88783299e76bb29b236d1c40839b719b4c13ae8be42c8afe3e7e9f"
+      "sha256": "8d513a32e9403aa9478ff3d1aa9e59ce2460e1ad99ae9b3881c0f9954f59a9cd"
     },
     {
       "path": "plugins/mi-fitness/README.md",

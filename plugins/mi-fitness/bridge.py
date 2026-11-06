@@ -234,6 +234,10 @@ def settle(db, candidate, outcome, receipt):
 
 
 def main():
+    # mifit interprets day strings in process-local time; the cloud VM may be UTC.
+    os.environ['TZ'] = 'Asia/Shanghai'
+    if hasattr(time, 'tzset'):
+        time.tzset()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--private-dir', required=True)
     parser.add_argument('--scope', required=True, choices=['owner-private'])
