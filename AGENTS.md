@@ -14,7 +14,9 @@ extra external model. Wire real before-reply context and prompts. Virtual life,
 dreams and observed reading must keep distinct provenance. Relationship scores
 never confer permissions. Every event/draw/receipt is idempotent.
 Current companion requests accept v2 with the shared emotion48 catalogue.
-New main-chat appraisals use full48-v1 and its generated complete template;
+New main-chat reply_driver uses compact48-v1 (affected labels only, omitted=0),
+locally canonicalized to full48-v1 before unchanged validation/math/storage.
+Legacy full48-v1 input still requires its generated complete template;
 sparse v2 remains for existing channel adapters, not as the new main-chat rule.
 New native main-chat binding uses docs/MAIN_ENTRY.md: lossless source selection,
 context then model-supplied commit, local validation and sampled read-only audits.
@@ -66,8 +68,9 @@ Banter level defaults to50; reactive counterattack is independent of proactive
 banter. Multiply validated raw emotion increments once, never relationships or
 half-lives. No chat text/submissions/credential registration to the Wiki.
 
-Current0.8.4 uses docs/FAST_REPLY.md: reply_driver context returns a private source
- ticket; SAME model commits complete full48 before text. Local reply_media reuses
+Current0.8.5 uses docs/FAST_REPLY.md: reply_driver context returns a private source
+ ticket; SAME model commits the returned compact template before text, locally
+ expanded to full48. Local reply_media reuses
  the single draw and verified cached assets; prepared is not delivered. No new
  per-turn scripts, repeat prepare or protocol rereads. Real receipts only finish.
  Read docs/READING_QUEUE.md: all new manual/phone social reading goes through the
@@ -75,3 +78,10 @@ Current0.8.4 uses docs/FAST_REPLY.md: reply_driver context returns a private sou
  most one bounded batch. Stage actual results before reflection; overdue native
  tasks require reconciliation, never a new lease to repair ingestion. Keep real
  settings and task identities; verify future scheduler read-back for handoffs.
+
+Current0.8.5 corrects approval-seeking appraisal inside the SAME existing pass.
+Use docs/MODEL_EMOTION.md: personal significance/needs/energy/expectations, not
+service success or the desired upbeat reply. Neutral and mixed reactions are
+valid; no negative quota or random mood. Express current reaction with residual
+mood, allowing cooperation and disagreement together. No forced cheerful ending.
+Keep48 names, gain/decay, settings, histories, once-only draws and native boundaries.

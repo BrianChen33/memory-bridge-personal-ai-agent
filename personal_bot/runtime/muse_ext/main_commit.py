@@ -4,6 +4,7 @@ import math
 
 
 def commit(b,q):
+    from muse_ext.emotion_full48 import INPUT_FORMATS
     from muse_ext.companion import assess, emotion_effect, context, mood
     from muse_ext.emotion_catalog import reaction
     from muse_ext.feedback import note
@@ -24,7 +25,7 @@ def commit(b,q):
     saved=b.db.execute('SELECT payload FROM ct_appraisal WHERE event=?',(eid,)).fetchone()
     if raw is None and saved and b.db.execute('SELECT 1 FROM ct_emotion_full48 WHERE event=?',(eid,)).fetchone():
         result=dict(status='replayed',source_event=eid,effect=emotion_effect(b,eid))
-    elif not isinstance(raw,dict) or raw.get('format')!='full48-v1':
+    elif not isinstance(raw,dict) or raw.get('format') not in INPUT_FORMATS:
         result=dict(status='invalid',detail='main_commit_full48_required')
     else:
         result=assess(b,eid,raw,lambda *_:dict(status='conflict'))

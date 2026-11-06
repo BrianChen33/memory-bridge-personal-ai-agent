@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.4；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.5；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -80,11 +80,11 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    启用本地能力：python -m personal_bot --root STATE enable。
    向量默认关闭，资源足够时再按README后的向量说明独立安装/常驻，不逐消息冷加载。
    用自己的正式主聊入口绑定每轮真实source/event_id/occurred_at/actor/scope，保留原始正文。
-   主聊固定context预读 → 你本人当前回复模型填写full48 → ticket commit保存并读回
+   主聊固定context预读 → 你本人当前回复模型填写compact48实际变化 → ticket commit扩展保存full48并读回
    新状态 → 组文；已有QQ/微信等适配器保留自己的兼容协议。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
    把companion、scene_context、persona_context、reaction实际交给回复模型，不能只修改解析器。
    用私有presentation-profile.json绑定精简的当前人格；每轮传入current_persona及其SHA，不能用旧L3摘要代替SOUL。
-   v0.6.4主聊直接填写context返回的emotion_template（full48-v1）：48项全部提交，不能猜additional_labels等字段。
+   v0.8.5主聊按driver返回的compact48-v1模板只报实际变化、未报为0，可为空；本地补全48项保存。旧full48输入仍须全键。不能猜additional_labels等字段。
    ordinary事件在倍率1.5下通常0.01–0.03，salient事件可到0.1–0.2；允许0，程序限总量、倍率只乘一次。
    检查pipeline_ok和emotion_validation，invalid按具体字段提示修正同一事件，不把降级抽签当作情绪保存成功。
 
@@ -218,3 +218,10 @@ AGPL-3.0-or-later，见LICENSE与NOTICE。受memory-brain启发，来源和移�
 反思；超时先核对确切原生任务，不重读修登记。15m情绪保持短任务，30m生活/2h阅读分批消费。
 保留六层、用户配置与单浏览名额；没有额外情绪模型、原生final拦截或固定秒数承诺。
 面板展示局部计时与队列真实状态；私库包含队列但迁移不会自动重启旧任务。
+
+## v0.8.5：感受自主，填写精简
+保留48情绪词表，主聊只报告真正变化的项，程序补齐48项后按原规则保存；旧格式继续兼容。
+同一回复模型依人格、需要、精力和期待判断，配合任务不自动等于开心，允许中性、混合和
+有依据的不悦；真实高兴仍可高兴。不增加模型/判断阶段，不用随机负面比例，见
+[当前情绪协议](docs/MODEL_EMOTION.md)。复制安装提示词时，当前driver的新模板优先，
+退役“每轮手写全部48个零”的旧主聊提示；原情绪历史、倍率与表情策略不重置。

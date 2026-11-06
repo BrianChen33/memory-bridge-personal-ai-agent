@@ -6,8 +6,12 @@ import subprocess
 import unittest
 import hashlib
 import time
+import sqlite3
+import sys
+from contextlib import closing
 
 from personal_bot import deploy
+sys.path.insert(0,str(deploy.RUNTIME))
 import test_lean_entry as entry_fixture
 
 
@@ -70,10 +74,10 @@ class ReplyDriver(entry_fixture.LeanEntry):
             self.assertNotEqual(code, 0, result)
         self.assertEqual(len(self.requests()), 1)
 
-    def test_driver_incomplete_assessment_can_repair_same_ticket_without_reroll(self):
+    def test_driver_invalid_compact_assessment_can_repair_same_ticket_without_reroll(self):
         _, prepared = self.driver(phase='context', native_response=self.native)
         malformed = copy.deepcopy(prepared['context']['emotion_template'])
-        malformed['emotion_deltas'].pop(next(iter(malformed['emotion_deltas'])))
+        malformed['emotion_deltas']['not-an-emotion'] = .01
         code, rejected = self.driver(phase='commit', ticket=prepared['ticket'], emotion_assessment=malformed)
         self.assertNotEqual(code, 0, rejected)
         code, repaired = self.driver(phase='commit', ticket=prepared['ticket'],
@@ -81,6 +85,29 @@ class ReplyDriver(entry_fixture.LeanEntry):
         self.assertEqual(code, 0, repaired)
         self.assertTrue(repaired['ready_to_send'])
         self.assertEqual(rejected['decision']['roll'], repaired['decision']['roll'])
+
+    def test_driver_compact_roundtrip_saves48_and_full_equivalent_replay_does_not_retrieve_or_reroll(self):
+        from muse_ext.emotion_catalog import LABELS
+        _,prepared=self.driver(phase='context',native_response=self.native)
+        assessment=prepared['context']['emotion_template']
+        self.assertEqual(assessment['format'],'compact48-v1')
+        self.assertEqual(assessment['emotion_deltas'],{})
+        assessment['emotion_deltas'].update(不满=.01,亲近=.005)
+        code,first=self.driver(phase='commit',ticket=prepared['ticket'],emotion_assessment=assessment)
+        self.assertEqual(code,0,first)
+        with closing(sqlite3.connect(self.root/'data/brain.sqlite')) as db:
+            stored=json.loads(db.execute('SELECT payload FROM ct_appraisal').fetchone()[0])
+            receipt=json.loads(db.execute('SELECT payload FROM ct_emotion_full48').fetchone()[0])
+        self.assertEqual(stored['format'],'full48-v1')
+        self.assertEqual(set(receipt['raw']),set(LABELS))
+        self.assertEqual(receipt['raw']['不满'],.01)
+        full=copy.deepcopy(assessment)
+        full.update(format='full48-v1',emotion_deltas={label:assessment['emotion_deltas'].get(label,0) for label in LABELS})
+        code,replay=self.driver(phase='commit',ticket=prepared['ticket'],emotion_assessment=full)
+        self.assertEqual(code,0,replay)
+        self.assertEqual(first['decision']['roll'],replay['decision']['roll'])
+        self.assertEqual(self.count('ct_appraisal'),1)
+        self.assertEqual([q['op'] for q in self.requests()],['prepare','companion_commit','companion_commit'])
 
     def test_driver_coherent_rebinding_and_python_runtime_upgrade_invalidate_ticket(self):
         _,old=self.driver(phase='context',native_response=self.native)

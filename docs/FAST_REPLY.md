@@ -1,4 +1,4 @@
-# 固定主聊入口 · v0.8.4
+# 固定主聊入口 · v0.8.5
 
 目标是减少工具编排，不跳过人格、记忆、同模型full48评估或每轮一次表情决策。
 Muse没有公开native-final/after_reply拦截，下面是宿主明确调用的固定驱动，不是新平台API。
@@ -12,9 +12,9 @@ node /actual/stickers/src/reply_driver.mjs --root /actual/workspace --chat-id AC
 
 1. 宿主真实chat.read_messages取源，传`{phase:context,native_response:真实返回}`。
    允许MAIN_ENTRY.md规定的无损user投影。固定请求文件可以覆盖，不能手抄/截断原文。
-   返回ticket、context、完整emotion_template。票据仅在私有目录保存选中turn全部真实user项。
-2. 同一个回复模型结合当前人格/语境逐项填写48个增量，传
-   `{phase:commit,ticket:刚才值,emotion_assessment:完整模板}`。保留context供组文。
+   返回ticket、context和compact48-v1的emotion_template；保留原48词表，只填写实际变化。票据仅在私有目录保存选中turn全部真实user项。
+2. 同一个回复模型结合当前人格/语境判断自身感受；emotion_deltas只报实际变化，未报为0、可为空，传
+   `{phase:commit,ticket:刚才值,emotion_assessment:按返回格式填好的完整信封}`。保留context供组文。
    可以同次传media_query/media_emotion作为宽松选图偏好。没有独立情绪模型或第二次prepare。
 3. `ready_to_send=true`后直接回复。commit抽中时自动读取本地索引，从宽松前10个有效候选中
    随机选一个，校验缓存并返回`media.path`。同一次native final先全部短句，最后附真实本地图片。
@@ -42,3 +42,7 @@ emotion、text、tags/use/desc；`assets/<hash>.gif`须魔数及hash相符。代
 不是模型耗时。stats只读。尚无平台分段遥测时，不能声称测到了排队或承诺固定秒数。
 
 隐私：reply-rounds含原始来信，只留私有环境，不进公共库。迁移不导入旧票据重放消息。
+
+v0.8.5只精简模型填写；本地验证前扩展为完整48项，旧full48输入仍严格校验。
+按MODEL_EMOTION.md先看个人意义，不把执行请求自动当开心。正文用当前reaction+残留mood，
+没有额外前置自省或新模型调用。不要把旧“必须手写48个零”的规则再注入新driver主聊。

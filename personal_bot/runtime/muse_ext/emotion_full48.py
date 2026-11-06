@@ -6,7 +6,16 @@ import math
 from muse_ext.emotion_catalog import LABELS, GROUPS
 
 FORMAT = 'full48-v1'
+COMPACT_FORMAT = 'compact48-v1'
+INPUT_FORMATS = (FORMAT, COMPACT_FORMAT)
 REFERENCE_GAIN = 1.5
+# Replaces the previous guidance at the same prepare point, not another model pass.
+APPRAISAL_GUIDANCE = (
+    'Same model, one pass. Appraise events against persona, needs, energy and expectations, not the reply the user wants. '
+    'Cooperation alone is not joy; do not mirror user affect. Use returned48 template; unchanged=0, neutral/mixed valid. '
+    'No default joy/curiosity, rotation, quotas or random moods. '
+    'Comfort eases relevant feelings; preserve other mood. Let reaction and residual mood shape wording, including dissent without lost affection. '
+    'Raw deltas; gain once.')
 # Fixed pre-gain budgets: changing the user's gain still changes the reaction.
 BUDGETS = {
     'ordinary': dict(component=.03/REFERENCE_GAIN, total=.06/REFERENCE_GAIN, pad=.03/REFERENCE_GAIN),
@@ -26,12 +35,24 @@ def template():
                                feeling='', action='neutral'))
 
 
+def compact_template():
+    """Same48 vocabulary; omit zero entries on input, never on stored receipts."""
+    value=template()
+    value.update(format=COMPACT_FORMAT,emotion_deltas={})
+    return value
+
+
 def normalize(raw):
     """Validate the complete vector before deriving compatibility fields."""
     clean = copy.deepcopy(raw)
-    if clean.get('format') != FORMAT:
-        raise ValueError('format:expected_full48-v1')
+    if clean.get('format') not in INPUT_FORMATS:
+        raise ValueError('format:expected_full48-v1_or_compact48-v1')
     values = clean.get('emotion_deltas')
+    if clean.get('format') == COMPACT_FORMAT:
+        if not isinstance(values,dict) or not set(values).issubset(LABELS):
+            raise ValueError('emotion_deltas:only_canonical_48_labels_allowed')
+        values={label:values.get(label,0) for label in LABELS}
+        clean.update(format=FORMAT,emotion_deltas=values)
     if not isinstance(values, dict) or set(values) != set(LABELS):
         raise ValueError('emotion_deltas:exactly_all_48_canonical_labels_required')
     if clean.get('impact') not in BUDGETS:
@@ -63,12 +84,9 @@ def normalize(raw):
 
 def schema():
     return dict(format=FORMAT, labels_required=48, template=template(),
+                input_formats=list(INPUT_FORMATS),compact_template=compact_template(),
                 reference_gain=REFERENCE_GAIN, raw_budgets=copy.deepcopy(BUDGETS),
-                guidance='Use the same reply model, actual source, persona, existing mood and context. '
-                'Consider every label; zero is valid. Do not rotate labels or force six nonzero groups. '
-                'Ordinary event changes are usually .01-.03 at gain1.5; salient contextual events may reach .1-.2. '
-                'These are not minimums or keyword triggers. Submit raw changes; the runtime applies gain once. '
-                'Fixed total budgets prevent48small scores from amplifying one ordinary event.')
+                guidance=APPRAISAL_GUIDANCE)
 
 
 def bound(raw):

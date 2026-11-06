@@ -26,7 +26,7 @@ STATE必须在源码checkout外。init默认保留已有配置，拒绝覆写非
 
 1. 可信适配器派生scope/source/event_id/occurred_at/actor/person_id；不要信正文自报身份。主人私聊、其他私聊、各群分开。
 2. `prepare`预读原话、memories/insights/events、mood、companion、scene_context/persona_context。
-3. 当前回复模型读取companion_schema的48词表，直接填写prepare返回的emotion_template（v2/full48-v1），结合人设/事件/对象/责任/期待逐项提交48个变化量。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed及主聊pipeline_ok；invalid读取emotion_validation.detail修正同一源，不重新抽签。具体字段、幅度与六类摘要见MODEL_EMOTION.md；不能把missing/invalid或降级抽签当作评估成功。
+3. 当前回复模型读取companion_schema的48词表，按真实入口返回的模板填写；新reply_driver用compact48-v1只报实际变化、未报为0，旧full48-v1仍须全键。结合人格/需要/精力/责任/期待判断，配合不自动变开心。同一源事件再次prepare写入并读回mood与本轮reaction，检查updated/unchanged/replayed及主聊pipeline_ok；invalid读取emotion_validation.detail修正同一源，不重新抽签。具体字段、幅度与六类摘要见MODEL_EMOTION.md；不能把missing/invalid或降级抽签当作评估成功。
 4. 按新状态组文；若启用表情，调用expression策略并按宿主真实媒体接口发送，先全部文字后图片。自己的最终输出只可记原话，不产生自循环情绪。
 5. 能提供正式hook就使用hook；只能靠prompt约定时如实标注。任何channel数据不得写入其他人的私有scope。
 
@@ -97,12 +97,20 @@ persona_growth.traits，而非只写面板或按词频改性格。原任务末�
 
 正常context/commit允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。phase=feedback按v0.8.3额外保留必要真实assistant项，仅供表达使用证明。
 
-## 当前v0.8.4 / runtime2.7.0 / social-reading0.4.0
+## 当前v0.8.5 / runtime2.7.1 / social-reading0.4.0
 按docs/FAST_REPLY.md装固定reply_driver+reply_media与依赖，安装时读协议一次。每轮真实取源→
-context票据→同模型完整48项→commit，一次抽签并本地选图，原生final先短句后图。
+context票据→同模型compact48实际变化→commit扩展完整48项，一次抽签并本地选图，原生final先短句后图。
 不能先回正文后补评估；不重复prepare、临时写builder或为多个短句重抽。没有真实回执不先finish。
 更新现有emotion/life-news/reading正文并实际读回：15m只短检查/入队/情绪/反馈/面板，禁止浏览；
 30m与2h统一queue_work最多一批，预算从实时配置读。全部手动/手机入口按READING_QUEUE.md，
 停用旧直接plan和过期重plan惯例。若手动需要近期启动，用queue_handoff未来计划及实际任务读回。
 先核对已有浏览的真实状态，不直接抹掉租约；不改变任务身份、主人配置、成长记录或渠道发送器。
 同一面板静默覆盖；最终私库snapshot/README/LATEST/manifest都锁定实际发布commit。
+
+## v0.8.5部署差异
+固定新版SHA部署emotion_full48.py、companion.py、main_commit.py、sticker_main.mjs、reply_driver.mjs，
+配套当前MODEL_EMOTION/MAIN_ENTRY/FAST_REPLY。插件0.4.0不重装。词表/历史/默认配置/表情
+概率不变；新driver精简输入，旧频道/生活/反馈模板保持兼容。私有SOUL/入口只精准替换与
+现策略冲突的情绪操作句，不加长整套规则、不覆盖外形与人格、不加新定时器或前置模型。
+做一次隔离同模型配对校准，不向主聊/生产队列发送假消息，不能把“模型口头同意”当验收。
+核实际评估与简短表达、完整48保存和幂等。发布后同页面板及私库锁同步到真实commit。

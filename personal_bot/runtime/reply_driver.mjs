@@ -114,7 +114,7 @@ function main(){
   if(process.argv.includes('--help'))return {ok:true,
     usage:'reply_driver.mjs --root WORKSPACE --chat-id TRUSTED_CHAT < JSON',
     context:'{phase:context,native_response:ACTUAL_TOOL_RESULT}',
-    commit:'{phase:commit,ticket:RETURNED_TICKET,emotion_assessment:COMPLETE_FULL48}',
+    commit:'{phase:commit,ticket:RETURNED_TICKET,emotion_assessment:FILLED_CONTEXT_TEMPLATE}',
     optional:'commit may include fresh native_response after long tools; gate/stats are read-only protocol checks',
     boundary:'same host model appraises48 before text; no native-final interception or sender'};
   if(!root||!chat)return {ok:false,error:'trusted_workspace_and_chat_required'};
@@ -130,6 +130,12 @@ function main(){
     executed=run({phase,native_response:request.native_response,
       ...(request.target_seq===undefined?{}:{target_seq:request.target_seq}),
       ...(request.target_turn_id===undefined?{}:{target_turn_id:request.target_turn_id})});
+    if(executed.result.ok&&executed.result.context?.emotion_template?.format==='full48-v1'){
+      executed.result.context.emotion_template={...executed.result.context.emotion_template,
+        format:'compact48-v1',emotion_deltas:{}};
+      executed.result.context.emotion_protocol={...executed.result.context.emotion_protocol,
+        preferred_format:'compact48-v1'};
+    }
     if(executed.result.ok&&executed.result.native_source&&executed.result.formal_entry?.context_recorded)
       record=remember(request.native_response,executed.result.native_source,executed.result.turnId);
   }else{
@@ -149,7 +155,7 @@ function main(){
   return {...executed.result,...(record?{ticket:record.ticket}:{}),timing,
     driver:'fixed-source-ticket-v1',next:executed.result.ready_to_send?
       'Reply now from the retained context and updates. Optional maintenance must not delay text.':
-      phase==='context'&&record?'The SAME host model supplies the complete emotion_template to commit with this ticket; no builder script or second prepare.':
+      phase==='context'&&record?'The SAME host model fills the template with affected labels only (omitted=0); commit this ticket. No extra reflection or second prepare.':
       'Use the specific validation error; no reroll, invented input or repeated repair loop.'};
 }
 try{const result=main();process.stdout.write(JSON.stringify(result)+'\n');if(!result.ok)process.exitCode=1;}

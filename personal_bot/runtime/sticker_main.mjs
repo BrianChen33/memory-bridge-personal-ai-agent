@@ -86,7 +86,7 @@ function main(){
     event_id:q.turnId,occurred_at:at,text:q.text,actor,person_id:'owner',sender_type:'human'};
   if(phase==='commit')req.source_event=prepared.event_id;
   if(finalizing&&q.emotion_assessment!==undefined)
-    req.emotion_assessment={...q.emotion_assessment,format:'full48-v1'};
+    req.emotion_assessment={...q.emotion_assessment,format:q.emotion_assessment?.format??'full48-v1'};
   if(finalizing)for(const key of ['humor_assessment','meme_updates'])if(q[key]!==undefined)req[key]=q[key];
   const p=runBrain(req);
   let status=p.emotion?.status||(p.ok?'missing':'error');

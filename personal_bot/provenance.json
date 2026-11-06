@@ -338,5 +338,42 @@
       "personal_bot/runtime/muse_ext/companion_panel.html": "ca70165200f71232d2a05b2261c8e02787b7754c880476d5dd5f530c8eeb1b50",
       "personal_bot/vault.py": "0b40eee066f40d4f865c045da2bebc1a17ca3244577fee34d6bc921a2ff1c501"
     }
+  },
+  "independent_appraisal_update": {
+    "date": "2026-11-07",
+    "release": "0.8.5",
+    "runtime": "2.7.1",
+    "plugin_version": "0.4.0",
+    "changes": [
+      "replace existing same-pass appraisal and expression instructions without adding labels or a model",
+      "compact48-v1 foreground input reports changed canonical labels; lossless full48-v1 storage before unchanged math",
+      "strict legacy input, gain/decay/source binding, histories and once-only draw remain intact",
+      "same-model isolated paired calibration; no fabricated negative quotas or production sends"
+    ],
+    "boundary": "instruction correction and input compression; no guarantee of subjective feelings or platform latency",
+    "portable_hashes": {
+      "personal_bot/runtime/muse_ext/emotion_full48.py": "64fad437527bf9a85625b0ddede0ef45153516e1ce92bc59167bbc371d9dc9ee",
+      "personal_bot/runtime/muse_ext/companion.py": "4a2424d04baab1ca2a54fe5ebd0bdaf34532430474413db57bd8c61b22b98361",
+      "personal_bot/runtime/muse_ext/main_commit.py": "587e81d0ff8242bd21c1eaa42305860f4cef902c83bcf7eaad5f7bb0eb8ddd89",
+      "personal_bot/runtime/sticker_main.mjs": "38129adb0e9ee51eda0f85d306e12c1acd73958864342fb82b6233bfc29675c8",
+      "personal_bot/runtime/reply_driver.mjs": "b59142668ed3d336e35991c30ebfedecbf29c7108956a69852fe67e218d71230",
+      "personal_bot/vault.py": "fa7e4540b8051055bf12f03ec9084f74916d1e4686599bd4d1fe80229070d513"
+    },
+    "validation": {
+      "independent_review": "one read-only review; code path accepted, documentation contradictions corrected",
+      "isolated_runtime": "initial248-test suite: one test-only Windows SQLite cleanup error corrected; focused driver10 and compact5 pass; remaining runtime208 and Node13 pass",
+      "wheel": "accepted outside checkout",
+      "host_calibration": "pending deployment; do not claim natural-chat results"
+    },
+    "tokenizer_proxies": {
+      "o200k_base": {
+        "foreground_old": 458,
+        "foreground_new": 216
+      },
+      "cl100k_base": {
+        "foreground_old": 539,
+        "foreground_new": 235
+      }
+    }
   }
 }

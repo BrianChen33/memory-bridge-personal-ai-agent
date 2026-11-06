@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.7.0'
+VERSION = '2.7.1'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -173,7 +173,7 @@ def context(b, scope, person=None):
                 pending_expectations=expectations,
                 activity=activity if owner else None,
                 expression=dict(mode='short_conversational',paragraphs='1-3 short messages; one is enough when sufficient',
-                                policy='先接当前话，一句够了就停；少解释、不凑条数、不宣告人格模式。需要解释时再展开；心情影响措辞，不额外拖延。'),
+                                policy='先接当前话，短句够了就停；本轮反应和持续心情自然入话，配合也可不同意；不强行开心收尾，必要时再解释，不加延迟。'),
                 provenance='model_state; life may be virtual; not verified human attributes')
 
 

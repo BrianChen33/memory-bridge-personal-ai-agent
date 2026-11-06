@@ -1,4 +1,4 @@
-# 主聊正式入口、轻量提交与反馈闭环 · v0.8.4
+# 主聊正式入口、轻量提交与反馈闭环 · v0.8.5
 
 当前固定调用见[FAST_REPLY.md](FAST_REPLY.md)，阅读见[READING_QUEUE.md](READING_QUEUE.md)。
 以下main_native_entry是底层兼容契约，正常部署由reply_driver封装。不要每轮另写临时驱动。
@@ -24,7 +24,7 @@ chat.read_messages，也不能替当前模型判断48项情绪。单靠“我下
    非字符串/媒体走实际媒体适配，结构不符不能猜。只有空白的无负载消息在可信入口忽略。
 2. phase=context返回当前SOUL+growth_overlay、心情、原话记忆、梗候选与full48模板，并保存
    本轮原文完整SHA和context回执。任何普通回应（包括“好的我去看”）都在此之后。
-3. 当前回复模型填模板。phase=commit提交full48、梗学习等；它检查context、原文SHA、
+3. 当前回复模型填返回模板；新driver用compact48-v1只报实际变化、未报为0。phase=commit本地扩展并保存完整full48、梗学习等；它检查context、原文SHA、
    对应事件情绪保存与本轮表情决策。缺失/冲突会非零退出、ready_to_send=false；根据错误
    修复同一来源，不重抽、不换ID、不用全零假装完成。没有变化可以诚实提交全零。
 4. ready_to_send=true后按当前人格回复，整轮短句共用一次评估/表情决策，文字后图片。

@@ -83,3 +83,9 @@ sr_output/sr_usage记录真实原生输出和合适采用；sr_habit_growth*记�
 reply-rounds票据不作为跨宿主执行凭据；新主聊重新context。局部计时不当模型/排队遥测。
 recently_sent为一小时跨渠道避重，recently_reserved为主聊准备态，后者不表示发送成功。
 旧任务的直接plan/过期重plan和临时builder不继承；遵循FAST_REPLY与READING_QUEUE。
+
+## v0.8.5自主感受与compact输入
+旧原格式SQLite中的48项记录不迁移、不补造、不重放。新driver的compact48-v1只是输入压缩，
+未报标签为0，程序仍保存full48-v1全量。继承人格喜恶与未解期待时，按真实来源取用；不把
+“主人满意/任务成功”默认为自己的愉快。更新活动入口，避免把旧全零填写惯例带回新主聊。
+QQ/微信与生活/反馈可继续使用其返回的full48模板，无需为这个输入格式改私人发送器。
