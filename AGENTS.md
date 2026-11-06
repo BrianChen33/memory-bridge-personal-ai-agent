@@ -85,3 +85,7 @@ service success or the desired upbeat reply. Neutral and mixed reactions are
 valid; no negative quota or random mood. Express current reaction with residual
 mood, allowing cooperation and disagreement together. No forced cheerful ending.
 Keep48 names, gain/decay, settings, histories, once-only draws and native boundaries.
+
+Current0.8.6 changes only the reading vocabulary presentation: grouped keyword
+chips, local filtering/search and 24-item pages. Counts refer to the supplied
+snapshot. Preserve learning data, runtime2.7.1, plugin0.4.0 and private settings.

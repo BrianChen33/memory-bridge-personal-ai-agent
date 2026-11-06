@@ -96,10 +96,10 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "2bac936cbe51eccba91e15f8456d7005b8f5c97078fd4e7f8dc5ca6f95768fd9",
+    "__init__.py": "6c50ff081d189ae5782b877110e91f1dc621d8abc72760fb7254ece638b88006",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7d827b169c9c9cc67f9823c2f494b9c0eb56d7f562ce7968595b62258e4c433b",
-    "deploy.py": "1e1d9bf8edd19d45c2bafa5bce49baa0612db74f2bd20793780bd2ac656c66cf",
+    "deploy.py": "ace0ac30e24c2ecbd806682ef85cf05da7fb5ae75f49efd48d51f471ddbb3b4c",
     "runtime/__init__.py": "0982936c2756201cd74c82711cf33c9063e2df95828ee25a47b6f884fafc0e98",
     "runtime/brain.py": "7c67d25ca06d63fc1d85d7106fdcb087b34da3b8d863340e66baab8c8160fc7a",
     "runtime/learn.mjs": "790eae305518c953216740b1f72a64736483ef3eaaf62f05c1abed542622ad0e",
@@ -108,16 +108,16 @@
     "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "517b1bf97aacae8d1cce3b16db6731495063455f687ccdc4b7e016f8eaa3c539",
+    "runtime/muse_ext/companion.py": "4a2424d04baab1ca2a54fe5ebd0bdaf34532430474413db57bd8c61b22b98361",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "25264de838c21f7fba4b2e3a3c4fd18e1798f368d4b9c987610a72c9c86a6acf",
+    "runtime/muse_ext/companion_panel.html": "8ae0d0d250ac155338512baefc55c4cdd30419e7253708822c76c24239e111d9",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
     "runtime/muse_ext/emotion.py": "59891b7f6d8ceb5a6c29928d4a253cb8583e319e033af85d30616157051e068e",
     "runtime/muse_ext/emotion_catalog.py": "44debe61294952add980cfd57171ba2d8e3e57a519bdea778af29e3114320627",
     "runtime/muse_ext/emotion_current.py": "b875cf28fa7cded27adb07445ef9cfd5f76f663393d62245f4694e7ac491bba9",
-    "runtime/muse_ext/emotion_full48.py": "b7af33e4db4229057d3a4e74708da2061f2791ec634444e815f72f075d522291",
+    "runtime/muse_ext/emotion_full48.py": "64fad437527bf9a85625b0ddede0ef45153516e1ce92bc59167bbc371d9dc9ee",
     "runtime/muse_ext/events.py": "e7c1a60044c37fc6c7005320386d3ae0a02f41f0ce32009605a5d89667b15b83",
     "runtime/muse_ext/expression.py": "e9222762caf9c67c43d7887e2a6342a82f815f877d2264f363fc1cb08cb8ad91",
     "runtime/muse_ext/feedback.py": "ac42bbba829b8307f151a9432dab4f0acf6c2f6559e5704ddffdd70eeeb4dd5f",
@@ -125,10 +125,10 @@
     "runtime/muse_ext/insights.py": "9999fdbd4e931c728431d3983b09ffa54363810b02f7e56741ac438a437a8a0f",
     "runtime/muse_ext/life_projects.py": "3b1185dc5c8822503798aac23391cc0ea27d04b1812ea745edafe022c43969a7",
     "runtime/muse_ext/life_routine.py": "b1811f0e2c1095daf6948ecefdfc8d593986c9b806656549606a94d3df02f6ae",
-    "runtime/muse_ext/main_commit.py": "e6644702d463808978cc294eb5d3a393e1e26132358a48a35ed2c8187d07f992",
+    "runtime/muse_ext/main_commit.py": "587e81d0ff8242bd21c1eaa42305860f4cef902c83bcf7eaad5f7bb0eb8ddd89",
     "runtime/muse_ext/meme_store.py": "831877a465fb2854a5ffe8bc5029e864b046b8eccbb86f8c12b4c51b4aa1c6b9",
     "runtime/muse_ext/meme_sync.py": "c8ae3ef8bb2b0de7d03282055d733f30201c7e821298d82d68341dcdc8c194d0",
-    "runtime/muse_ext/panel_home.py": "53c5909cde567ecbbf3206492369a8ff99d7e4eb99703a32151b03f2539a8f23",
+    "runtime/muse_ext/panel_home.py": "4b80aeacf6d8d0563a49c5a669dc5feb3d59f6c2cdaf890eebdbb79025dcf52b",
     "runtime/muse_ext/panel_refresh.py": "4c252e3d00969eaa6d4cd7fd1029ebca4de43b7df121571eefc456a10b0c6fba",
     "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
     "runtime/muse_ext/plugins.py": "9adffd2ca2515d4e95c4c0d3e7aff61330658f368b51015c83c13671a94e23ac",
@@ -144,8 +144,8 @@
     "runtime/sticker_decision.mjs": "bddb1e4478550efc57ecf2d852ba98e6d14d0ee19b7f4eebf91b993a786ba5c4",
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
-    "runtime/sticker_main.mjs": "71f403050b757940d37c6a269aa0175e8e28c05c33abceebc05a02011a67f671",
-    "vault.py": "4b6e6696f4e2b87257ab587ba4b6b8ae494f22b88ccc736c81dc04edce84fc19"
+    "runtime/sticker_main.mjs": "38129adb0e9ee51eda0f85d306e12c1acd73958864342fb82b6233bfc29675c8",
+    "vault.py": "8349a774453f05ddcdde6316f383fbd826cd1bd9b890e32a5ec59fe2f11e75de"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -374,6 +374,28 @@
         "foreground_old": 539,
         "foreground_new": 235
       }
+    }
+  },
+  "keyword_panel_update": {
+    "date": "2026-11-07",
+    "release": "0.8.6",
+    "runtime": "2.7.1",
+    "plugin_version": "0.4.0",
+    "changes": [
+      "status-grouped keyword-only habit presentation",
+      "local keyword search and 24-item pagination with bounded responsive list height",
+      "no learning, model, emotion, channel or schedule changes"
+    ],
+    "portable_hashes": {
+      "personal_bot/runtime/muse_ext/companion_panel.html": "8ae0d0d250ac155338512baefc55c4cdd30419e7253708822c76c24239e111d9",
+      "personal_bot/vault.py": "8349a774453f05ddcdde6316f383fbd826cd1bd9b890e32a5ec59fe2f11e75de"
+    },
+    "validation": {
+      "isolated_suites": "456 Python +13 Node passed; platform-dependent skips retained",
+      "wheel": "accepted outside checkout",
+      "layout": "desktop and375px synthetic180-keyword visual checks; status/search/paging verified",
+      "review": "one read-only review, no blockers",
+      "host": "pending deployment; do not claim host readback from these checks"
     }
   }
 }

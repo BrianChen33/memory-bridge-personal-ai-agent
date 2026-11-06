@@ -1,4 +1,4 @@
-# 响应式小屋面板（v0.6.1）
+# 响应式小屋面板
 
 `companion_panel` 继续生成单文件只读 HTML。横屏卡片总览，手机双列卡片与全屏详情；48种情绪按当前强度降序，支持分类/搜索。未记录不等于0；精力、关系、生活、实际开关和生成时间读取现有记录。页面不调用模型，不新增情绪事件，不参与聊天表情抽签。
 
@@ -59,3 +59,13 @@ It shows explicit plugin installation, source verification, actual partial readi
 and evolving speech habits. Core-only installs show 未安装; empty allowlists show
 待配置. Future Bilibili/Douyin are planned, not active. Refresh timing and binding
 details remain accessible through About; refresh now runs at the end of the existing 15-minute emotion heartbeat.
+
+## v0.8.6 口头禅小册
+
+阅读与成长中的词条改成关键词标签，按试用中、已用熟、仅理解、待理解、已停用分组；
+未知状态归入待整理。显示当前快照中实际提供的词条数量，不冒充数据库的全量统计。
+支持本地关键词搜索、状态筛选、每页24项；列表有高度上限，横竖屏均换行。
+释义、例句、场景、来源和使用流水不再渲染，也不藏在悬浮提示里。学习数据和规则未改。
+
+这是模板展示更新，无额外模型、网络请求、任务或数据迁移。只替换companion_panel.html，
+保留私有素材与路径定制，按既有heartbeat入口静默生成同一资料库HTML。

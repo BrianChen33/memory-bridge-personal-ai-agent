@@ -2,7 +2,9 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.5；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.6；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+
+v0.8.6：阅读与成长面板按学习状态收纳口头禅，只显示关键词；本地搜索、每页24项和有界列表避免长记录挤满页面。学习内容与成长规则不变，详见[面板说明](docs/HOME_PANEL.md)。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -76,7 +78,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    新目录默认伙伴v2开启配置但总功能停用；旧v0.3目录需先确认版本，再 companion-upgrade。
    人设/资料不放代码checkout内；不把真实数据提交到公共仓库。
 
-5. 当前主聊按docs/FAST_REPLY.md和MAIN_ENTRY.md部署reply_driver.mjs及reply_media.mjs，绑定可信主聊。真实原文context返回ticket；同模型full48后commit只传ticket和模板，不写临时程序、不二次prepare。平台没有发送钩子需如实说明。
+5. 当前主聊按docs/FAST_REPLY.md和MAIN_ENTRY.md部署reply_driver.mjs及reply_media.mjs，绑定可信主聊。真实原文context返回ticket；同模型填写返回模板后commit只传ticket和模板，不写临时程序、不二次prepare。平台没有发送钩子需如实说明。
    启用本地能力：python -m personal_bot --root STATE enable。
    向量默认关闭，资源足够时再按README后的向量说明独立安装/常驻，不逐消息冷加载。
    用自己的正式主聊入口绑定每轮真实source/event_id/occurred_at/actor/scope，保留原始正文。

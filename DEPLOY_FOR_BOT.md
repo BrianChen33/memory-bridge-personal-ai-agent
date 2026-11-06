@@ -97,7 +97,7 @@ persona_growth.traits，而非只写面板或按词频改性格。原任务末�
 
 正常context/commit允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。phase=feedback按v0.8.3额外保留必要真实assistant项，仅供表达使用证明。
 
-## 当前v0.8.5 / runtime2.7.1 / social-reading0.4.0
+## 当前v0.8.6 / runtime2.7.1 / social-reading0.4.0
 按docs/FAST_REPLY.md装固定reply_driver+reply_media与依赖，安装时读协议一次。每轮真实取源→
 context票据→同模型compact48实际变化→commit扩展完整48项，一次抽签并本地选图，原生final先短句后图。
 不能先回正文后补评估；不重复prepare、临时写builder或为多个短句重抽。没有真实回执不先finish。
@@ -114,3 +114,11 @@ context票据→同模型compact48实际变化→commit扩展完整48项，一�
 现策略冲突的情绪操作句，不加长整套规则、不覆盖外形与人格、不加新定时器或前置模型。
 做一次隔离同模型配对校准，不向主聊/生产队列发送假消息，不能把“模型口头同意”当验收。
 核实际评估与简短表达、完整48保存和幂等。发布后同页面板及私库锁同步到真实commit。
+
+## 从0.8.5升级到0.8.6
+
+本次只更新面板展示和包版本：按固定commit及docs/releases/0.8.6.json核对并替换
+companion_panel.html；vault.py版本辅助文件同步到既有发布器。runtime2.7.1/plugin0.4.0
+保持不变，不重新执行上一节的情绪校准、不重装插件、不改学习记录、SOUL、渠道或任务。
+按当前HOME_PANEL.md静默刷新同一资料库HTML，核对关键词分组、搜索、分页与横竖屏。
+更新私库架构锁及简短当前说明，保留继承prompt，不恢复旧安装流水。禁止把调试写回日记。
