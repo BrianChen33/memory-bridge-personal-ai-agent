@@ -145,7 +145,7 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "38129adb0e9ee51eda0f85d306e12c1acd73958864342fb82b6233bfc29675c8",
-    "vault.py": "8349a774453f05ddcdde6316f383fbd826cd1bd9b890e32a5ec59fe2f11e75de"
+    "vault.py": "a1ecb93375ceb7e7ec2db3f348d75a801240133fbb7209803ffc5008928915f0"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -396,6 +396,28 @@
       "layout": "desktop and375px synthetic180-keyword visual checks; status/search/paging verified",
       "review": "one read-only review, no blockers",
       "host": "pending deployment; do not claim host readback from these checks"
+    }
+  },
+  "owner_sleep_activity_update": {
+    "date": "2026-11-07",
+    "release": "0.9.0",
+    "runtime": "2.7.1",
+    "plugin_id": "mi-fitness",
+    "plugin_version": "0.1.0",
+    "dependency": "mifit==0.4.0",
+    "plugin_manifest_sha256": "0d89e03bed88783299e76bb29b236d1c40839b719b4c13ae8be42c8afe3e7e9f",
+    "changes": [
+      "owner-private fixed sleep/steps/activity/workout summaries only",
+      "local QR to recipient-bound encrypted credential delivery",
+      "compact cache-only existing plugin_context; hourly sync in existing life task",
+      "raw health stores and credentials outside GitHub; explicit consent gate for normal conversational-summary memory/backup"
+    ],
+    "host_validation": "pending deployment; local one-shot sleep was matched by owner; no cloud migration claim",
+    "validation": {
+      "isolated": "463 Python and13 Node passed; platform-dependent skips retained",
+      "wheel": "accepted outside checkout",
+      "review": "one read-only review; two focused regressions RED then9 focused cases GREEN",
+      "host": "pending; do not claim cloud handoff or natural proactive delivery"
     }
   }
 }

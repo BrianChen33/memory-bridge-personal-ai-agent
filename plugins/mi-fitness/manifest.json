@@ -1,0 +1,16 @@
+{
+  "id": "mi-fitness",
+  "name": "小米睡眠与运动",
+  "version": "0.1.0",
+  "api": 1,
+  "source": "https://github.com/Jenwein/mifit",
+  "dependency": "mifit==0.4.0",
+  "files": {
+    "__init__.py": "ad5f71563f0d4168ab9914e154c3d171f83105554c8e5b3e122c29430b1d1098",
+    "bridge.py": "3b39253c7d0f0ffdd33203f57456eeb52ffd088b8285b9aca9337b03ba5df789",
+    "handoff.py": "99d8c7b6b812dee0cf5b0acb02c69244e8b7076bb5b2a9482333c759a245fcdd",
+    "local_login.py": "a22f88958b94f8b7b47f0cbb05bfd71549b796c5f569cb3a99b0595fbdbe1447",
+    "README.md": "cef9ff02a74bf6d450fbdcdf3f4836b551343e78ac83de917c1cdbbea312b301",
+    "requirements.txt": "9d8be1d2e0a4467679940ccd258031af76a17f1980b0f3f349b48e045a946f42"
+  }
+}

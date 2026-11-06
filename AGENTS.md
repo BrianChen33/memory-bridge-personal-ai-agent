@@ -89,3 +89,15 @@ Keep48 names, gain/decay, settings, histories, once-only draws and native bounda
 Current0.8.6 changes only the reading vocabulary presentation: grouped keyword
 chips, local filtering/search and 24-item pages. Counts refer to the supplied
 snapshot. Preserve learning data, runtime2.7.1, plugin0.4.0 and private settings.
+
+Current0.9.0 adds optional mi-fitness0.1.0. Read its README. Only owner-private
+sleep/steps/activity/workout summaries; no standalone vitals, profile, relatives,
+raw requests or GPS. Local QR, pinned-recipient encrypted handoff, private storage
+outside brain/workspace/backups. Existing life30m checks hourly sync; foreground
+only reads compact cache. No new model/scheduler, health-to-bot-energy mapping,
+synthetic life stimuli or production test sends. Raw health stores and credentials
+are excluded from both GitHub repositories. Actual
+health dialogue summaries can join existing chat memory/private backups only
+after explicit owner consent to that data flow; the plugin gates context and
+care until recorded. Inheritance requires new consent; never promise automatic
+redaction of ordinary native chat or its feedback/backups.

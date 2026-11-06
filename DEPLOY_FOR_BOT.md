@@ -97,7 +97,7 @@ persona_growth.traits，而非只写面板或按词频改性格。原任务末�
 
 正常context/commit允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。phase=feedback按v0.8.3额外保留必要真实assistant项，仅供表达使用证明。
 
-## 当前v0.8.6 / runtime2.7.1 / social-reading0.4.0
+## 当前v0.9.0 / runtime2.7.1 / social-reading0.4.0
 按docs/FAST_REPLY.md装固定reply_driver+reply_media与依赖，安装时读协议一次。每轮真实取源→
 context票据→同模型compact48实际变化→commit扩展完整48项，一次抽签并本地选图，原生final先短句后图。
 不能先回正文后补评估；不重复prepare、临时写builder或为多个短句重抽。没有真实回执不先finish。
@@ -122,3 +122,15 @@ companion_panel.html；vault.py版本辅助文件同步到既有发布器。runt
 保持不变，不重新执行上一节的情绪校准、不重装插件、不改学习记录、SOUL、渠道或任务。
 按当前HOME_PANEL.md静默刷新同一资料库HTML，核对关键词分组、搜索、分页与横竖屏。
 更新私库架构锁及简短当前说明，保留继承prompt，不恢复旧安装流水。禁止把调试写回日记。
+
+## v0.9.0 可选小米睡眠与运动
+
+按plugins/mi-fitness/README.md和manifest核对安装。用户明确选择后才接入：本机扫码、
+一次性RSA3072公钥+AES-GCM密文附件交接；宿主凭据和按天健康缓存都在brain/工作区与
+备份源之外。上游登录态不是细粒度官方OAuth，睡眠/步数/活动/锻炼白名单由受限适配器
+实施，不提供独立心率/血氧/压力/体重/定位或通用SDK/MCP入口，不复制凭据到新Agent。
+worker单独Python3.12+；核心既有plugin_context只读精简缓存，不加前置网络或模型调用。
+更新原life30m任务正文，健康sync内置60m门禁，第一轮静默建基线，新睡眠/锻炼由同一
+模型判断是否关心，01–07不主动分享。走真实主动消息/贴纸/回执入口，unknown不重发；
+不伪造ct_life、健康情绪事件或虚拟经历。安装后核真实cloud读取、字段白名单、备份排除
+和原任务身份不变。核心runtime2.7.1与阅读0.4.0保持；只更新版本辅助文件和架构锁。

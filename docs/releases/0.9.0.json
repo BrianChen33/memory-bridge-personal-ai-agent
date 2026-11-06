@@ -1,0 +1,77 @@
+{
+  "release": "0.9.0",
+  "runtime": "2.7.1",
+  "social_reading_version": "0.4.0",
+  "mi_fitness_version": "0.1.0",
+  "base_architecture": "fc2d3407503b6f0df458b971343d76be0aa109bc",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "11287422ddf40830842f0ed392305e15fbc748c9cc17995ed84875250b9370e1"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2dabe7dea974a40d38328f01f009fd37468c1be6b08d6991f4de811dbf888280"
+    },
+    {
+      "path": "DEPLOY_FOR_BOT.md",
+      "sha256": "01dfa4852a8ac2989fa391fa90561393e63a6b1dd8d82e24f381d88b07c62adb"
+    },
+    {
+      "path": "docs/INHERITANCE.md",
+      "sha256": "54c789221f50afea12e109dc996b138a3c0c5cc060713688dd9ec81982441812"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-07-mi-fitness.md",
+      "sha256": "43a241f7df4678f9347c048ee5b0a4b49b4820fc1de8b132f38d352749a1b01b"
+    },
+    {
+      "path": "personal_bot/__init__.py",
+      "sha256": "20cb9db3e7d277b9c933fedc3f453cb94960965fb9df769fae1b14fecfc4b9d9"
+    },
+    {
+      "path": "personal_bot/vault.py",
+      "sha256": "a1ecb93375ceb7e7ec2db3f348d75a801240133fbb7209803ffc5008928915f0"
+    },
+    {
+      "path": "personal_bot/provenance.json",
+      "sha256": "996765ebbd213636c69123f894863ab23e8772e40e5985cc1681a02cc529cf5e"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "50a219da7bf34c9c84af91eda52a3dd9fedba780274db86b4ce831c19aec7618"
+    },
+    {
+      "path": "tests/test_mi_fitness.py",
+      "sha256": "a10ba2e0775ca9f63e2d1789c1f259d0d8ff6108b1901130d74e713904c04cfa"
+    },
+    {
+      "path": "plugins/mi-fitness/__init__.py",
+      "sha256": "ad5f71563f0d4168ab9914e154c3d171f83105554c8e5b3e122c29430b1d1098"
+    },
+    {
+      "path": "plugins/mi-fitness/bridge.py",
+      "sha256": "3b39253c7d0f0ffdd33203f57456eeb52ffd088b8285b9aca9337b03ba5df789"
+    },
+    {
+      "path": "plugins/mi-fitness/handoff.py",
+      "sha256": "99d8c7b6b812dee0cf5b0acb02c69244e8b7076bb5b2a9482333c759a245fcdd"
+    },
+    {
+      "path": "plugins/mi-fitness/local_login.py",
+      "sha256": "a22f88958b94f8b7b47f0cbb05bfd71549b796c5f569cb3a99b0595fbdbe1447"
+    },
+    {
+      "path": "plugins/mi-fitness/manifest.json",
+      "sha256": "0d89e03bed88783299e76bb29b236d1c40839b719b4c13ae8be42c8afe3e7e9f"
+    },
+    {
+      "path": "plugins/mi-fitness/README.md",
+      "sha256": "cef9ff02a74bf6d450fbdcdf3f4836b551343e78ac83de917c1cdbbea312b301"
+    },
+    {
+      "path": "plugins/mi-fitness/requirements.txt",
+      "sha256": "9d8be1d2e0a4467679940ccd258031af76a17f1980b0f3f349b48e045a946f42"
+    }
+  ]
+}

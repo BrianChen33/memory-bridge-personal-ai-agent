@@ -2,7 +2,9 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.6；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.9.0；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+
+v0.9.0：新增可选的[小米睡眠与运动](plugins/mi-fitness/README.md)插件。本机扫码、收件人加密交接；仅本人睡眠、步数、活动和锻炼摘要。现有生活任务每小时最多同步一次，普通聊天只读精简本地缓存。凭据与原始健康库独立存放，排除全部GitHub备份；实际主聊摘要进入既有记忆/私库前须用户单独同意。不开放独立心率/血氧/压力/体重或GPS。核心runtime2.7.1和阅读插件0.4.0不变。
 
 v0.8.6：阅读与成长面板按学习状态收纳口头禅，只显示关键词；本地搜索、每页24项和有界列表避免长记录挤满页面。学习内容与成长规则不变，详见[面板说明](docs/HOME_PANEL.md)。
 
@@ -72,6 +74,12 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    采用插件0.3.0时同时读docs/VOICE_TRIALS.md：先学具体词/短句，理解即试用；旧候选按真实
    归档逐项review，不能批量改状态。稳定习惯经同一模型反思可进入长期性情。
    当前B站/抖音只是预留接口，不能声称已经会刷视频。
+   另可选择安装“小米睡眠与运动”插件，默认不安装。若用户授权，先读plugins/mi-fitness/README.md，
+   确认只读取本人睡眠/运动和真实账号地区；支持本机扫码后仅上传宿主公钥加密的凭证包。
+   凭据与原始健康库排除所有GitHub备份；实际主聊摘要会沿现有聊天记忆/私库链路收录，须另外说明目的地
+   并得到主人同意，再authorize_chat_summary_memory，否则context/history/care保持关闭。只在owner-private使用，不能注册上游通用MCP或扩展到
+   独立心率/血氧/压力/体重/亲友/GPS。既有life30m任务检查60m同步门禁，首轮只建基线，普通回复不联网。
+   同一回复模型可据此关心作息/认可运动；不能把用户身体状态直接写成自己的心情或精力。
 
 4. 安装：克隆公开仓库，建立独立虚拟环境，python -m pip install .；在代码目录外选择
    私有 STATE，运行 python -m personal_bot --root STATE init。
