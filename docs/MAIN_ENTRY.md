@@ -1,4 +1,7 @@
-# 主聊正式入口、轻量提交与反馈闭环 · v0.8.2
+# 主聊正式入口、轻量提交与反馈闭环 · v0.8.4
+
+当前固定调用见[FAST_REPLY.md](FAST_REPLY.md)，阅读见[READING_QUEUE.md](READING_QUEUE.md)。
+以下main_native_entry是底层兼容契约，正常部署由reply_driver封装。不要每轮另写临时驱动。
 
 ## 三个原建议的取舍
 
@@ -29,10 +32,10 @@ chat.read_messages，也不能替当前模型判断48项情绪。单靠“我下
    phase=gate可只读重查已保存回执；finish仍只记录真实媒体/发送结果，不能凭gate当送达。
 
 ```sh
-node /actual/stickers/src/main_native_entry.mjs --root /actual/workspace --chat-id ACTUAL_OWNER_CHAT < request.json
+node /actual/stickers/src/reply_driver.mjs --root /actual/workspace --chat-id ACTUAL_OWNER_CHAT < request.json
 ```
 
-request含phase和native_response（真实read_messages结果或上述无损用户项投影），commit另含emotion_assessment。
+驱动context含phase和native_response（真实read_messages结果或上述无损用户项投影）；commit只需ticket与emotion_assessment，长工具后可附fresh native_response。底层main_native_entry仍接原契约，但不再每轮复写原文。
 context只做一次prepare；commit使用companion_commit校验同源事件、正文与原时间，再保存评估。
 commit只返回updates及门禁/决策，不重新检索记忆、人设或插件上下文，不再次回传整份context。
 保留本轮context在模型上下文中使用；不能为了找到省略的context字段再额外调用prepare。
@@ -48,7 +51,7 @@ commit只返回updates及门禁/决策，不重新检索记忆、人设或插件
 
 ## 真正读到以后，也要把结果记下来
 
-plan认领真实来源，浏览器按返回任务读取；observe才建立真实文档。随后同一阅读模型
+所有新阅读先queue_enqueue，后台queue_work认领；绑定真实browser task→queue_stage保存并释放浏览占用→queue_ingest建立文档，不再现场过期重plan。随后同一阅读模型
 调用finalize_reading，一次提交summary/style_candidates/growth_candidates/interest_score/
 emotion_assessment，合并原reflect和appraise；growth开启且没变化也明确填[]。
 它返回complete/may_claim_read/may_claim_learned/missing，未完成就按具体缺项修同一个文档。

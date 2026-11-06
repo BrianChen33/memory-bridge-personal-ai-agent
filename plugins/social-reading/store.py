@@ -33,6 +33,8 @@ def initialize(b):
     from . import voice,habit_growth
     voice.initialize(b)
     habit_growth.initialize(b)
+    from . import reading_queue
+    reading_queue.initialize(b)
 
 
 def get(b, key, default=None):

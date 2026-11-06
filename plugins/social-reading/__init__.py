@@ -3,10 +3,10 @@ import json
 import hashlib
 import math
 import time
-from . import reader, sources, store, growth, voice, habit_growth
+from . import reader, sources, store, growth, voice, habit_growth, reading_queue
 
 API = 1
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 
 
 def initialize(b):
@@ -21,6 +21,7 @@ def panel(b):
     return dict(status=state, settings=store.settings(b), sources=rows, recent_readings=recent,
                 habits=store.habit_rows(b), personality_growth=growth.rows(b), providers=sources.PROVIDERS,
                 habit_personality=habit_growth.rows(b),
+                reading_queue=reading_queue.status(b),
                 onboarding=store.get(b, 'onboarding', {}),
                 boundary='offline projection; the host must perform native browsing and owner-authorized configuration')
 
@@ -57,6 +58,10 @@ def schema():
                 voice_policy=dict(lexical_per_reading=8,mechanisms_per_reading=3,
                     trial='first source with same-model understood judgment; unknown meanings stay candidate',
                     mature='3 appropriate real output uses across2 turns; no praise requirement; no source confidence inflation'),
+                reading_queue_policy=dict(concurrency=1,batch_pages=3,target_seconds=180,
+                    sequence='queue_enqueue/work/bind_browser/stage/ingest/finalize_reading/finish',
+                    ownership='native browser ID + lease + request; no expired-result rebrowse',
+                    emotion_heartbeat='enqueue/dispatch only; no browsing or waiting'),
                 growth_candidate_fields=['domain:preference|temperament', 'trait', 'interpretation', 'example',
                                          'evidence_quote', 'resonance:0<value<=1', 'direction:adopt|reconsider', 'existing_id:optional'],
                 growth_policy=dict(opt_in=True, max_candidates=2, same_model=True, per_post_caps=growth.CAPS,
@@ -76,6 +81,7 @@ def allow_share(b, event_id):
 
 
 def appraise(b, q):
+    reading_queue.require_document(b,q.get('document_id'))
     doc = b.db.execute('SELECT * FROM sr_document WHERE id=?', (q.get('document_id'),)).fetchone()
     score = q.get('interest_score')
     if (not doc or isinstance(score, bool) or not isinstance(score, (int, float)) or
@@ -119,6 +125,11 @@ def completion(b, q):
 
 
 def dispatch(b, q):
+    with reading_queue.serialized(b):
+        return _dispatch(b,q)
+
+
+def _dispatch(b, q):
     if q.get('scope', 'owner-private') != 'owner-private':
         raise ValueError('social_reading_owner_only')
     action = q.get('action', 'status')
@@ -155,6 +166,14 @@ def dispatch(b, q):
         return store.configure(b, q)
     if action == 'plan':
         return reader.plan(b, q)
+    queue_actions = dict(queue_enqueue=reading_queue.enqueue,queue_work=reading_queue.work,
+        queue_bind_browser=reading_queue.bind_browser,queue_stage=reading_queue.stage,
+        queue_ingest=reading_queue.ingest,queue_finish=reading_queue.finish,
+        queue_release=reading_queue.release,queue_cancel=reading_queue.cancel,
+        queue_resume=reading_queue.resume,
+        queue_handoff=reading_queue.handoff,queue_status=lambda b,q:reading_queue.status(b))
+    if action in queue_actions:
+        return queue_actions[action](b,q)
     if action == 'discover':
         return reader.discover(b, q)
     if action == 'observe':
@@ -162,12 +181,14 @@ def dispatch(b, q):
     if action == 'read':
         return reader.read(b, q)
     if action == 'reflect':
+        reading_queue.require_document(b,q.get('document_id'))
         return store.reflect(b, q)
     if action == 'appraise':
         return appraise(b, q)
     if action == 'completion':
         return completion(b, q)
     if action == 'finalize_reading':
+        reading_queue.require_document(b,q.get('document_id'))
         reflected = store.reflect(b, q)
         appraised = appraise(b, q)
         checked = completion(b, q)
@@ -177,6 +198,7 @@ def dispatch(b, q):
     if action == 'habit_review': return voice.review(b,q)
     if action == 'teach_expressions': return voice.teach(b,q)
     if action == 'learn_expressions':
+        reading_queue.require_document(b,q.get('document_id'))
         doc=b.db.execute("SELECT d.* FROM sr_document d JOIN source_events e ON e.id=d.event AND e.status='active' WHERE d.id=?",
                          (q.get('document_id'),)).fetchone()
         if not doc: raise ValueError('real_observed_document_required')

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.6.1'
+VERSION = '2.7.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 

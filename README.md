@@ -2,7 +2,7 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.3；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.8.4；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
 
 这是可部署的外置运行时与宿主适配指南。程序不会自动获得平台工具权限；目标 Agent 必须使用自己的真实消息、调度和媒体接口。公开仓库没有真实用户记忆、人设、账号或聊天数据。
 
@@ -76,12 +76,12 @@ https://github.com/BrianChen33/personal-ai-companion-kit
    新目录默认伙伴v2开启配置但总功能停用；旧v0.3目录需先确认版本，再 companion-upgrade。
    人设/资料不放代码checkout内；不把真实数据提交到公共仓库。
 
-5. 当前主聊先按docs/MAIN_ENTRY.md绑定真实原文取源、context/commit与门禁，平台没有发送钩子需如实说明。
+5. 当前主聊按docs/FAST_REPLY.md和MAIN_ENTRY.md部署reply_driver.mjs及reply_media.mjs，绑定可信主聊。真实原文context返回ticket；同模型full48后commit只传ticket和模板，不写临时程序、不二次prepare。平台没有发送钩子需如实说明。
    启用本地能力：python -m personal_bot --root STATE enable。
    向量默认关闭，资源足够时再按README后的向量说明独立安装/常驻，不逐消息冷加载。
    用自己的正式主聊入口绑定每轮真实source/event_id/occurred_at/actor/scope，保留原始正文。
-   prepare预读 → 你本人当前回复模型提交emotion_assessment v2 → 同事件prepare保存并读回
-   新状态 → 组文。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
+   主聊固定context预读 → 你本人当前回复模型填写full48 → ticket commit保存并读回
+   新状态 → 组文；已有QQ/微信等适配器保留自己的兼容协议。无变化也要明确评估；missing/invalid不等于成功；重试不重复加情绪。
    把companion、scene_context、persona_context、reaction实际交给回复模型，不能只修改解析器。
    用私有presentation-profile.json绑定精简的当前人格；每轮传入current_persona及其SHA，不能用旧L3摘要代替SOUL。
    v0.6.4主聊直接填写context返回的emotion_template（full48-v1）：48项全部提交，不能猜additional_labels等字段。
@@ -104,7 +104,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 8. 用原生调度注册专用任务：情绪/反馈15m，生活/新闻30m，阅读2h，维护每日；任务默认停用
    创建并读回，避免旧新两代同时运行。生活先tick生成事件，再由模型评估、保存、可选分享。
    生活新活动默认40%琐事、60%刷手机，companion_life_config可改phone_probability，见docs/LIFE_ROUTINE.md。
-   所有自动社交阅读消费同一个phone_intent，plan传life_intent，不再独立抽第二次。
+   所有自动社交阅读消费同一phone_intent，queue_enqueue传life_intent；15m不浏览，30m/2h调用queue_work最多一批，按READING_QUEUE.md绑定/stage/ingest/finalize/finish，不再独立抽第二次或过期重plan。
    阅读要真实打开资料并保留出处；虚拟跑步/吃饭/梦境不能当用户真实经历或外网观察。
    默认01:00–07:00 Asia/Shanghai只收集不主动打扰；没有每日分享次数上限。
    当前核心时区固定UTC+8，若我需要别的时区要实际适配，不能只改提示词。
@@ -210,3 +210,11 @@ python -m personal_bot --root "<PRIVATE_STATE_OUTSIDE_CHECKOUT>" doctor
 开发检查：`python tools/test_all.py` 和 `python tools/check_wheel.py`，可作为一次最终隔离验收的两个阶段。源码、wheel内HTML模板与宿主绑定分别验证，不能把本地测试成功称为所有平台都已接入。
 
 AGPL-3.0-or-later，见LICENSE与NOTICE。受memory-brain启发，来源和移植差异见personal_bot/provenance.json；第三方素材须另查许可。
+
+## v0.8.4：固定入口和持久阅读
+[固定主聊驱动](docs/FAST_REPLY.md)把真实原文保存为私有票据，context后同模型full48再commit；
+一次抽签，命中后本地前10候选宽松随机选图并附在文字后。主聊不每轮重读协议或写临时程序。
+[阅读队列](docs/READING_QUEUE.md)分离浏览与登记，真实结果先暂存、释放浏览占用，再同模型
+反思；超时先核对确切原生任务，不重读修登记。15m情绪保持短任务，30m生活/2h阅读分批消费。
+保留六层、用户配置与单浏览名额；没有额外情绪模型、原生final拦截或固定秒数承诺。
+面板展示局部计时与队列真实状态；私库包含队列但迁移不会自动重启旧任务。

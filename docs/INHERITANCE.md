@@ -76,3 +76,10 @@ sr_output/sr_usage记录真实原生输出和合适采用；sr_habit_growth*记�
 使用凭据，不伪造新曝光或新对话。旧candidate基于真实归档重新理解，不批量晋升。
 历史输出不是待发送队列；人格倾向与SOUL合成当前人格，不直接覆盖新主人的身份/授权。
 新宿主反馈任务实际接入后才继续积累使用，不能声称导入文件等于新入口已经运行。
+
+## v0.8.4：固定入口、媒体与队列
+安装锁定版本的reply_driver/reply_media及social-reading0.4.0。sr_read_queue含待办、真实浏览
+绑定、暂存结果、完成时间与cursor；可继承历史结果和经主人重认的待办，不自动启动旧任务。
+reply-rounds票据不作为跨宿主执行凭据；新主聊重新context。局部计时不当模型/排队遥测。
+recently_sent为一小时跨渠道避重，recently_reserved为主聊准备态，后者不表示发送成功。
+旧任务的直接plan/过期重plan和临时builder不继承；遵循FAST_REPLY与READING_QUEUE。

@@ -313,5 +313,30 @@
       "offline panel and native-format private inheritance retain sources corrections usage and traits"
     ],
     "boundary": "same host model; no extra pre-reply stage, schedule, external model or native-final interception"
+  },
+  "responsive_replies_update": {
+    "date": "2026-11-06",
+    "release": "0.8.4",
+    "runtime": "2.7.0",
+    "plugin_version": "0.4.0",
+    "changes": [
+      "private immutable native source tickets and fixed full48 commit driver",
+      "single-draw verified local media selection without temporary glue or fake delivery",
+      "durable bound reading queue, staged results and honest continuation",
+      "emotion15m never browses; existing background jobs consume bounded batches",
+      "verified future scheduler handoffs and metadata-only local timing"
+    ],
+    "boundary": "same host model before text; no native-final interceptor, sender or model/queue telemetry",
+    "plugin_manifest_sha256": "e2bedb401f68e3978fa9e04373e94734fe2ea7dbf604308922183557f33c3d71",
+    "portable_hashes": {
+      "personal_bot/runtime/reply_driver.mjs": "1917b75307fa140ee6f3e564ddb111141b4dc20efb4dee26470cad4ab66b5694",
+      "personal_bot/runtime/reply_media.mjs": "a644f416375f0d1d46e3413b8ff1174395b4c9ee0fe57e953998f71233be5464",
+      "plugins/social-reading/reading_queue.py": "3fb7258afa9a84867afc8ac7f19225e5bed93b037a26824c9e580d14ef115cc8",
+      "plugins/social-reading/__init__.py": "606c571e43ea4016847b42dce3281cfab3c657c319e46e3ac4db2f02b131826e",
+      "personal_bot/runtime/muse_ext/companion.py": "7775a8155fdca4e86f1dc1df42317366f08edcba83cb15458c5dc2ab910ab951",
+      "personal_bot/runtime/muse_ext/panel_home.py": "4b80aeacf6d8d0563a49c5a669dc5feb3d59f6c2cdaf890eebdbb79025dcf52b",
+      "personal_bot/runtime/muse_ext/companion_panel.html": "ca70165200f71232d2a05b2261c8e02787b7754c880476d5dd5f530c8eeb1b50",
+      "personal_bot/vault.py": "0b40eee066f40d4f865c045da2bebc1a17ca3244577fee34d6bc921a2ff1c501"
+    }
   }
 }

@@ -103,11 +103,14 @@ def blueprint(root):
             'Use authorized news sources and local interests. News must pass current scoring/date/source/dedup gates. '
             'Prepare companion_activity pending plans with concrete 2-6 stages and a native artifact using the SAME host model; read docs/LIFE_PROJECTS.md. '
             'Never prewrite observed web results. Heavy browsing/drafts yield to owner conversation. '
+            'Social phone reading uses docs/READING_QUEUE.md: enqueue an actionable companion_phone intent once, then queue_work(worker_id=actual native run ID) consumes at most one bounded batch. '
+            'Bind real browser task immediately, stage actual packet before reflection, ingest then finalize_reading and queue_finish. Busy means leave queued; expired means reconcile exact browser, never re-plan. '
             'Update source cursors only on success. After new memories, vector_index limit20 if vector is enabled; failure must not block sharing. '
             'No panel record/bind or delayed runonce; panel refresh belongs only to the existing emotion heartbeat.'),
            ('emotion',{'kind':'interval','minutes':15},['emotion'],
             'If companion_v2=true: run companion_tick, companion_pending claim=true; appraise each registered original event with the SAME host model using returned full48 template, then companion_life_assess. '
             'Advance activity stages, but keep heavy planning/drafts in life-news. Use companion_feedback scan/claim/repair for recent24h missing/invalid ORIGINAL events (max2 per run); successful appraisals never replay. '
+            'NEVER browse or wait for a browser in this15m job. Phone intents only queue_enqueue; a necessary one-shot dispatch uses queue_handoff actual future native read-back, never a fabricated schedule. '
             'Native main-chat samples use main_native_entry phase=feedback lossless user projection; no assistant self-appraisal. Late emotion decays from original time, no relationship/expectation/send/sticker replay. '
             'Last, publish panel_refresh heartbeat on the existing emotion run to the exact configured private HTML, no delay/runonce/notification. '
             'Use companion_share claim then the real host sender; settle only actual receipts, unknown never automatically retries. Quiet01-07 collects only. '
@@ -115,7 +118,8 @@ def blueprint(root):
             'Recovery may enqueue once with the same real active sources and stable recovery topic. No real change means silence.'),
            ('reading',{'kind':'interval','minutes':120},['reading'],
             'If the explicitly installed social-reading plugin is enabled, read its PROTOCOL.md. '
-            'Optionally choose permitted native-browser browsing based on energy/interest; empty or unverified sources never browse. '
+            'Social reading consumes only the shared actionable phone intent via queue_enqueue and queue_work; no independent phone draw or legacy direct plan. Read docs/READING_QUEUE.md once at binding. '
+            'At most one bounded batch, real browser binding then stage/ingest/finalize/finish. Read budget from current settings, never hard-code it; overdue browser must be reconciled, not recreated. '
             'The host bot asks the owner for source links after installation; do not ask repeatedly from background jobs. '
             'Actual plugin observations use reflect/appraise and feed learned_voice into normal prepare. '
             'reading claim from the allowlisted library; read actual chunk, summarize as inference, reading commit with chunk_id/lease. '

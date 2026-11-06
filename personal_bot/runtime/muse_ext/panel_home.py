@@ -73,6 +73,7 @@ def enrich(b, snapshot):
     snapshot['life_routine'] = life_settings(b)
     snapshot['phone'] = phone_pending(b)
     snapshot['formal_entry_health'] = read_json(b.root / 'state' / 'formal-entry-health.json')
+    snapshot['reply_driver_health'] = read_json(b.root / 'state' / 'reply-driver-health.json')
     from muse_ext.feedback import status as feedback_status
     snapshot['feedback_health']=feedback_status(b)
     from muse_ext.life_projects import view as activity_view

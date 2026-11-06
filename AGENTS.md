@@ -65,3 +65,13 @@ meme knowledge, anonymous public API synchronization and signed emotion gain.
 Banter level defaults to50; reactive counterattack is independent of proactive
 banter. Multiply validated raw emotion increments once, never relationships or
 half-lives. No chat text/submissions/credential registration to the Wiki.
+
+Current0.8.4 uses docs/FAST_REPLY.md: reply_driver context returns a private source
+ ticket; SAME model commits complete full48 before text. Local reply_media reuses
+ the single draw and verified cached assets; prepared is not delivered. No new
+ per-turn scripts, repeat prepare or protocol rereads. Real receipts only finish.
+ Read docs/READING_QUEUE.md: all new manual/phone social reading goes through the
+ durable bound queue. Emotion15m never browses/waits; life30m/reading2h consume at
+ most one bounded batch. Stage actual results before reflection; overdue native
+ tasks require reconciliation, never a new lease to repair ingestion. Keep real
+ settings and task identities; verify future scheduler read-back for handoffs.

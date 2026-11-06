@@ -18,22 +18,22 @@ SQLite ct_kv.life_routine是唯一配置源，私库自动保留；面板日常�
 ## 刷手机是实际阅读入口
 
 companion_tick抽中后生成刷手机活动与phone.request.id（虚拟拿手机动作，不代表读过）。
-原生生活/情绪任务在同一次运行中读phone.actionable，或调用companion_phone查看；
-true时调用已安装的social-reading插件plan，传life_intent=request.id。运行时固定
-job_id=life-phone:<id>，认领后不再重复执行。原2h阅读任务的社交平台分支也只消费同一
-意图，不再独立再抽一次；原图书/知识阅读规则及任务ID/节奏继续保留。
+情绪15m任务读phone.actionable或companion_phone后只queue_enqueue(life_intent=request.id)，
+不浏览、不等待；真实消费在30m生活任务或2h阅读任务的queue_work中，统一单浏览名额。
+请求固定去重，绑定browser task后stage/ingest/finalize/finish；不再过期重plan。
+参阅READING_QUEUE.md。原图书/知识阅读规则及任务ID/节奏继续保留。
 
 ```json
-{"op":"plugin_call","scope":"owner-private","plugin":"social-reading","action":"plan","life_intent":"真实request.id"}
+{"op":"plugin_call","scope":"owner-private","plugin":"social-reading","action":"queue_enqueue","life_intent":"真实request.id"}
 ```
 
 浏览器只读已启用平台与已授权验证来源。当前贴吧适配已实现，B站/抖音仍planned_not_enabled。
 以后实现视频适配时消费同一个手机意图及统一observation契约，不新增平行随机循环。
-plan返回awaiting_sources/awaiting_verification/paused等会如实登记unavailable；busy不伪造
+队列返回awaiting_sources/awaiting_verification/paused等如实记录，busy保留待办不伪造
 失败。observe成功才标read并关联真实document/source_event，阅读反思与情绪走原协议。
 验证白屏标blocked，不产生虚构内容。超时未确认则会话结束标expired，不反复换ID重试。
 手机日常完成只概括真实结果，具体看到了什么以独立真实观察为准；不先随机编好帖子剧情。
 
 生命周期、真实阅读、情绪和成长分开：拿手机的意图/放下手机可以是虚拟日常；帖子与视频
 观察必须真实；不把生活启动或同一篇重复观察当两次人格学习。不加额外模型或浏览器。
-用户此轮明确要求手动阅读仍可走原manual入口，不受自主活动40/60抽签限制。
+主人明确手动阅读走queue_enqueue(manual=true,owner_event,authorized=true)，不受40/60抽签限制。

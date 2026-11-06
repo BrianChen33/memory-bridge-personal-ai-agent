@@ -1,0 +1,148 @@
+{
+  "release": "0.8.4",
+  "runtime": "2.7.0",
+  "plugin_version": "0.4.0",
+  "base_architecture": "0adbb596f85491bf8e6d42e9b73d09508c95701a",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "e6e343c2ddbac1e7c5a831714fb2cf4497b8617b0345fa6329370ac50e6f2623"
+    },
+    {
+      "path": "DEPLOY_FOR_BOT.md",
+      "sha256": "9f5c824ed254c39257001b45f444d1c96e7ec3faa7bbecbbdcb227caa45fb34d"
+    },
+    {
+      "path": "README.md",
+      "sha256": "166cb7bac6a2d40275649937f222ac6930c4fa6a880d6b71ddc306aff9c5df29"
+    },
+    {
+      "path": "docs/FAST_REPLY.md",
+      "sha256": "2746641f948297d566cb894c4fdca19a75bcc05a8fc61cced4473fc503910452"
+    },
+    {
+      "path": "docs/FEEDBACK_HEARTBEAT.md",
+      "sha256": "855cab2fd9fe6c1a2a7d4e056cef9dc22e996534fbfa06ed658c90704e7231af"
+    },
+    {
+      "path": "docs/HOST_TASKS.md",
+      "sha256": "ce58b38ce3ffe2f279968f2752b2e608a6a7de28be803920fc8ce44727a605f0"
+    },
+    {
+      "path": "docs/INHERITANCE.md",
+      "sha256": "a02b6804597416cd7fcca0abdd02f4e8abb4cccdf6ce6cd9b165bb7298dff7d0"
+    },
+    {
+      "path": "docs/LIFE_ROUTINE.md",
+      "sha256": "c9c1024433eb267fe24c5352c347b57e8e21c2ad1db7c5f53525365d5487dd9c"
+    },
+    {
+      "path": "docs/MAIN_ENTRY.md",
+      "sha256": "b84775a5c6976c8e6eba766a26bc5b8d5f8abbcca17a804f9d894a86ea7765a0"
+    },
+    {
+      "path": "docs/READING_QUEUE.md",
+      "sha256": "7040903773c7dce0c745f4b052eff5712c89c64da7c6ad872fda4a28b1ba527d"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-06-responsive-replies.md",
+      "sha256": "93bf1aa835cd9a26333305bef2dba295f1b21016928409ae5a03c7e4e47a7505"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-11-06-responsive-replies.md",
+      "sha256": "635df99e4be184cc9ec64e73f344350f70442ddad87fe4bb09773f637bd38fb1"
+    },
+    {
+      "path": "personal_bot/__init__.py",
+      "sha256": "2f2235e3f3904c972a6c079f3e9e67008e11db314377ca4d88b2bc58ada38bb8"
+    },
+    {
+      "path": "personal_bot/deploy.py",
+      "sha256": "ace0ac30e24c2ecbd806682ef85cf05da7fb5ae75f49efd48d51f471ddbb3b4c"
+    },
+    {
+      "path": "personal_bot/provenance.json",
+      "sha256": "4862b5438c43015e40866b2f7bad721e48a8ae89cabd5eafd4d6608ad14ff8f3"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/companion.py",
+      "sha256": "7775a8155fdca4e86f1dc1df42317366f08edcba83cb15458c5dc2ab910ab951"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/companion_panel.html",
+      "sha256": "ca70165200f71232d2a05b2261c8e02787b7754c880476d5dd5f530c8eeb1b50"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/panel_home.py",
+      "sha256": "4b80aeacf6d8d0563a49c5a669dc5feb3d59f6c2cdaf890eebdbb79025dcf52b"
+    },
+    {
+      "path": "personal_bot/runtime/reply_driver.mjs",
+      "sha256": "1917b75307fa140ee6f3e564ddb111141b4dc20efb4dee26470cad4ab66b5694"
+    },
+    {
+      "path": "personal_bot/runtime/reply_media.mjs",
+      "sha256": "a644f416375f0d1d46e3413b8ff1174395b4c9ee0fe57e953998f71233be5464"
+    },
+    {
+      "path": "personal_bot/vault.py",
+      "sha256": "0b40eee066f40d4f865c045da2bebc1a17ca3244577fee34d6bc921a2ff1c501"
+    },
+    {
+      "path": "plugins/social-reading/PROTOCOL.md",
+      "sha256": "8560936dba8c2359536f6dc5c222589a5d41dd44aea33264cc228b228a7da9ff"
+    },
+    {
+      "path": "plugins/social-reading/README.md",
+      "sha256": "d26d7e8c9dc3620069ba8a2fee7589640c1558ef6dfb99f8771ce77882513bd0"
+    },
+    {
+      "path": "plugins/social-reading/__init__.py",
+      "sha256": "606c571e43ea4016847b42dce3281cfab3c657c319e46e3ac4db2f02b131826e"
+    },
+    {
+      "path": "plugins/social-reading/manifest.json",
+      "sha256": "e2bedb401f68e3978fa9e04373e94734fe2ea7dbf604308922183557f33c3d71"
+    },
+    {
+      "path": "plugins/social-reading/reader.py",
+      "sha256": "badff013aca7805c08d335a0923156f5a65c04bd62ef0b0ecc67f3cd44f94259"
+    },
+    {
+      "path": "plugins/social-reading/reading_queue.py",
+      "sha256": "3fb7258afa9a84867afc8ac7f19225e5bed93b037a26824c9e580d14ef115cc8"
+    },
+    {
+      "path": "plugins/social-reading/store.py",
+      "sha256": "ec483153356dff45e6417d6443eb9d1f45bb5e091ba4202e633b5b8c7ad0ee9f"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "2b6a8b23bbf619f18edbbda78bb1258d101fe4a7b53a1542702375d565c72803"
+    },
+    {
+      "path": "tests/test_reading_queue.py",
+      "sha256": "101841c38c63dc9444e570acc8dd797fabb79c2f7e575bd4273df8e4d32009ac"
+    },
+    {
+      "path": "tests/test_reply_driver.py",
+      "sha256": "75be8f022413eb4718ddc6de05e9c39e610b0a9688749378b420a5404559e97e"
+    },
+    {
+      "path": "tools/build_plugin_manifest.py",
+      "sha256": "e7bdc9698f0cdf8c3ee41d0b65ca5a98eeaabece46826c6d1cf9612768a84873"
+    },
+    {
+      "path": "tools/check_wheel.py",
+      "sha256": "451c08ca090b13d40b7dd9e6c692f64f67acfdc0c62df4ae8851124f6e258c62"
+    }
+  ],
+  "host_notes": [
+    "preserve owner settings, sources, evidence, SOUL, customized companion_io/emotion and channel senders",
+    "deploy fixed reply_driver/reply_media with original verified native-entry dependencies; full48 before text and no delivery claims from preparation",
+    "all new social readers use queue; reconcile preexisting exact native browsers before switching",
+    "emotion15m enqueues but never browses or waits; existing life30m/reading2h consume one bounded batch",
+    "future runonce handoffs need actual native readback; no new recurring task",
+    "update existing active pointers/host task bodies, refresh same private HTML, lock one private snapshot to verified public commit"
+  ]
+}

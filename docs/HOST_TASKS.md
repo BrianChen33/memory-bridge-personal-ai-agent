@@ -52,8 +52,9 @@ phase=proactive关联已评估生活源或空来源新闻；自己的话不再�
 
 ## v0.8 生活选择与同一手机入口
 
-生活/情绪任务tick后读取phone.actionable或companion_phone；存在待执行意图时，按
-LIFE_ROUTINE.md调用插件plan(life_intent)，复用同一个原生浏览器任务与预算。原2h任务的
+情绪任务tick后读取phone.actionable或companion_phone，只queue_enqueue(life_intent)，禁止浏览和等待。
+30m生活任务实际queue_work消费最多一批；2h任务复用同一队列。绑定、暂存、登记与续读按
+READING_QUEUE.md，保留实时预算，不再直接plan或过期换租约。原2h任务的
 社交分支只消费同一意图，不独立再抽；不改变ID/节奏、不新增常驻循环。
 阅读反思按PERSONALITY_GROWTH.md把模型自身判断纳入growth_candidates，正常聊天把
 current_persona.growth_overlay作为当前人格，不能继续套用“学习不影响人格”的旧说明。

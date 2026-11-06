@@ -81,3 +81,8 @@ plugins.json及SQLite随私库原格式备份，代码从架构锁定的公共co
 
 参考referiw/dsh-plugin-tieba0.3.5，commit568cc4d75dc92984ec3cf625241e47a7f9c244d4。
 动态抽样和楼层组织按MIT项目适配，许可见THIRD_PARTY_LICENSE.txt；新增代码为AGPL-3.0-or-later。
+
+## 0.4.0：持久队列与主聊提速
+新任务只走[队列协议](../../docs/READING_QUEUE.md)。情绪15m仅入队，生活30m/阅读2h消费
+最多一个有界批次；浏览结果先暂存再反思，已完成结果迟到无需重开网页。旧plan/observe
+仅兼容独立调用。自动阅读、授权来源、人格成长与用户预算均不因升级重置。

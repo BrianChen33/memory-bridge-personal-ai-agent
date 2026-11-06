@@ -1,4 +1,4 @@
-# 唯一宿主协议 · social-reading0.3.0
+# 唯一宿主协议 · social-reading0.4.0
 
 先读实际宿主工具schema。下列是本地brain.py请求，不表示Muse自动注册了新工具：
 
@@ -20,7 +20,15 @@
 - configure(owner_event,authorized=true,patch)：修改auto_browse、language_learning、分享阈值、
   预算或抽样/截断，并回读值。owner_event是正式capture/prepare取得的整数ID，不是示例ID。
 
-## 一次真实阅读
+## 当前部署：持久队列优先
+
+所有新手机/手动阅读按docs/READING_QUEUE.md（代码库根目录）走queue_enqueue→queue_work→
+queue_bind_browser→queue_stage→queue_ingest→finalize_reading→queue_finish。15m情绪只入队，
+30m生活/2h阅读消费一次有界批次。真实结果迟到也先stage，不为登记重plan/重开浏览器。
+单浏览名额保留，来源/主人配置与原packet格式不变；设置实时读取。手动交接按未来实际调度读回。
+下节plan/observe仅为旧独立客户端兼容契约，不是新任务的执行入口。
+
+## 一次真实阅读（底层兼容）
 
 1. 在既有生活/阅读任务中决定本次逛帖，plan(job_id=真实原生运行ID,manual=false)。
    manual=true仅限主人此轮明确要求，不用于绕过安静时段。awaiting_sources不启动浏览器；
@@ -58,7 +66,7 @@
     plugin_context。成长与底稿及当前情绪共同构成现在的人格，可修正旧可变倾向；不能说只影响
     措辞/永不影响人格。外观、身份、真实历史与权限仍保留，按语境自然取用，不每句套用。
 11. 自动逛帖由生活40/60抽签产生手机意图；从companion_tick.phone或companion_phone取
-    actionable=true的request.id，plan传life_intent=id。运行时固定job_id=life-phone:<id>，
+    actionable=true的request.id，queue_enqueue传life_intent=id。请求固定去重，后台queue_work，
     不另一次抽签，不再由2h任务独立选刷帖。手机意图不等于已读；observe真实成功才标read。
     手动明确要求可用原manual入口，不计自主生活比例。参阅docs/LIFE_ROUTINE.md。
 

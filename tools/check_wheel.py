@@ -18,10 +18,11 @@ def main():
         run([py,'-c','from pathlib import Path; import personal_bot,sys; assert Path(personal_bot.__file__).is_relative_to(Path(sys.prefix)); print("installed package origin verified")'],work,env)
         installed=subprocess.run([str(py),'-c','from personal_bot import deploy; print(deploy.RUNTIME)'],cwd=work,env=env,capture_output=True,text=True,check=True)
         installed_runtime=Path(installed.stdout.strip())
-        for entry in ('main_entry_guard.mjs','main_native_entry.mjs'):
+        for entry in ('main_entry_guard.mjs','main_native_entry.mjs','reply_driver.mjs','reply_media.mjs'):
             if not (installed_runtime/entry).is_file():raise RuntimeError('installed main entry component missing')
         if shutil.which('node'):
             run(['node',installed_runtime/'main_native_entry.mjs','--help'],work,env)
+            run(['node',installed_runtime/'reply_driver.mjs','--help'],work,env)
         run([py,'-m','personal_bot','self-test'],work,env)
         state=work/'state with spaces'
         run([py,'-m','personal_bot','--root',state,'init'],work,env)

@@ -96,3 +96,13 @@ persona_growth.traits，而非只写面板或按词频改性格。原任务末�
 既有情绪任务做只读抽样audit，不另起定时器，不回放历史情绪或重发旧消息。
 
 正常context/commit允许无损用户项投影：保留真实chat_id/page/turn.id及每turn全部user的原文/role/seq/时间，移除助手项；不复制无关长回复，不改写或截断用户正文。phase=feedback按v0.8.3额外保留必要真实assistant项，仅供表达使用证明。
+
+## 当前v0.8.4 / runtime2.7.0 / social-reading0.4.0
+按docs/FAST_REPLY.md装固定reply_driver+reply_media与依赖，安装时读协议一次。每轮真实取源→
+context票据→同模型完整48项→commit，一次抽签并本地选图，原生final先短句后图。
+不能先回正文后补评估；不重复prepare、临时写builder或为多个短句重抽。没有真实回执不先finish。
+更新现有emotion/life-news/reading正文并实际读回：15m只短检查/入队/情绪/反馈/面板，禁止浏览；
+30m与2h统一queue_work最多一批，预算从实时配置读。全部手动/手机入口按READING_QUEUE.md，
+停用旧直接plan和过期重plan惯例。若手动需要近期启动，用queue_handoff未来计划及实际任务读回。
+先核对已有浏览的真实状态，不直接抹掉租约；不改变任务身份、主人配置、成长记录或渠道发送器。
+同一面板静默覆盖；最终私库snapshot/README/LATEST/manifest都锁定实际发布commit。

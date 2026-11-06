@@ -41,6 +41,8 @@ def _plan(b, q):
     now = time.time()
     with b.db:
         b.db.execute('BEGIN IMMEDIATE')
+        if b.db.execute("SELECT 1 FROM sr_read_queue WHERE status IN ('browsing','cancel_requested')").fetchone():
+            return dict(ok=True, action='busy', reason='bound_native_browser_requires_reconciliation')
         intent = q.get('life_intent')
         if intent:
             from muse_ext import life_routine
@@ -233,6 +235,8 @@ def observe(b, q):
 
 
 def _observe(b, q):
+    if b.db.execute('SELECT 1 FROM sr_read_queue WHERE lease=?', (q.get('lease_id'),)).fetchone():
+        raise ValueError('queued_reading_requires_bound_stage')
     # Terminal leases may replay their exact receipt, never append new content.
     old_lease = b.db.execute('SELECT * FROM sr_lease WHERE id=?', (q.get('lease_id'),)).fetchone()
     if old_lease and old_lease['status'].startswith('done:'):
@@ -247,6 +251,17 @@ def _observe(b, q):
                         observed=ensure_observed(b, doc['event']))
     row, source, policy = lease(b, q)
     value = normalize(q, source, policy)
+    return persist_observation(b, row, source, value)
+
+
+def persist_observation(b, row, source, value, observed_at=None):
+    """Store already-validated native evidence; staged packets no longer browse."""
+    if row['status'].startswith('done:'):
+        doc = b.db.execute('SELECT * FROM sr_document WHERE id=?', (row['status'][5:],)).fetchone()
+        if doc and content_fingerprint(value) == doc['fingerprint']:
+            return dict(ok=True, replayed=True, document_id=doc['id'], source_event=doc['event'],
+                        status=doc['status'], observed=ensure_observed(b, doc['event']))
+        raise ValueError('reading_lease_content_conflict')
     if value['status'] in ('blocked', 'login_required', 'unavailable', 'failed'):
         with b.db:
             b.db.execute('UPDATE sr_lease SET status=? WHERE id=?', (value['status'], row['id']))
@@ -272,11 +287,12 @@ def _observe(b, q):
     if not quote.strip():
         raise ValueError('image_urls_alone_are_not_reading')
     now = time.time()
+    happened = now if observed_at is None else observed_at
     event = b.dispatch(dict(op='capture', scope='owner-private', actor='article', person_id='owner',
                             source='plugin:social-reading:' + value['url'], event_id='social:' + did,
-                            occurred_at=now, text=quote))['event']['id']
+                            occurred_at=happened, text=quote))['event']['id']
     mid = b._remember(dict(scope='owner-private', source='reading:' + value['url'], event_id='social:' + did,
-                           occurred_at=now, text=quote, kind='episode', evidence='observed', importance=.4))
+                           occurred_at=happened, text=quote, kind='episode', evidence='observed', importance=.4))
     with b.db:
         b.db.execute('INSERT INTO sr_document VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
                      (did, source['id'], value['url'], value['title'], fingerprint,
