@@ -57,11 +57,16 @@ QQ/微信没有跨平台通用安装命令。询问是否启用后读取目标�
 接入真实原生浏览器与既有阅读/生活任务。来源未配置/未验证就暂停自动读；不复制DSH驱动。
 将plugin_context及expression_context.learned_voice实际交给回复模型。新增sr_认知表和plugins.json
 随私库继承；插件代码按锁定commit重建，旧登录态/任务不自动恢复。面板第8卡改为插件，
-原静默刷新照旧，状态详见“关于”。B站/抖音的disabled接口不是已完成部署。
+静默刷新改为现有15m情绪heartbeat末尾，撤掉旧30m+5m及其待发runonce，状态详见“关于”。B站/抖音的disabled接口不是已完成部署。
 人格成长单独征得主人选择，已明确同意无需重问。开启后同一阅读模型reflect带growth_candidates，
 每轮current_persona.growth_overlay与SOUL共同构成当前人格，允许改变可变性格，不能仅当措辞。
 参阅docs/PERSONALITY_GROWTH.md及docs/LIFE_ROUTINE.md，默认40%日常/60%手机，所有自动
 社交阅读入口消费同一life_intent，保留原生任务节奏，不另建刷帖循环。
+
+v0.8.2接线必须再读LIFE_PROJECTS.md、MAIN_ENTRY.md和FEEDBACK_HEARTBEAT.md：具体活动由同一模型
+后台准备，普通回复只读当前阶段；commit复用上下文而不再prepare；主动输出不重复评估自己。
+反馈只对真实近期缺失/无效原事件做按原时间衰减的有限修正，已成功、关系、期待、抽签和旧发送不重放。
+每日原格式SQLite快照已包含ct_activity_*和ct_feedback_*，不拆成大量单独作品文件。
 
 `companion_panel`输出`exports/Companion面板.html`。按实际资料库文档发布；没有API/刷新证据就保留离线方式。GitHub只在用户选择后配置，使用专用私库；`vault.py`保留原始SQLite、按SHA去重原生文件、锁定架构commit。
 

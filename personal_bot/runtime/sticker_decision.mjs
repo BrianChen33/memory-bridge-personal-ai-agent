@@ -68,7 +68,7 @@ export function decide(opts){
       sampled=roll<probability;reason=intensity.available?'emotion_intensity':'degraded_to_base';
     }
     const value={sampled,reason,probability,roll,mode,event_id,input_hash,assessment_status,
-      degraded:!['updated','unchanged','replayed'].includes(assessment_status),requires_context_match:false,
+      degraded:!['updated','unchanged','replayed','not_applicable_self_output'].includes(assessment_status),requires_context_match:false,
       order:'all_text_then_image',send_status:'not_handed_off'};
     const saved=saveDecision(scope,turnId,value);
     return saved.ok?saved.record:{sampled:false,mode:'error',reason:saved.error,probability:null};

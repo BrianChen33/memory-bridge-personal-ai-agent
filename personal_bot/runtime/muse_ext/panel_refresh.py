@@ -56,6 +56,8 @@ def record(root, cycle, source_task, completed_at=None):
         raise ValueError('real_host_cycle_and_task_required')
     with guard(root):
         state=read_json(state_path(root))
+        if state.get('mode')=='emotion_heartbeat':
+            return dict(ok=True,skipped='retired_delayed_panel_rule')
         if state.get('cycle')==cycle:
             if state.get('source_task')!=source_task: raise ValueError('panel_cycle_source_conflict')
             return dict(ok=True, replayed=True, **state)
@@ -77,6 +79,8 @@ def bind(root, cycle, task_id):
     if not task_id or len(task_id)>200: raise ValueError('native_task_id_required')
     with guard(root):
         state=read_json(state_path(root))
+        if state.get('mode')=='emotion_heartbeat':
+            raise ValueError('delayed_panel_binding_retired')
         if state.get('cycle')!=cycle: raise ValueError('stale_panel_cycle')
         if state.get('native_task') and state['native_task']!=task_id:
             raise ValueError('panel_cycle_already_bound')
@@ -109,14 +113,31 @@ def publish(root, target, cycle=None, manual=False):
         content=Path(result['path']).read_bytes()
         atomic(target, content)
         state.update(generated_at=result['snapshot_at'], target_sha256=hashlib.sha256(content).hexdigest(),
-                     status='published', last_publish_kind='manual' if manual else 'after_source_completion')
+                     status='published', last_publish_kind='manual' if manual else state.get('mode','after_source_completion'))
         if cycle: state['published_cycle']=cycle
         if state.get('due_at'):
-            state['next_at']=state['due_at']+1800 if now>=state['due_at'] else state['due_at']
+            state['next_at']=state['due_at']+state.get('cadence_seconds',1800) if now>=state['due_at'] else state['due_at']
             state['next_estimated']=now>=state['due_at']
         save(root, state)
         return dict(ok=True, path=str(target), snapshot_at=result['snapshot_at'],
                     sha256=state['target_sha256'], notifications=0)
+
+
+def heartbeat(root,target,cycle,source_task):
+    """Call last in the existing emotion job; no runonce or delayed refresh."""
+    if not cycle or not source_task or len(cycle)>200 or len(source_task)>200:
+        raise ValueError('actual_emotion_run_and_task_required')
+    with guard(root):
+        state=read_json(state_path(root))
+        if state.get('mode')=='emotion_heartbeat' and state.get('published_cycle')==cycle:
+            return dict(ok=True,replayed=True,snapshot_at=state.get('generated_at'))
+        now=time.time()
+        state.update(mode='emotion_heartbeat',enabled=True,cycle=cycle,source_task=source_task,
+                     source_completed_at=now,due_at=now,next_at=now+900,next_estimated=True,
+                     cadence_seconds=900,offset_after_event_seconds=0,native_task=source_task,
+                     task_name=None,status='ready',at_local=None)
+        save(root,state)
+    return publish(root,target,cycle=cycle)
 
 
 def main():
@@ -127,9 +148,12 @@ def main():
     mark.add_argument('--completed-at', type=float, help='Only a verified native success timestamp; never infer from chat text')
     attach=subs.add_parser('bind'); attach.add_argument('--cycle', required=True); attach.add_argument('--task-id', required=True)
     push=subs.add_parser('publish'); push.add_argument('--target', type=Path, required=True); push.add_argument('--cycle'); push.add_argument('--manual', action='store_true')
+    beat=subs.add_parser('heartbeat'); beat.add_argument('--target',type=Path,required=True)
+    beat.add_argument('--cycle',required=True); beat.add_argument('--source-task',required=True)
     args=parser.parse_args()
     if args.action=='record': result=record(args.root, args.cycle, args.source_task,args.completed_at)
     elif args.action=='bind': result=bind(args.root, args.cycle, args.task_id)
+    elif args.action=='heartbeat': result=heartbeat(args.root,args.target,args.cycle,args.source_task)
     else: result=publish(args.root, args.target, args.cycle, args.manual)
     print(json.dumps(result, ensure_ascii=False))
 

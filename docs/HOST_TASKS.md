@@ -4,14 +4,14 @@
 
 | 职责 | 建议节奏 | 真实动作 |
 |---|---|---|
-| 生活/情绪 | 15m或廉价tick | companion_tick→pending claim→模型v2→life_assess→share claim→真实发送→settle |
-| 新闻/邮件兴趣观察 | 30m | 真实来源、兴趣与日期、去重；有价值才分享 |
+| 情绪与反馈 heartbeat | 15m | 推进活动到期阶段→原事件full48评估→近期原文与无效评估检查/有限修正→可选分享→末尾静默刷新同一HTML |
+| 生活/新闻/邮件兴趣观察 | 30m | 具体活动主题/阶段/草稿准备；真实来源、兴趣与日期、去重；有价值才分享，重工作让主聊优先 |
 | 自主阅读/摘要 | 2h | 真实阅读claim/commit；capture article→observe；summary_work→commit→ack；后台向量索引 |
 | 维护 | 每日 | 跳过繁忙消息队列；按scope合并候选、冲突与derive；people_sync |
 | 每日总结 | 用户选择，如23:30 | 真实写日记→导出完整native定义→summary_done |
 | 私库备份 | 紧接总结，或23:35补偿 | 只有summary_done存在才调用vault发布；验证远端commit |
 | 公共梗知识同步 | 每周日07:40，一周一次 | meme-sync --mode full；匿名GET、持久进度、静默；私人解释不覆盖，不建立每日任务 |
-| 小屋面板（可选） | 每30m事件成功后5m | 复用源事件任务，记录真实完成时间，按周期去重创建静默原生runonce；panel_refresh原子覆盖原Library HTML，无聊天通知 |
+| 小屋面板（可选） | 复用15m情绪任务末尾 | panel_refresh heartbeat原子覆盖原Library HTML，无聊天通知；撤掉旧30m+5m步骤及待发panel-refresh runonce，不新增任务 |
 | 提醒对账 | 5m | 对账真实runonce与账本，不能替代准点路径 |
 
 01:00–07:00 Asia/Shanghai默认后台允许、主动分享暂停；用户主动来聊照常回复。无每日分享次数上限。备份可作为静默数据任务运行。失败记录并日间报告，不冒充已发消息。
@@ -23,6 +23,14 @@
 ## 生活调用
 
 `companion_pending`带claim=true返回待评估事件与context；对每条调用`companion_life_assess {id,assessment}`，可share=true。`companion_share`先claim，实际发送后settle accepted/failed/unknown。静默时段不认领分享；unknown不自动重复发送。
+
+assessment使用本次返回的full48模板，不再手写旧changed/label空信封。主聊主动输出按MAIN_ENTRY.md的
+phase=proactive关联已评估生活源或空来源新闻；自己的话不再制造一轮情绪刺激。
+活动档案按LIFE_PROJECTS.md：情绪任务负责advance/pending，30m生活任务负责模型计划与草稿；
+用户追问时view按真实时钟返回阶段，artifact只在完成后显式取全文。01–07只静默后台，不主动发。
+反馈用最近3–5turn的真实user投影走phase=feedback和原生cursor；24h窗口、120秒宽限、每轮最多2条，
+不能全库重评或把已成功生活事件再加分。检查失败仍应生成面板，暴露真实失败和生成时间。
+保持任务原ID/时区/周期和原有浏览预算，禁止整批替换、重建所有定时任务。
 
 ## 人物绑定
 

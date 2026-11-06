@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Host main-chat adapter. Native final is rule-driven, not a platform hard hook.
-// JSON stdin: trusted turnId/text/timestamp, phase=context|finalize|finish,
-// emotion_assessment v2, and actual delivery receipts for finish.
+// JSON stdin: trusted turnId/text/timestamp, phase=context|commit|proactive|finalize|finish,
+// same-host full48 assessment, and actual delivery receipts for finish.
 import {readFileSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -9,7 +9,7 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {decide,setPaths,getDecision,settleDecision} from './sticker_decision.mjs';
 import {classifyIntent} from './sticker_intent.mjs';
-import {recordEntry,entryStatus,auditEntries,boundReadings} from './main_entry_guard.mjs';
+import {recordEntry,entryStatus,auditEntries,boundReadings,observeNativeSource} from './main_entry_guard.mjs';
 const HERE=dirname(fileURLToPath(import.meta.url));
 const arg=process.argv.indexOf('--root');
 const workspace=arg>=0?process.argv[arg+1]:(process.env.STICKER_ROOT||join(HERE,'..','..'));
@@ -32,62 +32,99 @@ function bounded(p){
     plugin_context:p.plugin_context||null};
 }
 function main(){
-  if(process.argv.includes('--help'))return {ok:true,usage:'JSON stdin: phase=context|commit|gate|audit|finish; full48 supplied by the host model',
+  if(process.argv.includes('--help'))return {ok:true,usage:'JSON stdin: phase=context|commit|proactive|finalize|gate|audit|finish; full48 supplied by the host model; proactive requires actor=assistant and original life source_events',
     boundary:'local validation only; native final is not intercepted'};
   let q;try{q=JSON.parse(readFileSync(0,'utf8'));}catch{return {ok:false,error:'JSON_stdin_required'};}
   if(q.phase==='audit')return auditEntries(workspace,brainRoot,q.turns,getDecision);
   if(typeof q.turnId!=='string'||!q.turnId||q.turnId.length>256||typeof q.text!=='string'||q.text.length>12000)
     return {ok:false,error:'trusted_turnId_and_real_text_required'};
   const phase=q.phase||'finalize',scope='main';
-  if(!['context','finalize','commit','gate','finish'].includes(phase))return {ok:false,error:'invalid_phase'};
+  if(!['context','finalize','commit','proactive','gate','finish'].includes(phase))return {ok:false,error:'invalid_phase'};
   if(phase==='finish')return settleDecision(scope,q.turnId,q);
   const actor=q.actor||'user';if(!['user','assistant'].includes(actor))return {ok:false,error:'invalid_actor'};
+  if(q.timestamp!==undefined&&(typeof q.timestamp!=='number'||!Number.isFinite(q.timestamp)))return {ok:false,error:'invalid_timestamp'};
   const mode=classifyIntent(q.text),hash=createHash('sha256').update(q.text).digest('hex').slice(0,16);
   const debug=/^(?:\[Codex调试\]|［Codex调试］)/.test(q.text.trimStart());
   if(debug)return {ok:true,event:'control_ignored',decision:{mode:'skip',sampled:false,reason:'debug_skip',roll:null},assessment_required:false};
+  if(phase==='proactive'){
+    if(q.actor!=='assistant')return {ok:false,error:'proactive_assistant_actor_required',ready_to_send:false,assessment_required:false};
+    const sources=q.source_events===undefined?[]:q.source_events;
+    if(!Array.isArray(sources)||sources.length>3||sources.some(x=>!Number.isSafeInteger(x)||x<=0)||new Set(sources).size!==sources.length)
+      return {ok:false,error:'proactive_original_source_events_required',ready_to_send:false,assessment_required:false};
+    if(q.emotion_assessment!==undefined)return {ok:false,error:'proactive_self_assessment_not_allowed',ready_to_send:false,assessment_required:false};
+    const p=runBrain({op:'companion_proactive',scope:'owner-private',source_events:sources});
+    const valid=p.ok===true&&!p.disabled&&Array.isArray(p.source_events)&&p.source_events.length===sources.length&&
+      sources.every((id,index)=>p.source_events[index]===id);
+    const status=valid?(sources.length?'replayed':'not_applicable_self_output'):'error';
+    const decision=decide({scope,turnId:q.turnId,sampling_mode:mode,mood:p.mood||null,event_id:q.turnId,
+      input_hash:hash,assessment_status:status});
+    const ready=valid&&decision.mode!=='error';
+    return {ok:ready,ready_to_send:ready,pipeline_ok:ready,turnId:q.turnId,event:null,emotion:status,
+      emotion_origin:valid?(sources.length?'original_events':'no_new_stimulus'):'unverified',source_events:valid?p.source_events:sources,
+      mood:p.mood||null,updates:{companion:p.companion||null},reaction:p.reaction||null,
+      decision,image_action:ready&&decision.sampled&&decision.send_status==='not_handed_off'?'select_then_append_after_all_text':'do_not_send',
+      assessment_required:false,assessment_degraded:!valid,receipt_required:true,
+      ...(ready?{}:{error:p.error||'proactive_entry_not_ready'}),protocol:'companion-v2-emotion48'};
+  }
+  const native=observeNativeSource(workspace,q);
+  if(!native.ok)return {...native,ready_to_send:false};
   if(phase==='gate')return entryStatus(workspace,q,getDecision(scope,q.turnId));
   const readingDocuments=phase==='commit'?boundReadings(workspace,q):[];
+  let prepared=null;
   if(phase==='commit'){
-    const preflight=entryStatus(workspace,q,getDecision(scope,q.turnId));
-    if(preflight.missing.includes('context')||preflight.missing.includes('source_conflict'))return {...preflight,error:'native_context_required_before_commit'};
+    prepared=entryStatus(workspace,q,getDecision(scope,q.turnId));
+    if(prepared.missing.includes('context')||prepared.missing.includes('source_conflict'))
+      return {...prepared,error:'native_context_required_before_commit'};
   }
   const finalizing=phase==='finalize'||phase==='commit';
   const cached=finalizing?getDecision(scope,q.turnId):null;
   if(cached?.input_hash&&cached.input_hash!==hash)return {ok:false,error:'input_conflict'};
-  const at=q.timestamp??Date.now()/1000;
+  const at=phase==='commit'?prepared.source_timestamp:q.timestamp??Date.now()/1000;
   if(typeof at!=='number'||!Number.isFinite(at))return {ok:false,error:'invalid_timestamp'};
-  const req={op:'prepare',scope:'owner-private',source:actor==='assistant'?'main:proactive':'main:sticker',
+  q={...q,timestamp:at};
+  const req={op:phase==='commit'?'companion_commit':'prepare',scope:'owner-private',source:actor==='assistant'?'main:proactive':'main:sticker',
     event_id:q.turnId,occurred_at:at,text:q.text,actor,person_id:'owner',sender_type:'human'};
+  if(phase==='commit')req.source_event=prepared.event_id;
   if(finalizing&&q.emotion_assessment!==undefined)
     req.emotion_assessment={...q.emotion_assessment,format:'full48-v1'};
   if(finalizing)for(const key of ['humor_assessment','meme_updates'])if(q[key]!==undefined)req[key]=q[key];
   const p=runBrain(req);
   let status=p.emotion?.status||(p.ok?'missing':'error');
   const previousEntry=entryStatus(workspace,q,cached);
-  if(status==='missing'&&p.reaction&&previousEntry.event_id===p.event?.id&&
+  if(phase!=='commit'&&p.ok===true&&!p.disabled&&status==='missing'&&p.reaction&&previousEntry.event_id===p.event?.id&&
      ['updated','unchanged','replayed'].includes(previousEntry.assessment_status))status='replayed';
-  if(status==='missing'&&p.reaction&&['updated','unchanged','replayed'].includes(cached?.assessment_status))status='replayed';
+  if(phase!=='commit'&&p.ok===true&&!p.disabled&&status==='missing'&&p.reaction&&['updated','unchanged','replayed'].includes(cached?.assessment_status))status='replayed';
+  const eventMatches=phase!=='commit'||p.event?.id===prepared.event_id;
+  if(!eventMatches&&['updated','unchanged','replayed'].includes(status))status='source_conflict';
   const result={ok:true,turnId:q.turnId,event:p.event||null,emotion:status,mood:p.mood||null,
-    context:bounded(p),reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
+    reaction:p.reaction||null,emotion_protocol:p.emotion_protocol||null,
     humor_updates:p.humor_updates||null,emotion_validation:p.emotion||null,
     assessment_required:phase==='context',protocol:'companion-v2-emotion48'};
+  if(phase==='commit')result.updates={mood:result.mood,companion:p.companion||null,reaction:result.reaction,
+    emotion_effect:p.emotion_effect||null,humor_updates:result.humor_updates};
+  else result.context=bounded(p);
+  if(phase==='commit'&&result.emotion_validation){
+    const {effect,...validation}=result.emotion_validation;result.emotion_validation=validation;
+  }
   if(phase==='context'){
-    result.ok=p.ok===true;result.decision=null;
-    if(result.ok&&p.event?.id){const saved=recordEntry(workspace,q,{context_ok:true,context_event_id:p.event.id});
+    result.ok=p.ok===true&&!p.disabled;result.decision=null;
+    if(result.ok&&Number.isSafeInteger(p.event?.id)&&p.event.id>0){const saved=recordEntry(workspace,q,{context_ok:true,
+        context_event_id:p.event.id,context_protocol:'main-entry-context-v2',context_prepared_at:Date.now()/1000});
       result.formal_entry=saved.ok?{context_recorded:true,event_id:p.event.id}:saved;result.ok=saved.ok;}
     else{result.ok=false;result.formal_entry={context_recorded:false};}
     return result;
   }
   // A real assessment error stays visible. It does not silently suppress the draw.
   if(!result.mood)result.mood=runBrain({op:'mood',scope:'owner-private'});
+  if(result.updates)result.updates.mood=result.mood;
   result.decision=decide({scope,turnId:q.turnId,sampling_mode:mode,mood:result.mood,
     event_id:q.turnId,input_hash:hash,assessment_status:status});
   result.image_action=result.decision.sampled&&result.decision.send_status==='not_handed_off'?'select_then_append_after_all_text':'do_not_send';
   result.ok=result.decision.mode!=='error';result.receipt_required=true;
   result.assessment_degraded=!['updated','unchanged','replayed'].includes(status);
-  result.pipeline_ok=p.ok===true&&result.ok&&!result.assessment_degraded;
+  result.pipeline_ok=p.ok===true&&!p.disabled&&result.ok&&!result.assessment_degraded&&eventMatches;
   result.assessment_required=result.assessment_degraded;
-  result.repair_hint=result.assessment_degraded?'Fill context.emotion_template; inspect emotion_validation.detail; retry this same turnId/text. Do not reroll or claim emotion was saved.':null;
+  result.repair_hint=result.assessment_degraded?'Fill the prepared context.emotion_template; inspect emotion_validation.detail; retry this same turnId/text. Do not reroll or claim emotion was saved.':null;
   if(result.pipeline_ok){const saved=recordEntry(workspace,q,{finalized_ok:true,finalized_event_id:p.event?.id,assessment_status:status});
     if(!saved.ok){if(phase==='commit')result.pipeline_ok=false;result.formal_entry=saved;}}
   if(phase==='commit'){

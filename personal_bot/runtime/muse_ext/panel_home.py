@@ -73,6 +73,10 @@ def enrich(b, snapshot):
     snapshot['life_routine'] = life_settings(b)
     snapshot['phone'] = phone_pending(b)
     snapshot['formal_entry_health'] = read_json(b.root / 'state' / 'formal-entry-health.json')
+    from muse_ext.feedback import status as feedback_status
+    snapshot['feedback_health']=feedback_status(b)
+    from muse_ext.life_projects import view as activity_view
+    snapshot['activity_project']=activity_view(b)
     profile = read_json(b.root / 'panel-profile.json')
     snapshot['panel_profile'] = {k: profile[k][:200] for k in PROFILE_KEYS if isinstance(profile.get(k), str)}
     voice = profile.get('voice', {})
@@ -101,7 +105,7 @@ def enrich(b, snapshot):
     snapshot['panel_schedule'] = read_json(b.root / 'state' / 'panel-update.json')
     schedule = snapshot['panel_schedule']
     if schedule.get('due_at'):
-        schedule['next_at'] = schedule['due_at']+1800 if now >= schedule['due_at'] else schedule['due_at']
+        schedule['next_at'] = schedule['due_at']+schedule.get('cadence_seconds',1800) if now >= schedule['due_at'] else schedule['due_at']
         schedule['next_estimated'] = now >= schedule['due_at']
     # An absent host policy remains unknown, rather than borrowing a demo probability.
     policy = read_json(b.root / 'state' / 'panel-sticker-policy.json') or read_json(b.root / 'expression-policy.json')

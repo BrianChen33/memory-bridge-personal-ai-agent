@@ -101,9 +101,15 @@ def blueprint(root):
     tasks=[]
     specs=[('life-news',{'kind':'interval','minutes':30},['life','news'],
             'Use authorized news sources and local interests. News must pass current scoring/date/source/dedup gates. '
-            'Update source cursors only on success. After new memories, vector_index limit20 if vector is enabled; failure must not block sharing.'),
+            'Prepare companion_activity pending plans with concrete 2-6 stages and a native artifact using the SAME host model; read docs/LIFE_PROJECTS.md. '
+            'Never prewrite observed web results. Heavy browsing/drafts yield to owner conversation. '
+            'Update source cursors only on success. After new memories, vector_index limit20 if vector is enabled; failure must not block sharing. '
+            'No panel record/bind or delayed runonce; panel refresh belongs only to the existing emotion heartbeat.'),
            ('emotion',{'kind':'interval','minutes':15},['emotion'],
-            'If companion_v2=true: run companion_tick, companion_pending claim=true; appraise each registered event with the SAME host model and emotion assessment v2, then companion_life_assess. '
+            'If companion_v2=true: run companion_tick, companion_pending claim=true; appraise each registered original event with the SAME host model using returned full48 template, then companion_life_assess. '
+            'Advance activity stages, but keep heavy planning/drafts in life-news. Use companion_feedback scan/claim/repair for recent24h missing/invalid ORIGINAL events (max2 per run); successful appraisals never replay. '
+            'Native main-chat samples use main_native_entry phase=feedback lossless user projection; no assistant self-appraisal. Late emotion decays from original time, no relationship/expectation/send/sticker replay. '
+            'Last, publish panel_refresh heartbeat on the existing emotion run to the exact configured private HTML, no delay/runonce/notification. '
             'Use companion_share claim then the real host sender; settle only actual receipts, unknown never automatically retries. Quiet01-07 collects only. '
             'Actual mood updates require model assessment on registered sources; never use keyword rules or the task clock to add emotion. Share pending meaningful emotion candidates; do not duplicate threshold candidates. '
             'Recovery may enqueue once with the same real active sources and stable recovery topic. No real change means silence.'),

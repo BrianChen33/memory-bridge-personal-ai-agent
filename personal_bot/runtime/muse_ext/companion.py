@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from muse_ext.emotion_catalog import LABELS, HALF, CATALOG_VERSION, normalize, reaction, schema as emotion_schema
 
-VERSION = '2.5.0'
+VERSION = '2.6.0'
 TZ = timezone(timedelta(hours=8))
 RNG = random.SystemRandom()
 
@@ -55,6 +55,9 @@ def initialize(b):
             with b.db:
                 _set(b,'version',VERSION);_set(b,'emotion_catalog',CATALOG_VERSION)
         initialize_humor(b)
+        from muse_ext import feedback, life_projects
+        feedback.initialize(b)
+        life_projects.initialize(b)
         return
     b.db.executescript('''
     CREATE TABLE ct_kv(key TEXT PRIMARY KEY,value TEXT NOT NULL);
@@ -98,6 +101,9 @@ def initialize(b):
     b.db.execute('INSERT OR IGNORE INTO ct_person(id,name,role,at) VALUES(?,?,?,?)',('owner','用户','owner',stamp()))
     b.db.commit()
     initialize_humor(b)
+    from muse_ext import feedback, life_projects
+    feedback.initialize(b)
+    life_projects.initialize(b)
 
 
 def quiet(now=None):
@@ -156,11 +162,16 @@ def context(b, scope, person=None):
     if p:
         contact=35+(p['contact']-35)*.5**(max(0,stamp()-p['at'])/(12*3600))
     life=_get(b,'life',{})
+    activity=life.get('activity')
+    if owner and activity and activity.get('project_id'):
+        from muse_ext.life_projects import view
+        activity=view(b,activity['project_id'])
+    elif activity:
+        activity={k:v for k,v in activity.items() if k not in ('outcome','cost')}
     return dict(version=VERSION,energy=current,contact_desire=round(clamp(contact),1),
                 relationship=({k:p[k] for k in ('id','name','affection','trust','familiarity')} if p else None),
                 pending_expectations=expectations,
-                activity=({k:v for k,v in life['activity'].items() if k not in ('outcome','cost')}
-                          if owner and life.get('activity') else None),
+                activity=activity if owner else None,
                 expression=dict(mode='short_conversational',paragraphs='1-3 short messages; one is enough when sufficient',
                                 policy='先接当前话，一句够了就停；少解释、不凑条数、不宣告人格模式。需要解释时再展开；心情影响措辞，不额外拖延。'),
                 provenance='model_state; life may be virtual; not verified human attributes')
@@ -213,7 +224,7 @@ def _validate(raw):
     return delta,intensity
 
 
-def assess(b,event_id,raw,legacy_submit):
+def assess(b,event_id,raw,legacy_submit,repair=False):
     if not b.feature('emotion_events') or not b.available('mood'):
         return dict(status='disabled_by_config')
     if not event_id:
@@ -256,6 +267,9 @@ def assess(b,event_id,raw,legacy_submit):
         bounded=full48.bound(raw) if full else None
         before_state=full48.frame(b,scope,now)['values'] if full else None
         effective_pad=bounded['pad'] if full else delta
+        age=max(0,now-event['occurred_at']) if repair else 0
+        if repair:
+            effective_pad={k:v*.5**(age/(8*3600)) for k,v in effective_pad.items()}
         applied_delta={k:0.0 for k in delta}
         if full:
             raw_labels=[dict(label=k,delta=raw['emotion_deltas'][k]) for k in LABELS]
@@ -280,7 +294,8 @@ def assess(b,event_id,raw,legacy_submit):
                 meta=b.db.execute('SELECT half FROM ct_label WHERE scope=? AND label=?',(scope,label)).fetchone()
                 half=meta[0] if meta else .75
                 before=r['intensity']*.5**(max(0,now-r['at'])/(half*3600)) if r else 0
-                value=clamp(before+item['delta']*gain,0,.6)
+                late_decay=.5**(age/(HALF.get(label,2)*3600)) if repair else 1
+                value=clamp(before+item['delta']*gain*late_decay,0,.6)
                 effective=round(value-before,8)
                 applied_labels.append(dict(label=label,delta=effective))
                 half=item.get('half_life_hours',HALF.get(label,2))
@@ -303,7 +318,7 @@ def assess(b,event_id,raw,legacy_submit):
         b.db.execute('INSERT INTO assessment_log VALUES(?,?,?,?,?,?,?,?)',
                      (event_id,scope,int(status=='updated'),raw.get('label'),dump(applied_delta),effective_intensity,'inference',now))
         b.db.execute('INSERT INTO ct_appraisal VALUES(?,?,?)',(event_id,payload,now))
-        if pid and actor_ok:
+        if pid and actor_ok and not repair:
             b.db.execute('INSERT OR IGNORE INTO ct_person(id,name,at) VALUES(?,?,?)',(pid,pid,now))
             relation=raw.get('relationship') or {}
             if life:
@@ -332,7 +347,9 @@ def assess(b,event_id,raw,legacy_submit):
                 energy['mental']=clamp(energy['mental']-.25)
                 energy['social']=clamp(energy['social']-.4)
                 _set(b,'vitals',energy)
-        if life:
+        if life and repair:
+            b.db.execute('UPDATE ct_life SET appraised=1,lease_until=0 WHERE id=?',(life['id'],))
+        elif life:
             from muse_ext.plugins import share_allowed
             b.db.execute('UPDATE ct_life SET appraised=1,lease_until=0,share=? WHERE id=?',
                          ('pending' if raw.get('share') and share_allowed(b,event_id) else 'none',life['id']))
@@ -372,16 +389,16 @@ ACTIVITIES = [
 ]
 
 
-def _life_event(b,activity,stage,description,origin='virtual',occurred=None):
+def _life_event(b,activity,stage,description,origin='virtual',occurred=None,event_id=None):
     from muse_ext.events import capture_event
-    eid=uuid.uuid4().hex
+    eid=event_id or uuid.uuid4().hex
     when=occurred or stamp()
     q=dict(scope='owner-private',source='companion:'+origin,event_id=eid,actor='article',
            text=description,occurred_at=when)
     ev=capture_event(b,q)
     if not ev.get('id'):
         return None
-    b.db.execute('INSERT INTO ct_life(id,activity,stage,origin,description,occurred,source_event) VALUES(?,?,?,?,?,?,?)',
+    b.db.execute('INSERT OR IGNORE INTO ct_life(id,activity,stage,origin,description,occurred,source_event) VALUES(?,?,?,?,?,?,?)',
                  (eid,activity,stage,origin,description,when,ev['id']))
     if b.available('memory'):
         b._remember(dict(scope='owner-private',text=description,source='companion:'+origin,
@@ -406,17 +423,36 @@ def tick(b):
             return dict(ok=True,busy=True,created=[])
         state=_get(b,'life',{})
         current=state.get('activity')
-        if current and now>=current['ends_at']:
-            if current.get('phone_intent'):
+        completed=False
+        if current:
+            if current.get('phone_intent') and now>=current['ends_at']:
                 from muse_ext.life_routine import outcome
                 current['outcome']=outcome(b,current['phone_intent'])
-            made.append(_life_event(b,current['name'],'completed',current['outcome']))
+                made.append(_life_event(b,current['name'],'completed',current['outcome'],
+                                        event_id='phone:'+str(current['phone_intent'])+':completed'))
+                completed=True
+            elif not current.get('phone_intent'):
+                from muse_ext import life_projects
+                if not current.get('project_id'):
+                    # Do not fabricate missing history for an already running
+                    # legacy activity: begin planning from its next real visit.
+                    current['started_at']=now
+                    current['ends_at']=now+1800
+                    made.append(life_projects.register(b,current))
+                    state['activity']=current
+                    _set(b,'life',state)
+                    b.db.commit()
+                progress=life_projects.advance(b,now)
+                made.extend(progress['created'])
+                completed=progress['completed']
+        if current and completed:
             s=vitals(b,now)
             for key,d in zip(('physical','mental','social','hunger'),current['cost']):
                 s[key]=clamp(s[key]+d)
             _set(b,'vitals',s)
             state['activity']=None
             state['next_at']=now+RNG.randint(8*60,40*60)
+            _set(b,'life',state)
             b.db.commit()
         local=datetime.fromtimestamp(now,TZ)
         day=local.date().isoformat()
@@ -462,9 +498,13 @@ def tick(b):
             if phone_selected:
                 current['phone_intent']=phone_start(b,now,duration)['id']
                 b.db.commit()
+            else:
+                from muse_ext import life_projects
+                made.append(life_projects.register(b,current))
             state['activity']=current
             state['last_activity']=activity[0]
-            made.append(_life_event(b,activity[0],'started','准备'+activity[0]+'，想看看这次会有什么小收获'))
+            if phone_selected:
+                made.append(_life_event(b,activity[0],'started','拿起手机，准备按已允许的来源真实阅读。'))
         _set(b,'life',state)
         b.db.commit()
     from muse_ext.life_routine import pending as phone_pending, settings as routine_settings
@@ -602,6 +642,19 @@ def install(Brain):
             if op in ('companion_life_config','companion_phone'):
                 from muse_ext import life_routine
                 return life_routine.configure(self,q) if op=='companion_life_config' else life_routine.pending(self)
+            if op=='companion_activity':
+                if not self.available('life'): return dict(ok=False,disabled=True)
+                from muse_ext import life_projects
+                return life_projects.dispatch(self,q)
+            if op=='companion_feedback':
+                from muse_ext import feedback
+                return feedback.dispatch(self,q)
+            if op=='companion_commit':
+                from muse_ext.main_commit import commit
+                return commit(self,q)
+            if op=='companion_proactive':
+                from muse_ext.main_commit import proactive
+                return proactive(self,q)
             if op=='companion_meme_status':
                 from muse_ext.meme_store import status as meme_status
                 return dict(ok=True,**meme_status(self))
@@ -628,7 +681,10 @@ def install(Brain):
             if op=='companion_life_assess':
                 row=self.db.execute('SELECT * FROM ct_life WHERE id=?',(q.get('id'),)).fetchone()
                 if not row: raise ValueError('life_event_not_found')
-                return dict(ok=True,emotion=assess(self,row['source_event'],q.get('assessment'),old_submit),
+                result=assess(self,row['source_event'],q.get('assessment'),old_submit)
+                from muse_ext.feedback import note
+                note(self,row['source_event'],result)
+                return dict(ok=True,emotion=result,
                             mood=mood(self,'owner-private'),companion=context(self,'owner-private'))
             if op=='companion_context': return dict(ok=True,mood=mood(self,'owner-private'),companion=context(self,'owner-private'))
             return operations(self,q)
@@ -636,6 +692,9 @@ def install(Brain):
         if op=='mood' and result.get('ok') is True and not result.get('disabled'):
             result.update(mood(self,q['scope']))
         if op=='prepare' and result.get('ok') is True:
+            if (result.get('emotion') or {}).get('status')=='invalid':
+                from muse_ext.feedback import note
+                note(self,(result.get('event') or {}).get('id'),result['emotion'])
             from muse_ext.companion_io import summaries
             result['companion']=context(self,q['scope'],q.get('person_id'))
             result.update(summaries(self,q))

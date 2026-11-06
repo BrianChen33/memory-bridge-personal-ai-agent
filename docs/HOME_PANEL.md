@@ -28,29 +28,24 @@ python tools/compact_panel_art.py --root STATE
 
 表情概率从实际 `expression-policy.json` 读；采用宿主自己的表情配置时，每次刷新可把该配置的 `enabled/base_probability/maximum_probability` 只读投影到 `state/panel-sticker-policy.json`。它是展示快照，绝不回写或代替原策略。
 
-## 每半小时，事件完成后5分钟
+## v0.8.2 当前规则：情绪heartbeat末尾，每15分钟
 
-不另造一套心情判断。复用已有30分钟事件任务，在真实状态更新成功后执行：
-
-```sh
-python -m muse_ext.panel_refresh --root STATE record --cycle REAL_HOST_RUN_ID --source-task REAL_HOST_TASK_ID
-```
-
-它固定首次完成时间、`due_at=ceil(completed_at+300)`、确定性`task_name`和Asia/Shanghai的`at_local`；相同周期重试不推迟。宿主查询同名任务去重，以正式原生工具创建一次性静默任务。只支持agent任务的宿主也应让该任务只执行下述本地命令，不能重新聊天、阅读、判断情绪或总结。
-
-恢复漏掉的真实周期时，可用 `record --completed-at UNIX_SECONDS` 传入正式工具读回的实际成功结束时间，不能用当前时间伪造过去的完成时间。已过due的runonce按宿主真实catch-up语义处理，只补最近周期，不重放整段历史。
+新接线使用既有15m情绪任务的最后一步；不再等待5分钟、不再由30m生活新闻任务创建面板runonce。
+调用前先完成本轮状态推进/有限反馈检查；有单条失败也显示实际失败状态，不假称全成功。
 
 ```sh
-python -m muse_ext.panel_refresh --root STATE publish --target EXACT_PRIVATE_LIBRARY_HTML --cycle SAME_REAL_HOST_RUN_ID
+python3 -m muse_ext.panel_refresh --root STATE heartbeat --target EXACT_PRIVATE_LIBRARY_HTML --cycle REAL_EMOTION_RUN_ID --source-task ACTUAL_EMOTION_TASK_ID
 ```
 
-创建并读回实际任务ID/时间/enabled/delivery=[]后执行 `bind --cycle SAME_REAL_HOST_RUN_ID --task-id ACTUAL_NATIVE_TASK_ID`。若创建后在绑定前中断，重试先查确定性名称，不重建。runonce的时间格式和时区以宿主真实schema为准；不能把本项目的Unix秒直接当作每个平台的时间参数。
+迁移时：删掉原生活新闻任务中的record/bind/创建runonce步骤；查询并取消**确属旧系统面板**的待发
+panel-refresh任务。不要取消行程安排室、校招、邮件、提醒或其他页面刷新。读回原任务ID/body/时区，
+保持原资料库HTML真实目标和符号链接。heartbeat模式会拒绝旧record/bind，旧周期publish返回stale。
+同一真实运行周期去重，下一次预计时间为15分钟后；原生调度延迟如实显示。手动更新可立即publish --manual。
+面板保持单文件、离线、静默覆盖；已打开的预览可能要刷新或重开，下载的旧副本不会自行变化。
 
-发布命令使用真实时钟，提前运行返回waiting且不写文件；过期周期跳过，已发布周期不重复。独立文件锁不占用情绪/聊天数据库写锁。先完整生成再原子替换指定HTML，不碰聊天通道；错误保留旧版。定时任务的原生唤醒可能有少量延迟，记录实际生成时间，不假称准秒执行。`next_at`是下一周期预计时间时带`next_estimated=true`。
+## 旧版机制的退役
 
-初次安装或用户明确要求手动刷新可执行 `publish --target EXACT_PRIVATE_LIBRARY_HTML --manual`，如实记录manual。不能伪造一次成功生活事件来触发安装验收。暂停/取消自动更新，应停用原生待运行任务并撤掉源任务末尾步骤，再记录enabled=false。
-
-Muse资料库适配示例：覆盖宿主已经使用的 `workspace/your_files/Muse系统面板.html`；保留宿主实际文件名和路径。Library预览缓存行为必须实际点开核验，下载到别处的旧HTML不会变成实时网页。页面没有后台网络API。
+旧版从30m事件结束时间推迟300秒，再动态创建runonce。该规则已取消；兼容函数仅供旧版本状态读取，不能用于新部署。启用heartbeat模式后旧record/bind拒绝重新排程，旧cycle的publish不会覆盖当前页面。
 
 ## 安装与继承
 
@@ -63,4 +58,4 @@ The eighth overview card is now 阅读与成长, replacing the panel-update card
 It shows explicit plugin installation, source verification, actual partial reading
 and evolving speech habits. Core-only installs show 未安装; empty allowlists show
 待配置. Future Bilibili/Douyin are planned, not active. Refresh timing and binding
-details remain accessible through About; the existing silent refresh job is retained.
+details remain accessible through About; refresh now runs at the end of the existing 15-minute emotion heartbeat.

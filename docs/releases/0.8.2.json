@@ -1,0 +1,82 @@
+{
+  "release": "0.8.2",
+  "runtime": "2.6.0",
+  "base_architecture": "451ed42fc7abc15aaa21bf3e6e55d244335cd92a",
+  "files": [
+    {
+      "path": "personal_bot/runtime/muse_ext/companion.py",
+      "sha256": "7b9fc4934b6f0454564f861a2e5c2cec716aaeb1329c6075417b877d07e357f0"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/life_projects.py",
+      "sha256": "3b1185dc5c8822503798aac23391cc0ea27d04b1812ea745edafe022c43969a7"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/feedback.py",
+      "sha256": "a0125a329b3ad6d7f542d575a99938da63346ac07c85ef1215fb4a038ebf1407"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/main_commit.py",
+      "sha256": "e6644702d463808978cc294eb5d3a393e1e26132358a48a35ed2c8187d07f992"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/panel_home.py",
+      "sha256": "53c5909cde567ecbbf3206492369a8ff99d7e4eb99703a32151b03f2539a8f23"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/companion_panel.html",
+      "sha256": "9a0829137107aec4e648b8aa7a68874c6866e38cf0a0d351fd0429a93ff2661a"
+    },
+    {
+      "path": "personal_bot/runtime/muse_ext/panel_refresh.py",
+      "sha256": "4c252e3d00969eaa6d4cd7fd1029ebca4de43b7df121571eefc456a10b0c6fba"
+    },
+    {
+      "path": "personal_bot/runtime/sticker_main.mjs",
+      "sha256": "71f403050b757940d37c6a269aa0175e8e28c05c33abceebc05a02011a67f671"
+    },
+    {
+      "path": "personal_bot/runtime/main_native_entry.mjs",
+      "sha256": "bf4b3e73563e8db6b15f834bb4b026236c2305f2bf7f4bc88ef294b969b6c6c4"
+    },
+    {
+      "path": "personal_bot/runtime/main_entry_guard.mjs",
+      "sha256": "361012a06e73d3849e7e0b947f2098a2b19ca3c2fe68f011154f0b3e807a73de"
+    },
+    {
+      "path": "personal_bot/runtime/sticker_decision.mjs",
+      "sha256": "bddb1e4478550efc57ecf2d852ba98e6d14d0ee19b7f4eebf91b993a786ba5c4"
+    },
+    {
+      "path": "personal_bot/vault.py",
+      "sha256": "9a22388ed1a4bfb755b31389d9dc83465b0f53081c409ef7648651597608a468"
+    },
+    {
+      "path": "docs/MAIN_ENTRY.md",
+      "sha256": "b633650c8cee1fbd0de68785f968246bafe85a41ec3bfd6076b052f184f699aa"
+    },
+    {
+      "path": "docs/LIFE_PROJECTS.md",
+      "sha256": "f18dac4b79d59422f4a3f70ec9aff79a220fe4247b4d91369a95092af81088de"
+    },
+    {
+      "path": "docs/FEEDBACK_HEARTBEAT.md",
+      "sha256": "b27191db822450720ad0740db43b1c6af715340f28624594858515c92f5b5213"
+    },
+    {
+      "path": "docs/HOST_TASKS.md",
+      "sha256": "eabf1083288bb24bcbedd692bcb7198084ab3c32b2a35602ce8bb76d3672ccb7"
+    },
+    {
+      "path": "docs/HOME_PANEL.md",
+      "sha256": "1ce011b5648ae70b05d2ea48486eb3ca38549d8dcdc9694c7280c84ec5b98b09"
+    }
+  ],
+  "host_notes": [
+    "preserve existing private companion_io.py and persona/channel adapters",
+    "compare deployed base hashes before replacing customized files",
+    "read actual task bodies and update existing emotion/life jobs without new schedules",
+    "retire delayed panel trigger and only its pending runonce tasks",
+    "no production test messages; no reroll or resend during feedback"
+  ]
+}

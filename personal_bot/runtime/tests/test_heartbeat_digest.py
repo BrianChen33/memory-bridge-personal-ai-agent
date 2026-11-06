@@ -11,6 +11,7 @@ import tempfile
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from unittest import mock
+from contextlib import contextmanager
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -37,8 +38,14 @@ def dt(day, h, m):
     return datetime(2026, 11, day, h, m, tzinfo=BJ)
 
 
+@contextmanager
 def clock(day, h, m):
-    return mock.patch.object(proactive, 'beijing_now', return_value=dt(day, h, m))
+    # Quiet-hour gating and candidate expiry must use the same fixture clock.
+    # Otherwise the fixed 2026-11 news expires as the real calendar advances.
+    instant=dt(day,h,m)
+    with mock.patch.object(proactive,'beijing_now',return_value=instant), \
+            mock.patch('time.time',return_value=instant.timestamp()):
+        yield
 
 
 def make_brain():

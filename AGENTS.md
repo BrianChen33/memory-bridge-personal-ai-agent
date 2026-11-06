@@ -19,6 +19,11 @@ sparse v2 remains for existing channel adapters, not as the new main-chat rule.
 New native main-chat binding uses docs/MAIN_ENTRY.md: lossless source selection,
 context then model-supplied commit, local validation and sampled read-only audits.
 Do not claim this intercepts Muse native final.
+v0.8.2 uses companion_commit without re-retrieval, model-authored sealed activity
+projects (docs/LIFE_PROJECTS.md), and the existing 15m emotion heartbeat for bounded
+feedback repairs plus silent panel refresh (docs/FEEDBACK_HEARTBEAT.md). Retire the
+30m+5m panel trigger. Successful emotions, old sends and sticker draws never replay;
+proactive output reuses original life stimuli or explicitly has no new stimulus.
 Retire obsolete operational rules from active prompts and retrievable memories;
 do not erase unrelated personal history. Return current-event reaction separately
 from background mood. Assessment errors must not silently suppress every draw.

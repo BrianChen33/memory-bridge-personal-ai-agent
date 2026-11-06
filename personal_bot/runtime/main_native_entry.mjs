@@ -8,7 +8,7 @@ import {spawnSync} from 'node:child_process';
 
 function main(){
  if(process.argv.includes('--help'))return {ok:true,usage:'main_native_entry.mjs --root WORKSPACE --chat-id TRUSTED_OWNER_CHAT < request.json',
-  input:'{phase:context|commit|gate|audit,native_response:real_chat_read_messages_result,target_seq?,target_turn_id?,emotion_assessment?,reading_documents?}',
+  input:'{phase:context|commit|gate|audit|feedback,native_response:real_chat_read_messages_result,target_seq?,target_turn_id?,emotion_assessment?,reading_documents?}',
   boundary:'host performs chat.read_messages; this local adapter cannot intercept native final or access a chat API'};
  const argument=name=>{const i=process.argv.indexOf(name);return i<0?null:process.argv[i+1];};
  const root=argument('--root'),chat=argument('--chat-id');
@@ -41,7 +41,21 @@ function main(){
  }
  rows.sort((a,b)=>b.native.seq-a.native.seq);
  const phase=q.phase||'context';
- if(!['context','commit','gate','audit'].includes(phase))return {ok:false,error:'invalid_native_entry_phase'};
+ if(!['context','commit','gate','audit','feedback'].includes(phase))return {ok:false,error:'invalid_native_entry_phase'};
+ if(phase==='feedback'){
+  // This is the existing scheduled model's bounded historical scan. It never
+  // goes through sticker decisions or changes the current native-source head.
+  const brainRoot=process.env.STICKER_BRAIN_ROOT||join(root,'muse-brain');
+  const request={op:'companion_feedback',action:'scan',scope:'owner-private',native_events:rows.slice(0,20).map(r=>({
+    source:'main:sticker',event_id:r.turnId,actor:'user',text:r.text,occurred_at:r.timestamp})),
+    coverage:{chat_id:chat,page:native.page||null,sample_size:rows.length}};
+  const result=spawnSync(process.env.STICKER_PYTHON||'python3',[join(brainRoot,'brain.py'),'--root',brainRoot],
+    {input:JSON.stringify(request),encoding:'utf8',timeout:8000,maxBuffer:262144});
+  if(result.error||!result.stdout)return {ok:false,error:'feedback_scan_process_failed'};
+  let output;try{output=JSON.parse(result.stdout);}catch{return {ok:false,error:'feedback_scan_output_invalid'};}
+  if(result.status!==0&&output.ok!==false)return {ok:false,error:'feedback_scan_process_failed'};
+  return {...output,native_sample:{chat_id:chat,page:native.page||null,coverage:'recent verified user-item sample only'}};
+ }
  let selected;
  if(phase!=='audit'){
   const blank=ignored.find(r=>(q.target_seq!==undefined?r.seq===q.target_seq:
@@ -55,6 +69,7 @@ function main(){
    return {ok:false,error:'new_owner_turn_requires_context',latest_seq:rows[0].native.seq};
  }
  const input=phase==='audit'?{phase:'audit',turns:rows.slice(0,20)}:{...selected,phase,
+  native_head:{...rows[0].native,source_timestamp:rows[0].timestamp},
   ...(q.emotion_assessment===undefined?{}:{emotion_assessment:q.emotion_assessment}),
   ...(q.humor_assessment===undefined?{}:{humor_assessment:q.humor_assessment}),
   ...(q.meme_updates===undefined?{}:{meme_updates:q.meme_updates}),
