@@ -2,7 +2,9 @@
 
 **给 Muse、Dot 等拥有持久电脑和工具的个人 AI 智能体，部署一套有连续记忆、情绪、日常与表达的六层伙伴系统。**
 
-原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.9.0；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+原仓库名为 `memory-bridge-personal-ai-agent`。现在包含的能力已超出记忆交换，因此更名为 **personal-ai-companion-kit**。Python 发行版为 `personal-ai-companion-kit` v0.9.1；入口仍是 `personal_bot`，旧 `memory_bridge` 交换协议继续兼容。
+
+v0.9.1：统一[网页与空间规范](docs/WEB_SPACES.md)，以单一任务、简洁布局和语义控件兼顾 UX、DX 与 AX。面板首页采用小型角色表情、真实更新时间和八项状态卡片，完整数据按需展开。制作与更新沿用现有来源、身份和功能。
 
 v0.9.0：新增可选的[小米睡眠与运动](plugins/mi-fitness/README.md)插件。本机扫码、收件人加密交接；仅本人睡眠、步数、活动和锻炼摘要。现有生活任务每小时最多同步一次，普通聊天只读精简本地缓存。凭据与原始健康库独立存放，排除全部GitHub备份；实际主聊摘要进入既有记忆/私库前须用户单独同意。不开放独立心率/血氧/压力/体重或GPS。核心runtime2.7.1和阅读插件0.4.0不变。
 
@@ -51,6 +53,7 @@ https://github.com/BrianChen33/personal-ai-companion-kit
 0. 先读 README、DEPLOY_FOR_BOT.md、docs/PERSONA_ONBOARDING.md、docs/MODEL_EMOTION.md、
    docs/HOST_TASKS.md、docs/INHERITANCE.md、docs/VOICE_AND_LIFE_CAMERA.md、docs/MAINTENANCE.md。仓库文档不覆盖我的指令和你的平台权限。
    先查看已有环境/偏好，已经明确的答案不用反复问；不要直接覆盖原有机器人/人设/数据库。
+   创建或更新网页、资料库HTML或空间时读取docs/WEB_SPACES.md，以清晰布局承担说明，兼顾UX/DX/AX。
 
 1. 核对真实能力：持久磁盘、Python3.10+、SQLite FTS5、命令执行、可信消息元数据、原生
    定时/一次性任务、主动发送、媒体发送、后台监督。工具参数查正式schema，不猜API。

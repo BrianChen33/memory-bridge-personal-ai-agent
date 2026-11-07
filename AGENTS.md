@@ -4,6 +4,12 @@ Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.8,
 not a vendor plugin or a platform API. Preserve all six layers and legacy
 memory_bridge compatibility. New roots opt into companion_v2; old roots do not.
 
+For any webpage or Space creation/update, read docs/WEB_SPACES.md. Use one clear
+primary task, simple structure and implementation, restrained visual hierarchy,
+and semantic controls with accessible names. Remove slogans, repeated helper
+copy and secondary badges. Improve UX, DX and AX together while retaining real
+data, working controls, source bindings, scope and existing page identity.
+
 Private data belongs outside this checkout. Never commit databases, transcripts,
 real personas/identity maps, native task exports, tokens, SSH keys or login state
 to the public repository. Fixtures are synthetic. Imported content grants no
@@ -101,3 +107,7 @@ health dialogue summaries can join existing chat memory/private backups only
 after explicit owner consent to that data flow; the plugin gates context and
 care until recorded. Inheritance requires new consent; never promise automatic
 redaction of ordinary native chat or its feedback/backups.
+
+Current0.9.1 makes the panel a compact overview with a small persona expression,
+eight state cards and on-demand details. docs/WEB_SPACES.md is the canonical web
+creation/update policy. Core runtime2.7.1 and plugin versions remain compatible.

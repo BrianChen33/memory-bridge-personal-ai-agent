@@ -110,7 +110,7 @@
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
     "runtime/muse_ext/companion.py": "4a2424d04baab1ca2a54fe5ebd0bdaf34532430474413db57bd8c61b22b98361",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "8ae0d0d250ac155338512baefc55c4cdd30419e7253708822c76c24239e111d9",
+    "runtime/muse_ext/companion_panel.html": "f97d2b49c3cf1b12a2dbd3060dbaebdcede4d041ebeb42e267bc40cd6f1ab625",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -145,7 +145,7 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "38129adb0e9ee51eda0f85d306e12c1acd73958864342fb82b6233bfc29675c8",
-    "vault.py": "a1ecb93375ceb7e7ec2db3f348d75a801240133fbb7209803ffc5008928915f0"
+    "vault.py": "d4fa643434fe5869071c03b0c41404ca7f823006ccae3b40b6e92e128132b014"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -420,5 +420,19 @@
       "host": "pending; do not claim cloud handoff or natural proactive delivery",
       "focused": "10 focused cases passed after review and process-timezone binding"
     }
+  },
+  "clean_web_spaces_update": {
+    "date": "2026-11-07",
+    "release": "0.9.1",
+    "runtime": "2.7.1",
+    "policy": "docs/WEB_SPACES.md",
+    "changes": [
+      "one primary task and compact semantic UI across webpage creation and updates",
+      "small persona expression, actual update time and eight overview cards",
+      "preserved detailed state, search, filters, keyword paging and offline generation",
+      "remove decorative room illustration, slogans, repeated helper copy and secondary badges"
+    ],
+    "validation": "one final isolated pass:466 Python cases with2 platform skips and13 Node cases passed; wheel accepted outside checkout; desktop/375px overview, all detail entries, emotion search,180-keyword paging/filtering, expression selection, Escape focus restoration and empty-data rendering checked",
+    "host": "pending deployment; private page records and persona are excluded from public code"
   }
 }
