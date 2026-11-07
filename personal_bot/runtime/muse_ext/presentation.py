@@ -49,7 +49,49 @@ def _completion(b, started):
                         (started['activity'], started['occurred'], next_start or float('inf'), stamp())).fetchone()
 
 
+def camera_backup_sources(b, database=None):
+    """Reference art only. Photo outputs remain in their separate local album."""
+    import re
+    selected = {}
+    database = database if database is not None else b.db
+    if not database.execute("SELECT 1 FROM sqlite_master WHERE name='lc_asset'").fetchone():
+        return selected
+    for row in database.execute('SELECT payload FROM lc_asset'):
+        for image in json.loads(row[0])['images']:
+            name = image['file']
+            if not re.fullmatch(r'assets/life-camera/references/[a-f0-9]{64}\.(png|jpg|webp)', name):
+                raise ValueError('invalid_camera_backup_reference')
+            path = b.root / name
+            if (any(part.is_symlink() for part in (path, *path.parents)) or not path.is_file() or
+                    hashlib.sha256(path.read_bytes()).hexdigest() != image['sha256']):
+                raise ValueError('camera_backup_reference_missing_or_changed')
+            selected[name] = path
+    if sum(path.stat().st_size for path in selected.values()) > 64*1024*1024:
+        raise ValueError('camera_reference_backup_exceeds_64MiB')
+    return selected
+
+
+def _camera_plugin(b):
+    from muse_ext.plugins import load, read_registry
+    entry = read_registry(b)['plugins'].get('life-camera')
+    if entry is None:
+        return False, None
+    return True, load(b, 'life-camera') if entry.get('enabled') is True else None
+
+
 def camera(b, scope):
+    if scope != 'owner-private':
+        return dict(enabled=False)
+    try:
+        installed, plugin = _camera_plugin(b)
+        if installed:
+            return plugin.camera(b, scope) if plugin else dict(enabled=False, status='plugin_disabled')
+    except (OSError, ValueError, TypeError, KeyError):
+        return dict(enabled=False, status='plugin_unavailable')
+    return _legacy_camera(b, scope)
+
+
+def _legacy_camera(b, scope, force_enabled=False):
     from muse_ext.companion import _get, stamp
     if scope != 'owner-private':
         return dict(enabled=False)
@@ -57,7 +99,7 @@ def camera(b, scope):
         config = profile(b)
     except (OSError, ValueError, TypeError):
         return dict(enabled=False, status='configuration_unavailable')
-    if config.get('life_photos') is not True:
+    if not force_enabled and config.get('life_photos') is not True:
         return dict(enabled=False)
     now = stamp()
     activity = _get(b, 'life', {}).get('activity')
@@ -91,6 +133,15 @@ def camera(b, scope):
 
 
 def photo(b, q):
+    installed, plugin = _camera_plugin(b)
+    if installed:
+        if plugin is None:
+            return dict(ok=False, error='life_camera_plugin_disabled')
+        return plugin.compat_photo(b, q)
+    return _legacy_photo(b, q)
+
+
+def _legacy_photo(b, q, force_enabled=False):
     """A user photo promise tied to a real source and life cycle; uses existing tasks."""
     from muse_ext.companion import _get, _set, stamp
     if q.get('scope') != 'owner-private':
@@ -103,7 +154,7 @@ def photo(b, q):
                           (source_id, q['scope'])).fetchone()
     if not source:
         raise ValueError('real_photo_request_source_required')
-    if profile(b).get('life_photos') is not True:
+    if not force_enabled and profile(b).get('life_photos') is not True:
         return dict(ok=False, error='life_photos_not_enabled')
     with b.db:
         b.db.execute('BEGIN IMMEDIATE')

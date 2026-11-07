@@ -1,5 +1,11 @@
 # 给部署 Agent 的执行手册（v0.8）
 
+当前可选生活相机使用 Kit0.9.2 / runtime2.8.0 / life-camera0.1.0。先按插件README
+核manifest、原三视图SHA及宿主生图/后台/投递schema，再 install/enable、asset_put、
+configure、bind_host。将 PROTOCOL 接到现有生活任务、主聊 camera_context 与面板，
+读回真实ID/正文/工具绑定。已有用户授权的安装选择沿用，图片工具缺口如实报告。
+所有通用更新遵守 docs/MAINTENANCE.md，公开commit与私库当前代码锁分别核实。
+
 先读README里的完整提示词。它规定顺序：能力摸底→人格与选择→核心→真实宿主接线→专用任务→面板/可选私库→一次最终隔离验收。不要只写几条规则就宣布完成。
 
 ## 1. 能力与人格

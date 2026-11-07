@@ -94,6 +94,27 @@ def summary_proof(root,day,bootstrap=False):
     return {'kind':'daily','day':day,'completed_summary':json.loads(row[0])}
 
 
+def camera_reference_sources(root, database=None):
+    """Only current registered reference art, excluding the generated photo album."""
+    selected = {}
+    database = database or root/'data/brain.sqlite'
+    with closing(sqlite3.connect(database.resolve().as_uri()+'?mode=ro', uri=True)) as db:
+        if not db.execute("SELECT 1 FROM sqlite_master WHERE name='lc_asset'").fetchone():
+            return selected
+        for row in db.execute('SELECT payload FROM lc_asset'):
+            for image in json.loads(row[0])['images']:
+                name = image['file']
+                if not re.fullmatch(r'assets/life-camera/references/[a-f0-9]{64}\.(png|jpg|webp)', name):
+                    raise ValueError('invalid_camera_backup_reference')
+                path = safe_source(root/name)
+                if not path.is_file() or sha(path) != image['sha256']:
+                    raise ValueError('camera_backup_reference_missing_or_changed')
+                selected[name] = path
+    if sum(path.stat().st_size for path in selected.values()) > 64*1024*1024:
+        raise ValueError('camera_reference_backup_exceeds_64MiB')
+    return selected
+
+
 def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,identity_file=None,architecture_repo='https://github.com/BrianChen33/personal-ai-companion-kit'):
     root=safe_source(root).resolve(); dest=Path(destination).resolve()
     if not re.fullmatch(r'[0-9a-f]{40}',architecture_ref): raise ValueError('exact_architecture_commit_required')
@@ -142,6 +163,9 @@ def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,i
         src.backup(dst)
         if dst.execute('PRAGMA quick_check').fetchone()[0]!='ok': raise ValueError('snapshot_database_invalid')
     finally: dst.close(); src.close()
+    references = camera_reference_sources(root, target)
+    selected.update(references)
+    before.update({name: sha(path) for name, path in references.items()})
     os.chmod(target,0o600);scan_file(target)
     files.append({'path':'brain.sqlite','sha256':sha(target),'bytes':target.stat().st_size,'category':'cognitive_database'})
     for name,p in selected.items():
@@ -163,7 +187,7 @@ def export_snapshot(root,destination,architecture_ref,day=None,bootstrap=False,i
                 if p.is_symlink() or not p.resolve().is_relative_to(dest): raise ValueError('unsafe_stale_file')
                 p.unlink()
     manifest={'schema':SCHEMA,'created_at':time.time(),'summary_proof':proof,'files':files,'aliases':aliases,
-              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.9.1'},
+              'architecture':{'repository':architecture_repo,'commit':architecture_ref,'package':'personal-ai-companion-kit','version':'0.9.2'},
               'inheritance':{'default':['native_memory_or_persona','cognitive_database'],'never_auto_activate':['operational_reference'],
                              'excluded':['credentials','SSH keys','channel login state','runtime code','models','generated panels','completed learning queue files']}}
     write_json(marker,manifest)

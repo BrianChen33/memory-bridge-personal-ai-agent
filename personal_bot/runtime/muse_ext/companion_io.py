@@ -250,7 +250,12 @@ def backup(b,q):
             raise ValueError('credential_or_unsafe_backup_source')
         if any(p.is_symlink() for p in (file,*file.parents)): raise ValueError('backup_symlink_refused')
     before={name:digest(file) for name,file in selected.items()}
-    with closing(sqlite3.connect(dest)) as target: b.db.backup(target)
+    with closing(sqlite3.connect(dest)) as target:
+        b.db.backup(target)
+        from muse_ext.presentation import camera_backup_sources
+        references = camera_backup_sources(b, target)
+        selected.update(references)
+        before.update({name: digest(file) for name, file in references.items()})
     os.chmod(dest,0o600); files.append(dest)
     for name,file in selected.items():
         target=directory/name; target.parent.mkdir(parents=True,exist_ok=True)

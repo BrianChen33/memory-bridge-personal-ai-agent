@@ -627,10 +627,35 @@ function renderPeople(){
  body.append(note('数值来自当前人物记录，属于角色的模型推断；未评估项留白，未确认身份不自动合并，好感等级不授予管理员权限。'));
 }
 function renderSwitches(){
+ renderLifeCamera();
  const list=section('表达与学习',switchDefinitions.filter(([key])=>controls[key]===true).length+' 项开启');
  for(const [key,,label] of [...switchDefinitions].sort((a,b)=>Number(controls[b[0]]===true)-Number(controls[a[0]]===true))){const r=node('div',null,'list-row'),enabled=controls[key],value=node('span',null,'readonly-switch'+(enabled===true?'':' off'));value.append(node('span',null,'switch-visual'),document.createTextNode(typeof enabled==='boolean'?(enabled?'已开启':'已关闭'):'未记录'));r.append(node('span',label,'row-label'),value);list.append(r)}body.append(list);
  const values=section('程度与反应');values.append(row('串子程度',number(controls.banter_level)+' / 100'),row('情绪影响值',typeof controls.emotion_gain==='number'?controls.emotion_gain.toFixed(1)+' ×':'未记录'),row('普通表情概率',percent(snapshot.sticker_policy?.base_probability),'情绪越强烈，自动概率越高'),row('表情发送顺序','文字全部结束后再发图'),row('明确说要表情','直接选图，不参加概率抽签'));body.append(values);
  const knowledge=section('梗知识的生长');knowledge.append(row('公共词条',number(snapshot.meme_knowledge?.public_count)),row('已理解 / 候选',number(snapshot.meme_knowledge?.private_counts?.active)+' / '+number(snapshot.meme_knowledge?.private_counts?.candidate)),row('定期更新','每周一次','公共更新不会覆盖私人共同梗与纠错'));body.append(knowledge);
+}
+function renderLifeCamera() {
+  const camera = (snapshot.plugins?.items || []).find(item => item.id === 'life-camera');
+  if (!camera) return;
+  const settings = camera.settings || {};
+  const states = {ready: '已就绪', awaiting_reference: '等待角色参考图', awaiting_host_binding: '等待生图接线', disabled: '已暂停', unavailable: '暂不可用'};
+  const modes = {manual: '按需', balanced: '自然分享', proactive: '积极分享'};
+  const views = {auto: '按场景选择', selfie: '自拍', rear: '拍物与景色', mirror: '镜自拍'};
+  const sectionBox = section('生活相机');
+  sectionBox.append(
+    row('状态', states[camera.status] || camera.status),
+    row('主动照片', settings.automatic === true ? '开启' : '关闭'),
+    row('分享方式', modes[settings.mode] || '未设置'),
+    row('主动间隔', number(settings.cooldown_minutes) + ' 分钟'),
+    row('镜头偏好', views[settings.camera_preference] || '未设置'),
+    row('角色参考', camera.reference?.name || '尚未配置'),
+    row('待生成 / 待发送', String(camera.counts?.queued || 0) + ' / ' + String(camera.counts?.ready || 0))
+  );
+  for (const photo of (camera.recent || []).slice(0, 4)) {
+    const status = {queued:'排队',claimed:'已认领',generating:'生成中',ready:'待发送',sending:'发送中',
+      accepted:'已送达',unknown:'送达待核对',generation_unknown:'生成待核对',failed:'失败',stale:'场景已过期'};
+    sectionBox.append(row(photo.caption || views[photo.camera] || '生活照片', status[photo.status] || photo.status));
+  }
+  body.append(sectionBox);
 }
 function renderHabitKeywords(habits){
  const states=[['trial','试用中'],['mature','已用熟'],['reference','仅理解'],['candidate','待理解'],['rejected','已停用'],['other','待整理']],known=new Set(states.map(([key])=>key)),pageSize=24;
@@ -657,7 +682,7 @@ function renderHabitKeywords(habits){
 function renderPlugins(){
  const items=snapshot.plugins?.items||[];
  if(!items.length){body.append(note('尚未安装可选阅读插件。核心聊天、记忆和情绪系统照常工作。'));return}
- for(const p of items){const states={awaiting_sources:'等待你选择贴吧',awaiting_verification:'等待正常验证',ready:'许可来源已就绪',disabled:'插件已暂停',unavailable:'插件暂不可用'},s=section(p.name||p.id,p.version||'');s.append(row('当前状态',states[p.status]||p.status||'未知'),row('自动阅读',p.settings?.auto_browse===true?'开启':'关闭或未接入'),row('语言学习',p.settings?.language_learning===true?'开启':'关闭或未接入'));if(p.settings)s.append(row('单次预算',p.settings.budget_seconds+' 秒 / '+p.settings.max_pages+' 页 / '+p.settings.max_threads+' 帖'),row('分享兴趣阈值',String(p.settings.share_threshold)));body.append(s);
+ for(const p of items){if(p.id!=='social-reading'){const pluginBox=section(p.name||p.id,p.version||'');pluginBox.append(row('状态',({ready:'已就绪',disabled:'已暂停',awaiting_reference:'等待角色参考图',awaiting_host_binding:'等待生图接线',unavailable:'暂不可用'})[p.status]||p.status||'未知'));body.append(pluginBox);continue}const states={awaiting_sources:'等待你选择贴吧',awaiting_verification:'等待正常验证',ready:'许可来源已就绪',disabled:'插件已暂停',unavailable:'插件暂不可用'},s=section(p.name||p.id,p.version||'');s.append(row('当前状态',states[p.status]||p.status||'未知'),row('自动阅读',p.settings?.auto_browse===true?'开启':'关闭或未接入'),row('语言学习',p.settings?.language_learning===true?'开启':'关闭或未接入'));if(p.settings)s.append(row('单次预算',p.settings.budget_seconds+' 秒 / '+p.settings.max_pages+' 页 / '+p.settings.max_threads+' 帖'),row('分享兴趣阈值',String(p.settings.share_threshold)));body.append(s);
  const queue=p.reading_queue;if(queue){const box=section('后台阅读进度','一批一批读，真实结果先保存');const names={queued:'排队',browsing:'正在阅读',staged:'已保存结果',ingesting:'正在登记',observed:'等待反思',done:'完成',paused:'已暂停',cancel_requested:'等待停止',cancelled:'已取消'};for(const [key,count] of Object.entries(queue.counts||{}))box.append(row(names[key]||key,String(count)+' 项'));for(const q of (queue.requests||[]).slice(0,6))box.append(row((q.cursor?.url||'阅读请求')+' · '+(names[q.status]||q.status),q.problem||'按真实进度处理',q.schedule?.bound?'已绑定后台任务':'未绑定一次性调度'));body.append(box);}
  const sourcesBox=section('允许阅读的地方','名称、链接和验证状态分开记录');for(const src of p.sources||[]){let reason='';try{const proof=JSON.parse(src.proof||'{}');reason=proof.title||proof.status||''}catch{}sourcesBox.append(row(src.name||src.id,(src.active?src.status:'已撤销')+' · '+src.url,reason))}if(!(p.sources||[]).length)sourcesBox.append(note('还没有许可来源。把你愿意让她阅读的贴吧链接告诉她，只有吧名也可以，确认后再启用。'));body.append(sourcesBox);
  body.append(renderHabitKeywords(p.habits||[]));

@@ -1,5 +1,16 @@
 # Repository instructions
 
+Current0.9.2/runtime2.8.0 adds optional life-camera0.1.0. Read its README and
+PROTOCOL before binding. Original owner-provided identity/style art must be actual
+image input, with reserved first reference quota. Same host model chooses photos
+inside existing life/reply appraisal. Foreground reads compact local context only.
+Native background generation and delivery need verified bind_host metadata.
+Released life events/real owner requests bind durable jobs, claims and receipts.
+Uncertain work never auto-regenerates/resends or blocks unrelated later events.
+Existing camera operations route to the installed plugin; installed-disabled is off.
+Reference art joins private native snapshots, generated albums stay separate.
+Keep private character sheets and deployment paths out of public source.
+
 Read README.md and DEPLOY_FOR_BOT.md. This is Personal AI Companion Kit v0.8,
 not a vendor plugin or a platform API. Preserve all six layers and legacy
 memory_bridge compatibility. New roots opt into companion_v2; old roots do not.

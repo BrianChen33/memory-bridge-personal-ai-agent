@@ -96,7 +96,7 @@
     ]
   },
   "current_code_hashes": {
-    "__init__.py": "6c50ff081d189ae5782b877110e91f1dc621d8abc72760fb7254ece638b88006",
+    "__init__.py": "d46916e543f8f650452740885e8ff03b2efd2c64e995a6f87a8f26843e3a2c28",
     "__main__.py": "79ee6f134c5c5193377cf9b189cbdcc3e2095e49ba9cec310114441c15a917c4",
     "cli.py": "7d827b169c9c9cc67f9823c2f494b9c0eb56d7f562ce7968595b62258e4c433b",
     "deploy.py": "ace0ac30e24c2ecbd806682ef85cf05da7fb5ae75f49efd48d51f471ddbb3b4c",
@@ -108,9 +108,9 @@
     "runtime/model-assets.json": "123babcabc0903fd4cc02a7269d59fd224867324b7e9c24ec9090918482421c3",
     "runtime/muse_ext/__init__.py": "4bf8f41e81a7e6b2930c051cf08e6cdef6a1d35f6d099ace496bcb1521c8cf5f",
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
-    "runtime/muse_ext/companion.py": "4a2424d04baab1ca2a54fe5ebd0bdaf34532430474413db57bd8c61b22b98361",
-    "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "2119cc396f0ad5ae811209b46fec7268a9e51cd1ae463c34dbe300a809fd8bbe",
+    "runtime/muse_ext/companion.py": "931452d9f5eec77ae03c02281c3d001be8b497866172eb1f9495f615e8e8a0d0",
+    "runtime/muse_ext/companion_io.py": "4b3a95c14cc81beae6aeafdbb17b8e2912b783aea0fa040e33f679528e6f5044",
+    "runtime/muse_ext/companion_panel.html": "c09705a770477d7db691720c2f926152bff076ef36f3aca16b7c8089ad47490f",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -132,7 +132,7 @@
     "runtime/muse_ext/panel_refresh.py": "4c252e3d00969eaa6d4cd7fd1029ebca4de43b7df121571eefc456a10b0c6fba",
     "runtime/muse_ext/pause.py": "aeb2fcc3fcd171428c0fd1e5bddd50750b86a6798cae9231cfa7e3b77569792b",
     "runtime/muse_ext/plugins.py": "9adffd2ca2515d4e95c4c0d3e7aff61330658f368b51015c83c13671a94e23ac",
-    "runtime/muse_ext/presentation.py": "9cd95ecb1670fdb030c96eeb8a921a5e0244363e04780eae2b3bb704bec8fd77",
+    "runtime/muse_ext/presentation.py": "1a0a74b26be4f8119632c841c1c99b1dd57ab6214cbb44779cf9670aec06cbb4",
     "runtime/muse_ext/reading.py": "3263e14c71108655328ea7467124e89890b980791a5d99a5315271314cc483ca",
     "runtime/muse_ext/reminders.py": "a0f8ab2d3f92a1c6e5a73fe1c7bc7a2d3e0c57aaadbdb2f0012656f3ec5cb3ba",
     "runtime/muse_ext/retrieval.py": "dbd9ff86806fab9023806740d525a48115481806276216c93ffcf3f0f3edb3ba",
@@ -145,7 +145,7 @@
     "runtime/sticker_emotion.mjs": "6d6b4275602d9fda9bc2eca0e62e31d40ed15179c4720d0dcd25b8212a3258bc",
     "runtime/sticker_intent.mjs": "691e4fafb83a9ba179cb6b3e6b5f6bf5472ca0ab50355572f0505c55f2e22084",
     "runtime/sticker_main.mjs": "38129adb0e9ee51eda0f85d306e12c1acd73958864342fb82b6233bfc29675c8",
-    "vault.py": "d4fa643434fe5869071c03b0c41404ca7f823006ccae3b40b6e92e128132b014"
+    "vault.py": "fae6e545e08a6d9e6e42b52e7559941753094a488a82e9175fddc37f7697bf50"
   },
   "emotion48_update": {
     "date": "2026-11-05",
@@ -434,5 +434,33 @@
     ],
     "validation": "one final isolated pass:466 Python cases with2 platform skips and13 Node cases passed; wheel accepted outside checkout; desktop/375px overview, all detail entries, emotion search,180-keyword paging/filtering, expression selection, Escape focus restoration and empty-data rendering checked; requested cozy-room refinement checked with6 object shortcuts, snapshot clock/night lighting and375px layout",
     "host": "pending deployment; private page records and persona are excluded from public code"
+  },
+  "life_camera_plugin_update": {
+    "date": "2026-11-08",
+    "release": "0.9.2",
+    "runtime": "2.8.0",
+    "plugin_id": "life-camera",
+    "plugin_version": "0.1.0",
+    "reference_project": "https://github.com/aa1355721445-lgtm/dsh-image-studio",
+    "reference_commit": "fbd8f662f29546c2574a21f8c17ae1bc68c9498a",
+    "plugin_manifest_sha256": "d66d12a77c5ce569692272134307c28b889868e402b0a783746c568cb179e681",
+    "changes": [
+      "optional complete camera routing and legacy promise compatibility",
+      "original identity/style image reserved first and passed as actual host image input",
+      "same-pass model photo choice, compact foreground context and native background binding gate",
+      "persistent source-bound generation and delivery claims with honest unknown recovery",
+      "reference art copied from frozen SQLite snapshot, separate album and compact completed jobs",
+      "read-only camera controls and bounded photo ledger in the existing cozy panel"
+    ],
+    "validation": {
+      "python_cases": 482,
+      "platform_skips": 2,
+      "node_cases": 13,
+      "wheel": "accepted outside checkout",
+      "method": "one final isolated phase; two receipt-message assertions corrected and focused2 passed; final scope guard focused1 passed; remaining208 Python and13 Node passed without repeating the274-case discovery",
+      "host": "awaiting browser-assisted deployment and verified native binding"
+    },
+    "host": "pending actual native tool/background/delivery binding; no live deployment claim",
+    "review": "one read-only review; corrected host-binding send gate, legacy receipt closure, scene-time expiry and promised-camera binding"
   }
 }
