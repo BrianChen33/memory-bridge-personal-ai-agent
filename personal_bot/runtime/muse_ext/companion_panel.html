@@ -55,9 +55,47 @@ h1 { font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -.025e
 .top-meta { display: grid; gap: 2px; text-align: right; flex: none; font-variant-numeric: tabular-nums; }
 .snapshot-time { font-size: 12px; }
 .snapshot-date { color: var(--muted); font-size: 11px; }
-.room-character { width: 56px; height: 56px; display: grid; place-items: center; flex: none; padding: 2px; border-radius: 12px; background: var(--mint); }
+.home-room {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin-bottom: 20px;
+  padding: 13px 20px 18px;
+  overflow: hidden;
+  border: 1px solid #e8e1d5;
+  border-radius: 16px;
+  background: #f6f3ec;
+}
+.room-scene { position: relative; width: min(100%, 680px); aspect-ratio: 520 / 230; }
+.room-art { display: block; width: 100%; height: 100%; }
+.room-scene .room-character {
+  position: absolute;
+  left: 27.7%; top: 21.7%; width: 29.6%; height: 65.2%;
+  display: grid; place-items: center; padding: 0;
+  border-radius: 12px; background: transparent; mix-blend-mode: multiply;
+}
 .room-character img { width: 100%; height: 100%; object-fit: contain; }
-.reduced-art { display: none; color: var(--green); }
+.room-character:hover { transform: translateY(-2px) rotate(-2deg); }
+.room-object { position: absolute; display: flex; align-items: flex-end; justify-content: center; min-width: 40px; min-height: 40px; padding: 0; border-radius: 9px; background: transparent; }
+.room-object:hover, .room-object:focus-visible { background: #d4dcc52b; }
+.room-object span { position: absolute; bottom: 0; opacity: 0; padding: 2px 6px; border-radius: 5px; background: #fffaf0; color: #5d6657; font-size: 10px; white-space: nowrap; }
+.room-object:hover span, .room-object:focus-visible span { opacity: 1; }
+.rice-object { left: 4.5%; top: 51%; width: 18%; height: 40%; }
+.diary-object { left: 19.8%; top: 71%; width: 12%; height: 23%; }
+.hammock-object { left: 61.8%; top: 47%; width: 29.4%; height: 45%; }
+.window-object { left: 66.5%; top: 12%; width: 24%; height: 33%; }
+.bookshelf-object { left: 5%; top: 23%; width: 18%; height: 33%; }
+.room-gallery { position: absolute; right: 17px; bottom: 12px; padding: 3px 6px; border-radius: 5px; background: transparent; color: #6f7267; font-size: 11px; }
+.room-gallery:hover { background: #eae6dc; }
+.room-moon-cutout { opacity: 0; fill: #536c80; }
+.room-lamp-glow { opacity: .07; }
+body[data-room-period="evening"] .room-sky { fill: #e8c5ae; }
+body[data-room-period="night"] .room-sky { fill: #536c80; }
+body[data-room-period="night"] .room-sun { fill: #f8ecc5; }
+body[data-room-period="night"] .room-moon-cutout { opacity: 1; }
+body[data-room-period="night"] .room-lamp-glow { opacity: .3; }
+.reduced-art { display: none; width: 80%; height: 80%; align-items: center; justify-content: center; border-radius: 50%; color: var(--green); background: #e9eddb; }
+.reduced-art .icon { width: 54%; height: 54%; }
 .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .card { display: flex; flex-direction: column; min-width: 0; min-height: 168px; padding: 19px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); text-align: left; transition: border-color .15s ease, background .15s ease; }
 .card:hover { border-color: #b8c6bd; background: #fdfefd; }
@@ -213,7 +251,8 @@ summary { cursor: pointer; font-size: 12px; }
   .main { margin-left: 0; padding: 24px 16px calc(82px + env(safe-area-inset-bottom)); }
   .topbar { align-items: flex-start; gap: 10px; margin-bottom: 22px; }
   .page-identity { gap: 9px; }
-  .room-character { width: 42px; height: 42px; border-radius: 9px; }
+  .home-room { padding: 8px 7px 17px; margin-bottom: 16px; border-radius: 12px; }
+  .room-gallery { right: 10px; bottom: 5px; font-size: 10px; }
   h1 { font-size: 20px; }
   .current-activity { max-width: 180px; font-size: 11px; }
   .snapshot-time { font-size: 11px; }
@@ -297,14 +336,46 @@ summary { cursor: pointer; font-size: 12px; }
 <main class="main" id="main">
   <header class="topbar">
     <div class="page-identity">
-      <button class="room-character" id="room-character" data-detail="home-expression" aria-label="查看表情">
-        <img id="house-sticker" alt="伙伴当前表情" decoding="async">
-        <span class="reduced-art" aria-hidden="true"><svg class="icon"><use href="#i-fish"/></svg></span>
-      </button>
       <div><h1>伙伴的小屋</h1><p class="current-activity" id="presence-activity">—</p></div>
     </div>
     <div class="top-meta"><time class="snapshot-time" id="snapshot-time">—</time><span class="snapshot-date" id="snapshot-date"></span></div>
   </header>
+  <section class="home-room" aria-label="小屋">
+    <div class="room-scene">
+      <svg class="room-art" viewBox="0 0 520 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+ <rect x="9" y="9" width="502" height="212" rx="22" fill="#faf4e8" stroke="#e3dec6" stroke-width="1.3"/>
+ <path d="M10 175h500v25q0 21-21 21H31q-21 0-21-21Z" fill="#eee5d1"/><path d="M10 175h500M45 192h82m21 16h63m-2-18h85m39 17h60m41-16h51" stroke="#e1d6be" stroke-width="1"/>
+ <rect x="352" y="30" width="104" height="81" rx="19" fill="#e1d8bd"/><rect x="358" y="36" width="92" height="69" rx="14" class="room-sky" fill="#d9e9e5"/><circle cx="429" cy="50" r="8" class="room-sun" fill="#eee1a8"/><circle cx="433" cy="47" r="7" class="room-moon-cutout"/><path d="M359 82q15-7 30 0t30 0 30 0v22h-90Z" fill="#b9d4d0"/><path d="M360 93q12-5 25 0t25 0 25 0 13 0" fill="none" stroke="#90bebc" stroke-width="1.1"/><path d="M404 35v70M356 70h95" stroke="#e9dfc8" stroke-width="5"/><path d="M341 30h12v90q-8-3-12-12ZM455 30h13v78q-5 8-13 12Z" fill="#dbe2c5"/><path d="M339 28h131" stroke="#c2bea0" stroke-width="3" stroke-linecap="round"/>
+ <rect x="35" y="68" width="76" height="94" rx="5" fill="#dfd8bf"/><rect x="41" y="74" width="64" height="37" rx="2" fill="#f1ead8"/><rect x="41" y="117" width="64" height="38" rx="2" fill="#f1ead8"/><path d="M47 105V81h9v24m5 0V84h7v21m8 0V80h8v25m5 0 2-19 7 1-2 19" stroke="#a5b79c" stroke-width="5" stroke-linejoin="round"/><path d="M48 148v-21h10v21m8 0v-19h9v19m9 0 2-17 8 1-2 17" stroke="#beaaa5" stroke-width="5"/>
+ <path d="M64 67V49m0 9q-16-4-13-16 15 2 13 16m0-2q1-13 13-17 3 14-13 17" fill="#b4c4a1" stroke="#92ac7d" stroke-width="1"/><path d="M54 58h21l-3 11H57Z" fill="#d8c4af"/><circle cx="294" cy="42" r="14" fill="#efe8d3" stroke="#d9d1b8"/><g stroke="#8b8c74" stroke-linecap="round"><line id="room-hour-hand" x1="294" y1="42" x2="294" y2="36" stroke-width="1.8"/><line id="room-minute-hand" x1="294" y1="42" x2="294" y2="32" stroke-width="1.2"/></g>
+ <path d="m327 111 8 17m126-17-8 17" stroke="#bcae8c" stroke-width="2"/><path d="M334 128q59 44 120 0c-8 43-107 48-120 0Z" fill="#c1d0ae" stroke="#a5b88e" stroke-width="1.2"/><path d="M340 131q57 30 109 0" stroke="#e2e8d6" stroke-width="3" fill="none"/><path d="m347 143 8 9m3-5 7 9m4-6 7 8m4-6 7 8m4-6 6 5m8-8 6 4m9-9 7 4m5-11 7 4" stroke="#dce5ce" stroke-width="1"/><path d="M328 112v71m134-71v71" stroke="#c5b79a" stroke-width="3" stroke-linecap="round"/>
+ <path d="M40 141h54v25q0 19-27 19t-27-19Z" fill="#e9d5aa" stroke="#c9b58a" stroke-width="1.3"/><ellipse cx="67" cy="142" rx="27" ry="8" fill="#fdfbf1" stroke="#c9b58a" stroke-width="1.3"/><path d="m45 140 5-4 5 3 5-6 6 4 5-3 7 5 5-2 7 5" fill="#fffdf6" stroke="#e9e4cf" stroke-width="1"/><path d="M61 159h12m-6-5v17m-5-8-3 5m12-5 3 5" stroke="#b39d70" stroke-width="1.1" stroke-linecap="round"/>
+ <rect x="106" y="179" width="31" height="29" rx="3" fill="#d8bcb5" transform="rotate(-9 122 194)"/><path d="m111 184 5-1m-5 6 15-2m-14 7 13-2" stroke="#faf4eb" stroke-width="1.3" stroke-linecap="round"/>
+ <ellipse cx="231" cy="204" rx="75" ry="7" fill="#e0d8bd" opacity=".65"/><rect x="179" y="181" width="104" height="8" rx="4" fill="#c8b48f"/><path d="M191 189v22m78-22v22" stroke="#c8b48f" stroke-width="5" stroke-linecap="round"/><path d="M223 172q11-4 24 0v13q-12-4-24 0Zm24 0q12-4 24 0v13q-12-4-24 0Z" fill="#fdfaf0" stroke="#b4bca1" stroke-width="1"/><path d="M247 172v13m-19-9h11m-11 3h11m13-3h12m-12 3h12" stroke="#d3d9c5" stroke-width=".9"/>
+ <path d="M477 179v-18m0 8q-18-6-14-20 17 4 14 20m0-6q0-18 16-23 4 17-16 23" fill="#bccbaa" stroke="#a0b58b" stroke-width="1"/><path d="M464 176h27l-4 18h-19Z" fill="#d6bca3"/><path d="m127 51 2 4 5 1-5 2-2 5-1-5-5-2 5-1 1-4Zm354-2 1 3 4 1-4 2-1 3-1-3-4-2 4-1 1-3Z" fill="#d9d7af"/>
+
+  <path d="M166 207q58-15 116 0l-8 9H174Z" fill="#d8bcb2" opacity=".58"/>
+  <path d="M169 210h110m-102 3h94" stroke="#efe3d8" stroke-width="1"/>
+  <path d="M240 10v14" stroke="#b7a78b" stroke-width="1.2"/>
+  <ellipse class="room-lamp-glow" cx="240" cy="82" rx="67" ry="46" fill="#ffe6ad"/>
+  <path d="m224 24-8 14h48l-8-14Z" fill="#d3b891" stroke="#bda37f" stroke-width="1"/>
+  <ellipse cx="240" cy="38" rx="24" ry="3" fill="#f8e6bd"/>
+  <rect x="127" y="38" width="25" height="29" rx="2" fill="#d4c0a7"/>
+  <path d="M131 42h17v21h-17Z" fill="#f7f1e4"/>
+  <path d="m133 59 5-7 4 4 4-9v13Z" fill="#c0ceb4"/>
+ </svg>
+      <button class="room-character" id="room-character" data-detail="mood" aria-label="查看当前心情">
+        <img id="house-sticker" alt="伙伴当前表情" decoding="async">
+        <span class="reduced-art" aria-hidden="true"><svg class="icon"><use href="#i-fish"/></svg></span>
+      </button>
+      <button class="room-object rice-object" data-detail="energy" aria-label="饭缸，查看精力"><span>饭缸</span></button>
+      <button class="room-object diary-object" data-detail="memory" aria-label="日记本，查看记忆"><span>日记本</span></button>
+      <button class="room-object hammock-object" data-detail="energy" aria-label="吊床，查看休息与精力"><span>吊床</span></button>
+      <button class="room-object window-object" data-detail="life" aria-label="窗边，查看日常"><span>日常</span></button>
+      <button class="room-object bookshelf-object" data-detail="plugins" aria-label="书架，查看阅读与成长"><span>阅读</span></button>
+    </div>
+    <button class="room-gallery" data-detail="home-expression" aria-label="查看表情">表情</button>
+  </section>
   <section class="cards" aria-label="当前状态">
     <button class="card mood-card" data-detail="mood" aria-label="心情详情">
       <div class="card-top"><span class="icon-tile"><svg class="icon" aria-hidden="true"><use href="#i-smile"/></svg></span>心情<svg class="icon card-arrow" aria-hidden="true"><use href="#i-up-right"/></svg></div>
@@ -437,12 +508,24 @@ function row(label,value,sub){const r=node('div',null,'list-row'),l=node('div',l
 function stat(label,value,sub='',color){const e=node('div',null,'stat-cell');e.append(node('div',label,'stat-label'),node('div',number(value),'stat-value'));if(typeof value==='number')e.append(track(value,color));if(sub)e.append(node('p',sub,'stat-note'));return e}
 function moodWord(){return activeEmotions[0]?.label||'暂无记录'}
 function relationLevel(score){return typeof score!=='number'?'尚未评估':score>=85?'很亲近':score>=65?'亲近':score>=45?'熟悉':score>=25?'有些距离':'疏远'}
+function renderRoomClock(generated) {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: snapshot.timezone || 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hour12: false
+  }).format(generated).split(':').map(Number);
+  const [hour, minute] = parts;
+  const period = hour >= 19 || hour < 7 ? 'night' : hour >= 17 ? 'evening' : 'day';
+  document.body.dataset.roomPeriod = period;
+  $('room-hour-hand').setAttribute('transform', `rotate(${hour % 12 * 30 + minute / 2} 294 42)`);
+  $('room-minute-hand').setAttribute('transform', `rotate(${minute * 6} 294 42)`);
+}
+
 function renderOverview() {
   const companion = snapshot.companion || {};
   const energy = companion.energy || {};
   const average = typeof energy.physical === 'number' && typeof energy.mental === 'number'
     ? (energy.physical + energy.mental) / 2 : null;
   const generated = new Date(snapshot.generated_at * 1000);
+  renderRoomClock(generated);
   $('snapshot-time').textContent = time(snapshot.generated_at) + ' 更新';
   $('snapshot-time').dateTime = generated.toISOString();
   $('snapshot-date').textContent = generated.toLocaleDateString('zh-CN', {

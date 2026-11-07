@@ -7,11 +7,11 @@
   "files": [
     {
       "path": "AGENTS.md",
-      "sha256": "ce2edfe109cbdfdb99e4d461204657fb2c1fb12b3cd9e3483c7f7409bbbd1cb8"
+      "sha256": "9cf365155f6c3633a9c4c18b27c088ef178ad14da061e19ea68a9716d2df1515"
     },
     {
       "path": "README.md",
-      "sha256": "cff753111ed6e3f7ba913c3aee792d08d95ccabe52a59337c90fc90d2984057c"
+      "sha256": "0858ff51dca05086f2e464ca388f21e2599a4eed70edfd4504d429cdd4d722d0"
     },
     {
       "path": "DEPLOY_FOR_BOT.md",
@@ -19,11 +19,11 @@
     },
     {
       "path": "docs/HOME_PANEL.md",
-      "sha256": "0c41ef3389e8c1e3c205a30acac93c31fccd064057650d4d7a35943044ae32f2"
+      "sha256": "83785e489b1a4bc77651cd1a8ab3f8719d672a3290959bef2b6959fc47baeee0"
     },
     {
       "path": "docs/WEB_SPACES.md",
-      "sha256": "0271030b3407d852a332f450237c4a196729472898646bff85eeec0657353d2a"
+      "sha256": "d483b8bd54e521c0edc77332df203e0a56737496a43bac8192423ddffdc7c551"
     },
     {
       "path": "docs/INHERITANCE.md",
@@ -43,11 +43,11 @@
     },
     {
       "path": "personal_bot/runtime/muse_ext/companion_panel.html",
-      "sha256": "f97d2b49c3cf1b12a2dbd3060dbaebdcede4d041ebeb42e267bc40cd6f1ab625"
+      "sha256": "2119cc396f0ad5ae811209b46fec7268a9e51cd1ae463c34dbe300a809fd8bbe"
     },
     {
       "path": "personal_bot/provenance.json",
-      "sha256": "bf851e231c7af20e39c23d7d65337865ffd431e110b14b544442730c32c390f9"
+      "sha256": "f9fac665583f0928b47a72305e0e27a042b21e3e49e8a3babf4f14fcce07305b"
     }
   ]
 }

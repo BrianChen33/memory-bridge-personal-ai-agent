@@ -108,6 +108,6 @@ after explicit owner consent to that data flow; the plugin gates context and
 care until recorded. Inheritance requires new consent; never promise automatic
 redaction of ordinary native chat or its feedback/backups.
 
-Current0.9.1 makes the panel a compact overview with a small persona expression,
-eight state cards and on-demand details. docs/WEB_SPACES.md is the canonical web
+Current0.9.1 keeps the interactive home scene above eight compact state cards
+and on-demand details, with a small character, functional objects and snapshot-time lighting. docs/WEB_SPACES.md is the canonical web
 creation/update policy. Core runtime2.7.1 and plugin versions remain compatible.

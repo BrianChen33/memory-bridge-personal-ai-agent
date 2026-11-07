@@ -110,7 +110,7 @@
     "runtime/muse_ext/backup.py": "1a20e5cd1fe9ea818a4a3ba049c37e13909e53bc860bc31c0a14a5e6539ea6f4",
     "runtime/muse_ext/companion.py": "4a2424d04baab1ca2a54fe5ebd0bdaf34532430474413db57bd8c61b22b98361",
     "runtime/muse_ext/companion_io.py": "e32fc8a127a1dfbb701263e1dcb82ee475c4e5f0f15fdd87daf57ea727287d84",
-    "runtime/muse_ext/companion_panel.html": "f97d2b49c3cf1b12a2dbd3060dbaebdcede4d041ebeb42e267bc40cd6f1ab625",
+    "runtime/muse_ext/companion_panel.html": "2119cc396f0ad5ae811209b46fec7268a9e51cd1ae463c34dbe300a809fd8bbe",
     "runtime/muse_ext/consolidation.py": "8931583ee8b842199cd7d54144aeeaa2ae774403eaaf523b6ab740b899c937e1",
     "runtime/muse_ext/embedding_server.py": "24b80165d9426dd4ed8ab69583a76f2e134a2d461aa11f6f6d220656c5691131",
     "runtime/muse_ext/embeddings.py": "c303b6175965a3b5717026c2a655aff03f8d5ffc7fc4b42b8af06983f814d22e",
@@ -428,11 +428,11 @@
     "policy": "docs/WEB_SPACES.md",
     "changes": [
       "one primary task and compact semantic UI across webpage creation and updates",
-      "small persona expression, actual update time and eight overview cards",
+      "interactive cozy room, functional objects and snapshot-time lighting above eight overview cards",
       "preserved detailed state, search, filters, keyword paging and offline generation",
-      "remove decorative room illustration, slogans, repeated helper copy and secondary badges"
+      "keep the requested room scene while removing slogans, repeated helper copy and secondary badges"
     ],
-    "validation": "one final isolated pass:466 Python cases with2 platform skips and13 Node cases passed; wheel accepted outside checkout; desktop/375px overview, all detail entries, emotion search,180-keyword paging/filtering, expression selection, Escape focus restoration and empty-data rendering checked",
+    "validation": "one final isolated pass:466 Python cases with2 platform skips and13 Node cases passed; wheel accepted outside checkout; desktop/375px overview, all detail entries, emotion search,180-keyword paging/filtering, expression selection, Escape focus restoration and empty-data rendering checked; requested cozy-room refinement checked with6 object shortcuts, snapshot clock/night lighting and375px layout",
     "host": "pending deployment; private page records and persona are excluded from public code"
   }
 }
